@@ -29,6 +29,34 @@ class Chef
       include Chef::Mixin::ConvertToClassName
       include Chef::Mixin::Language
       
+      def cookbook_name
+        @cookbook_name ||= ""
+      end
+      
+      def recipe_name
+        @recipe_name ||= ""
+      end
+      
+      def collection
+        @collection ||= Chef::ResourceCollection.new
+      end
+      
+      def definitions
+        @definitions ||= {}
+      end
+      
+      def node
+        @node ||= nil
+      end
+      
+      def params
+        @params ||= {}
+      end
+      
+      def cookbook_loader
+        @cookbook_loader ||= nil
+      end
+      
       def method_missing(method_symbol, *args, &block)
         # If we have a definition that matches, we want to use that instead.  This should
         # let you do some really crazy over-riding of "native" types, if you really want
