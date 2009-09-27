@@ -116,4 +116,15 @@ describe Chef::ResourceDefinition do
     @def.to_s.should eql("woot")
   end
   
+  describe "deep copying with #new" do
+    
+    it "dups itself and its params" do
+      new_def = @def.new
+      new_def.should_not equal(@def)
+      new_def.params.should_not equal(@def)
+      new_def.params.should == @def.params
+    end
+    
+  end
+  
 end

@@ -53,6 +53,12 @@ class Chef
       true
     end
     
+    def new
+      new_defn = self.dup
+      new_defn.params = params.dup
+      new_defn
+    end
+    
     # When we do the resource definition, we're really just setting new values for
     # the paramaters we prototyped at the top.  This method missing is as simple as
     # it gets.
