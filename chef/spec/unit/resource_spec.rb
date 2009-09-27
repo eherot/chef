@@ -232,7 +232,6 @@ describe Chef::Resource do
     end
   end
   
-<<<<<<< HEAD
   describe "setting the base provider class for the resource" do
     
     it "defaults to Chef::Provider for the base class" do
@@ -242,14 +241,18 @@ describe Chef::Resource do
     it "allows the base provider to be overriden by a " do
       ResourceTestHarness.provider_base.should == Chef::Provider::Package
     end
-    
-=======
+  end
+
   describe "dynamically generating methods on recipe dsl for subclasses" do
     it "defines a method based on class name for each subclass" do
       recipe_obj = RecipeDSLIncluder.new()
       recipe_obj.resource_test_harness("beatrix kiddo").should be_a_kind_of(Chef::Resource::ResourceTestHarness)
     end
->>>>>>> define resources as methods instead of missings
+    
+    it "doesn't define a method if the class doesn't yet have a name" do
+      recipe_obj = RecipeDSLIncluder.new()
+      lambda {anon_class = Class.new(Chef::Resource::ResourceTestHarness)}.should_not raise_error
+    end
   end
   
 end
