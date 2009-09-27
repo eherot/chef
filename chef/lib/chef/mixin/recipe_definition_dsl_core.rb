@@ -45,32 +45,10 @@ class Chef
           new_recipe.params[:name] = args[0]
           new_recipe.instance_eval(&new_def.recipe)
         else
-          # Otherwise, we're rocking the regular resource call route.
-          method_name = method_symbol.to_s
-          rname = convert_to_class_name(method_name)
-          
-          # If we have a resource like this one, we want to steal its state
-          resource = begin
-                       args << @collection
-                       args << @node
-                       Chef::Resource.const_get(rname).new(*args)
-                     rescue NameError => e
-                       if e.to_s =~ /Chef::Resource/
-                         raise NameError, "Cannot find #{rname} for #{method_name}\nOriginal exception: #{e.class}: #{e.message}"
-                       else
-                         raise e
-                       end
-                     end
-          resource.load_prior_resource
-          resource.cookbook_name = @cookbook_name
-          resource.recipe_name = @recipe_name
-          resource.params = @params
-          # Determine whether this resource is being created in the context of an enclosing Provider
-          resource.enclosing_provider = self.is_a?(Chef::Provider) ? self : nil
-          resource.instance_eval(&block) if block
-
-          @collection.insert(resource)
-          resource
+          # regular resources get dynamically defined as methods on this module
+          # raise a helpful error if we get here
+          rname = convert_to_class_name(method_symbol.to_s)
+          raise NameError, "no resource named #{rname} could be found for #{method_symbol}"
         end
       end
       

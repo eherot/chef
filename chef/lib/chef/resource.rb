@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/recipe_definition_dsl_core'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/check_helper'
 require 'chef/mixin/language'
@@ -26,12 +27,32 @@ require 'chef/node'
 
 class Chef
   class Resource
-        
+    
     include Chef::Mixin::CheckHelper
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::Language
     include Chef::Mixin::ConvertToClassName
     
+    def self.inherited(subclass)
+      method_name = convert_to_snake_case(subclass.name.to_s, "Chef::Resource")
+      method_body =<<-RESOURCE_METHOD
+      def #{method_name}(*args, &block)
+        r = #{subclass}.new(*args)
+        r.load_prior_resource
+        r.cookbook_name = cookbook_name
+        r.recipe_name   = recipe_name
+        r.params        = params
+        r.instance_eval(&block) if block
+        
+        collection << r
+        r
+      end
+      RESOURCE_METHOD
+      #puts "method body for #{subclass.name}:"
+      #puts method_body
+      Chef::Mixin::RecipeDefinitionDSLCore.module_eval(method_body)
+    end
+        
     attr_accessor :actions, :params, :provider, :updated, :allowed_actions, :collection, :cookbook_name, :recipe_name, :enclosing_provider
     attr_reader :resource_name, :source_line, :node
     

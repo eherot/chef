@@ -18,8 +18,25 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
-class ResourceTestHarness < Chef::Resource
-  provider_base Chef::Provider::Package
+class Chef
+  class Resource
+    class ResourceTestHarness < Chef::Resource
+      provider_base Chef::Provider::Package
+      
+      attr_accessor :load_prior_resource, :recipe_name, :cookbook_name, :params
+    end
+  end
+end
+
+class RecipeDSLIncluder
+  attr_accessor :load_prior_resource, :recipe_name, :cookbook_name, :params, :collection
+  include Chef::Mixin::RecipeDefinitionDSLCore
+  
+  def initialize(*args)
+    super(*args)
+    @definitions = {}
+    @collection = []
+  end
 end
 
 describe Chef::Resource do
@@ -215,6 +232,7 @@ describe Chef::Resource do
     end
   end
   
+<<<<<<< HEAD
   describe "setting the base provider class for the resource" do
     
     it "defaults to Chef::Provider for the base class" do
@@ -225,6 +243,13 @@ describe Chef::Resource do
       ResourceTestHarness.provider_base.should == Chef::Provider::Package
     end
     
+=======
+  describe "dynamically generating methods on recipe dsl for subclasses" do
+    it "defines a method based on class name for each subclass" do
+      recipe_obj = RecipeDSLIncluder.new()
+      recipe_obj.resource_test_harness("beatrix kiddo").should be_a_kind_of(Chef::Resource::ResourceTestHarness)
+    end
+>>>>>>> define resources as methods instead of missings
   end
   
 end
