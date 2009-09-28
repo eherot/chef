@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/recipe_definition_dsl_core'
 require 'chef/mixin/from_file'
 require 'chef/mixin/params_validate'
 
@@ -50,6 +51,7 @@ class Chef
       else
         raise ArgumentError, "You must pass a block to a definition."
       end
+      Mixin::RecipeDefinitionDSLCore.resource_definition_method(resource_name, self)
       true
     end
     

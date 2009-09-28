@@ -105,6 +105,14 @@ describe Chef::ResourceDefinition do
     }.should raise_error(ArgumentError)
   end
   
+  it "defines a method on RecipeDefinitionDSLCore for itself" do
+    dsl_core = Chef::Mixin::RecipeDefinitionDSLCore
+    dsl_core.should_receive(:resource_definition_method).with(:metaprogramming_ftw, @def)
+    @def.define :metaprogramming_ftw do
+      :noop
+    end
+  end
+  
   it "should load a description from a file" do
     @def.from_file(File.join(File.dirname(__FILE__), "..", "data", "definitions", "test.rb"))
     @def.name.should eql(:rico_suave)

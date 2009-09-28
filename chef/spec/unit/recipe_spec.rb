@@ -52,7 +52,8 @@ describe Chef::Recipe do
         end.should_not raise_error(ArgumentError)
       end
   
-      it "should throw an error if you access a resource that we can't find" do
+      it "should throw an error and log to fatal if you access an undefined resource" do
+        Chef::Log.should_receive(:fatal)
         lambda { @recipe.not_home { || } }.should raise_error(NameError)
       end
   
@@ -105,7 +106,6 @@ describe Chef::Recipe do
             something params[:something]
           end
         end
-        @recipe.definitions[:crow] = crow_define
         @recipe.crow "mine" do
           peace true
         end
@@ -121,7 +121,6 @@ describe Chef::Recipe do
             something params[:something]
           end
         end
-        @recipe.definitions[:crow] = crow_define    
         @recipe.node[:foo] = false
         @recipe.crow "mine" do
           something node[:foo]

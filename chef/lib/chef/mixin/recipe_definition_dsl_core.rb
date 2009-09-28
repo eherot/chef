@@ -17,8 +17,6 @@
 # limitations under the License.
 #
 
-require 'chef/recipe'
-require 'chef/resource'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/mixin/language'
 
@@ -28,6 +26,27 @@ class Chef
       
       include Chef::Mixin::ConvertToClassName
       include Chef::Mixin::Language
+      
+      def self.resource_defn_prototypes
+        @@resource_defn_prototypes ||= {}
+      end
+    
+      def self.resource_definition_method(name, prototype)
+       RecipeDefinitionDSLCore.resource_defn_prototypes[name.to_sym] = prototype
+      
+        method_body=<<-METHOD_BODY
+        def #{name}(*args, &block)
+          new_defn = Chef::Mixin::RecipeDefinitionDSLCore.resource_defn_prototypes[:#{name.to_s}].new
+          new_defn.node = node
+          new_defn.instance_eval(&block) if block
+          new_recipe = Chef::Recipe.new(cookbook_name, recipe_name, node, collection, definitions, cookbook_loader)
+          new_recipe.params = new_defn.params
+          new_recipe.params[:name] = args[0]
+          new_recipe.instance_eval(&new_defn.recipe)
+        end
+        METHOD_BODY
+        module_eval(method_body)
+      end
       
       def cookbook_name
         @cookbook_name ||= ""
@@ -58,26 +77,12 @@ class Chef
       end
       
       def method_missing(method_symbol, *args, &block)
-        # If we have a definition that matches, we want to use that instead.  This should
-        # let you do some really crazy over-riding of "native" types, if you really want
-        # to. 
-        if definitions.has_key?(method_symbol)
-          # This dupes the high level object, but we still need to dup the params
-          new_def = definitions[method_symbol].dup
-          new_def.params = new_def.params.dup
-          new_def.node = node
-          # This sets up the parameter overrides
-          new_def.instance_eval(&block) if block
-          new_recipe = Chef::Recipe.new(cookbook_name, recipe_name, node, collection, definitions, cookbook_loader)
-          new_recipe.params = new_def.params
-          new_recipe.params[:name] = args[0]
-          new_recipe.instance_eval(&new_def.recipe)
-        else
-          # regular resources get dynamically defined as methods on this module
-          # raise a helpful error if we get here
-          rname = convert_to_class_name(method_symbol.to_s)
-          raise NameError, "no resource named #{rname} could be found for #{method_symbol}"
-        end
+        # Resource and resource definition lookups now happen
+        # by dynamically defining methods on this module.
+        # Log a helpful message and super, probably resulting in a 
+        # NoMethodError or NameError
+        Chef::Log.fatal "no resource or resource definition could be found for #{method_symbol}"
+        super
       end
       
     end

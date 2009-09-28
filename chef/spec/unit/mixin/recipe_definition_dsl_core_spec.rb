@@ -25,6 +25,7 @@ end
 describe Chef::Mixin::RecipeDefinitionDSLCore do
   
   before do
+    @dsl_core = Chef::Mixin::RecipeDefinitionDSLCore
     @dsl_user = RecipeDSLUser.new
   end
   
@@ -56,6 +57,30 @@ describe Chef::Mixin::RecipeDefinitionDSLCore do
     it "provides a getter for params" do
       @dsl_user.params.should == {}
     end
+  end
+  
+  describe "defining a method on itself for a resource definition" do
+    
+    it "puts a resource definition prototype in a hash of prototypes" do
+      @dsl_core.resource_defn_prototypes.should == {}
+      @dsl_core.resource_defn_prototypes[:whatevs] = :prototype
+      @dsl_core.resource_defn_prototypes[:whatevs].should == :prototype
+    end
+    
+    it "defines a method for a resource definition" do
+      snitch = nil
+      recipe = lambda {snitch = 4815162342}
+      defn_clone = mock("cloned resource defn from prototype", :params=> {:tasty=>:cake}, :recipe=>recipe)
+      prototype = mock("resource_defn", :new => defn_clone)
+      @dsl_core.resource_definition_method(:foobar, prototype)
+      implementer = RecipeDSLUser.new
+      implementer.should respond_to(:foobar)
+      implementer.stub!(:node).and_return(:sawks)
+      defn_clone.should_receive(:node=).with(:sawks)
+      implementer.foobar("baz")
+      snitch.should == 4815162342
+    end
+    
   end
   
 end

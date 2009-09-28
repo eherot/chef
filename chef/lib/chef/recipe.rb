@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+require 'chef/mixin/recipe_definition_dsl_core'
 require 'chef/resource'
 Dir[File.join(File.dirname(__FILE__), 'resource/**/*.rb')].sort.each { |lib| require lib }
 require 'chef/mixin/from_file'
@@ -46,6 +47,30 @@ class Chef
       @definitions = definitions || Hash.new
       @cookbook_loader = cookbook_loader || Chef::CookbookLoader.new
       @params = Hash.new      
+    end
+    
+    def include_recipe(*args)
+      args.flatten.each do |recipe|
+        if @node.run_state[:seen_recipes].has_key?(recipe)
+          Chef::Log.debug("I am not loading #{recipe}, because I have already seen it.")
+          next
+        end        
+
+        Chef::Log.debug("Loading Recipe #{recipe} via include_recipe")
+        @node.run_state[:seen_recipes][recipe] = true
+        
+        if rmatch = recipe.match(/(.+?)::(.+)/)
+          cookbook = @cookbook_loader[rmatch[1]]
+          cookbook.load_recipe(rmatch[2], @node, @collection, @definitions, @cookbook_loader)
+        else
+          cookbook = @cookbook_loader[recipe]
+          cookbook.load_recipe("default", @node, @collection, @definitions, @cookbook_loader)
+        end
+      end
+    end
+    
+    def require_recipe(*args)
+      include_recipe(*args)
     end
     
     def resources(*args)

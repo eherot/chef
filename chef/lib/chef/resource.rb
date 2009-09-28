@@ -55,7 +55,7 @@ class Chef
       end
       RESOURCE_METHOD
       
-      Chef::Mixin::RecipeDefinitionDSLCore.module_eval(method_body)
+      ::Chef::Mixin::RecipeDefinitionDSLCore.module_eval(method_body)
     end
         
     attr_accessor :actions, :params, :provider, :updated, :allowed_actions, :collection, :cookbook_name, :recipe_name, :enclosing_provider
