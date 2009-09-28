@@ -27,47 +27,49 @@ class Chef
       include Chef::Mixin::Language
       extend Chef::Mixin::ConvertToClassName
       
-      def self.resource_defn_prototypes
-        @@resource_defn_prototypes ||= {}
-      end
+      class << self
+        def resource_defn_prototypes
+          @@resource_defn_prototypes ||= {}
+        end
     
-      def self.add_definition_to_dsl(name, prototype)
-       RecipeDefinitionDSLCore.resource_defn_prototypes[name.to_sym] = prototype
+        def add_definition_to_dsl(name, prototype)
+         RecipeDefinitionDSLCore.resource_defn_prototypes[name.to_sym] = prototype
       
-        method_body=<<-METHOD_BODY
-        def #{name}(*args, &block)
-          new_defn = Chef::Mixin::RecipeDefinitionDSLCore.resource_defn_prototypes[:#{name.to_s}].new
-          new_defn.node = node
-          new_defn.instance_eval(&block) if block
-          new_recipe = Chef::Recipe.new(cookbook_name, recipe_name, node, collection, definitions, cookbook_loader)
-          new_recipe.params = new_defn.params
-          new_recipe.params[:name] = args[0]
-          new_recipe.instance_eval(&new_defn.recipe)
+          method_body=<<-METHOD_BODY
+          def #{name}(*args, &block)
+            new_defn = Chef::Mixin::RecipeDefinitionDSLCore.resource_defn_prototypes[:#{name.to_s}].new
+            new_defn.node = node
+            new_defn.instance_eval(&block) if block
+            new_recipe = Chef::Recipe.new(cookbook_name, recipe_name, node, collection, definitions, cookbook_loader)
+            new_recipe.params = new_defn.params
+            new_recipe.params[:name] = args[0]
+            new_recipe.instance_eval(&new_defn.recipe)
+          end
+          METHOD_BODY
+          module_eval(method_body)
         end
-        METHOD_BODY
-        module_eval(method_body)
-      end
       
-      def self.add_resource_to_dsl(resource_class)
-        method_name = convert_to_snake_case(resource_class.name.to_s, "Chef::Resource")
-        method_body =<<-RESOURCE_METHOD
-        def #{method_name}(*args, &block)
-          args << collection << node
+        def add_resource_to_dsl(resource_class)
+          method_name = convert_to_snake_case(resource_class.name.to_s, "Chef::Resource")
+          method_body =<<-RESOURCE_METHOD
+          def #{method_name}(*args, &block)
+            args << collection << node
 
-          r = #{resource_class}.new(*args)
-          r.load_prior_resource
-          r.cookbook_name = cookbook_name
-          r.recipe_name   = recipe_name
-          r.params        = params
-          r.instance_eval(&block) if block
+            r = #{resource_class}.new(*args)
+            r.load_prior_resource
+            r.cookbook_name = cookbook_name
+            r.recipe_name   = recipe_name
+            r.params        = params
+            r.instance_eval(&block) if block
 
-          collection << r
-          r
-        end
-        RESOURCE_METHOD
+            collection << r
+            r
+          end
+          RESOURCE_METHOD
 
-        module_eval(method_body)
+          module_eval(method_body)
         
+        end
       end
       
       def cookbook_name
