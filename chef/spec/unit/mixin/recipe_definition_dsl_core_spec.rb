@@ -22,10 +22,13 @@ class RecipeDSLUser
   include Chef::Mixin::RecipeDefinitionDSLCore
 end
 
+class PseudoResource
+  
+end
+
 describe Chef::Mixin::RecipeDefinitionDSLCore do
   
   before do
-    @dsl_core = Chef::Mixin::RecipeDefinitionDSLCore
     @dsl_user = RecipeDSLUser.new
   end
   
@@ -59,7 +62,13 @@ describe Chef::Mixin::RecipeDefinitionDSLCore do
     end
   end
   
-  describe "defining a method on itself for a resource definition" do
+  describe "defining DSL sugar methods for resources" do
+    
+    before do
+      @dsl_core = Chef::Mixin::RecipeDefinitionDSLCore
+      @implementer = RecipeDSLUser.new
+      @implementer.stub!(:node).and_return(:sawks)
+    end
     
     it "puts a resource definition prototype in a hash of prototypes" do
       @dsl_core.resource_defn_prototypes.should == {}
@@ -73,14 +82,17 @@ describe Chef::Mixin::RecipeDefinitionDSLCore do
       defn_clone = mock("cloned resource defn from prototype", :params=> {:tasty=>:cake}, :recipe=>recipe)
       prototype = mock("resource_defn", :new => defn_clone)
       @dsl_core.resource_definition_method(:foobar, prototype)
-      implementer = RecipeDSLUser.new
-      implementer.should respond_to(:foobar)
-      implementer.stub!(:node).and_return(:sawks)
+      @implementer.should respond_to(:foobar)
       defn_clone.should_receive(:node=).with(:sawks)
-      implementer.foobar("baz")
+      @implementer.foobar("baz")
       snitch.should == 4815162342
     end
     
+    it "defines a method for a resource" do
+      @dsl_core.add_resource_to_dsl(PseudoResource)
+      @implementer.should respond_to(:pseudo_resource)
+    end
+
   end
   
 end

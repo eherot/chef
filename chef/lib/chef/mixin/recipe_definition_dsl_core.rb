@@ -24,8 +24,8 @@ class Chef
   module Mixin
     module RecipeDefinitionDSLCore
       
-      include Chef::Mixin::ConvertToClassName
       include Chef::Mixin::Language
+      extend Chef::Mixin::ConvertToClassName
       
       def self.resource_defn_prototypes
         @@resource_defn_prototypes ||= {}
@@ -46,6 +46,28 @@ class Chef
         end
         METHOD_BODY
         module_eval(method_body)
+      end
+      
+      def self.add_resource_to_dsl(resource_class)
+        method_name = convert_to_snake_case(resource_class.name.to_s, "Chef::Resource")
+        method_body =<<-RESOURCE_METHOD
+        def #{method_name}(*args, &block)
+          args << collection << node
+
+          r = #{resource_class}.new(*args)
+          r.load_prior_resource
+          r.cookbook_name = cookbook_name
+          r.recipe_name   = recipe_name
+          r.params        = params
+          r.instance_eval(&block) if block
+
+          collection << r
+          r
+        end
+        RESOURCE_METHOD
+
+        module_eval(method_body)
+        
       end
       
       def cookbook_name

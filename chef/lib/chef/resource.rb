@@ -34,28 +34,9 @@ class Chef
     include Chef::Mixin::ConvertToClassName
     
     def self.inherited(subclass)
-      define_resource_method(subclass) unless subclass.name.empty?
-    end
-    
-    def self.define_resource_method(subclass)
-      method_name = convert_to_snake_case(subclass.name.to_s, "Chef::Resource")
-      method_body =<<-RESOURCE_METHOD
-      def #{method_name}(*args, &block)
-        args << collection << node
-        
-        r = #{subclass}.new(*args)
-        r.load_prior_resource
-        r.cookbook_name = cookbook_name
-        r.recipe_name   = recipe_name
-        r.params        = params
-        r.instance_eval(&block) if block
-      
-        collection << r
-        r
+      unless subclass.name.empty?
+        ::Chef::Mixin::RecipeDefinitionDSLCore.add_resource_to_dsl(subclass)
       end
-      RESOURCE_METHOD
-      
-      ::Chef::Mixin::RecipeDefinitionDSLCore.module_eval(method_body)
     end
         
     attr_accessor :actions, :params, :provider, :updated, :allowed_actions, :collection, :cookbook_name, :recipe_name, :enclosing_provider
@@ -343,7 +324,7 @@ class Chef
         # register new class as a Chef::Resource
         class_name = convert_to_class_name(rname)
         Chef::Resource.const_set(class_name, new_resource_class)
-        define_resource_method(new_resource_class)
+        Chef::Mixin::RecipeDefinitionDSLCore.add_resource_to_dsl(new_resource_class)
         Chef::Log.debug("Loaded contents of #{filename} into a resource named #{rname} defined in Chef::Resource::#{class_name}")
         
         new_resource_class
