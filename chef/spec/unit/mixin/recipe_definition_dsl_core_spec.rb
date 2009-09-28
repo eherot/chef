@@ -71,7 +71,7 @@ describe Chef::Mixin::RecipeDefinitionDSLCore do
     end
     
     it "puts a resource definition prototype in a hash of prototypes" do
-      @dsl_core.resource_defn_prototypes.should == {}
+      @dsl_core.resource_defn_prototypes.should be_an_instance_of(Hash)
       @dsl_core.resource_defn_prototypes[:whatevs] = :prototype
       @dsl_core.resource_defn_prototypes[:whatevs].should == :prototype
     end
@@ -81,7 +81,7 @@ describe Chef::Mixin::RecipeDefinitionDSLCore do
       recipe = lambda {snitch = 4815162342}
       defn_clone = mock("cloned resource defn from prototype", :params=> {:tasty=>:cake}, :recipe=>recipe)
       prototype = mock("resource_defn", :new => defn_clone)
-      @dsl_core.resource_definition_method(:foobar, prototype)
+      @dsl_core.add_definition_to_dsl(:foobar, prototype)
       @implementer.should respond_to(:foobar)
       defn_clone.should_receive(:node=).with(:sawks)
       @implementer.foobar("baz")

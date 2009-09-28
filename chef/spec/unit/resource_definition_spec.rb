@@ -107,7 +107,7 @@ describe Chef::ResourceDefinition do
   
   it "defines a method on RecipeDefinitionDSLCore for itself" do
     dsl_core = Chef::Mixin::RecipeDefinitionDSLCore
-    dsl_core.should_receive(:resource_definition_method).with(:metaprogramming_ftw, @def)
+    dsl_core.should_receive(:add_definition_to_dsl).with(:metaprogramming_ftw, @def)
     @def.define :metaprogramming_ftw do
       :noop
     end

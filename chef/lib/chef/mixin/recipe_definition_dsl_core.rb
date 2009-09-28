@@ -31,7 +31,7 @@ class Chef
         @@resource_defn_prototypes ||= {}
       end
     
-      def self.resource_definition_method(name, prototype)
+      def self.add_definition_to_dsl(name, prototype)
        RecipeDefinitionDSLCore.resource_defn_prototypes[name.to_sym] = prototype
       
         method_body=<<-METHOD_BODY

@@ -51,7 +51,7 @@ class Chef
       else
         raise ArgumentError, "You must pass a block to a definition."
       end
-      Mixin::RecipeDefinitionDSLCore.resource_definition_method(resource_name, self)
+      Mixin::RecipeDefinitionDSLCore.add_definition_to_dsl(resource_name, self)
       true
     end
     
