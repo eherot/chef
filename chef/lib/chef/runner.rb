@@ -26,7 +26,7 @@ class Chef
     
     include Chef::Mixin::ParamsValidate
     
-    def initialize(node, collection, definitions={}, cookbook_loader=nil)
+    def initialize(node, collection, cookbook_loader=nil)
       validate(
         {
           :node => node,
@@ -43,7 +43,6 @@ class Chef
       )
       @node = node
       @collection = collection
-      @definitions = definitions
       @cookbook_loader = cookbook_loader
     end
     
@@ -51,7 +50,7 @@ class Chef
       provider_klass = resource.provider
       provider_klass ||= Chef::Platform.find_provider_for_node(@node, resource)
       Chef::Log.debug("#{resource} using #{provider_klass.to_s}")
-      provider = provider_klass.new(@node, resource, @collection, @definitions, @cookbook_loader)
+      provider = provider_klass.new(@node, resource, @collection, @cookbook_loader)
       provider.load_current_resource
       provider
     end

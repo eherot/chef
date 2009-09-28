@@ -45,10 +45,6 @@ describe Chef::Compile do
     @compile.collection.should be_a_kind_of(Chef::ResourceCollection)
   end
   
-  it "should have a hash of Definitions" do
-    @compile.definitions.should be_a_kind_of(Hash)
-  end
-
   it "should load a node by name" do
     node = Chef::Node.new
     Chef::Node.stub!(:load).and_return(node)

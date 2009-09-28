@@ -49,10 +49,6 @@ describe Chef::Mixin::RecipeDefinitionDSLCore do
       @dsl_user.node.should be_nil
     end
     
-    it "provides a getter for definitions" do
-      @dsl_user.definitions.should == {}
-    end
-    
     it "provides a getter for cookbook loader" do
       @dsl_user.cookbook_loader.should be_nil
     end

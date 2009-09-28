@@ -149,7 +149,7 @@ class ChefServerWebui::Application < Merb::Controller
   #
   # === Parameters
   # cookbook_id<String>:: The cookbook to load
-  # segment<Symbol>:: :attributes, :recipes, :definitions, :libraries
+  # segment<Symbol>:: :attributes, :recipes, :libraries
   #
   # === Returns
   # <Hash>:: A hash consisting of the short name of the file in :name, and the full path

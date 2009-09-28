@@ -155,7 +155,7 @@ class Chef
       results
     end
     
-    def load_recipe(name, node, collection=nil, definitions=nil, cookbook_loader=nil)
+    def load_recipe(name, node, collection=nil, cookbook_loader=nil)
       cookbook_name = @name
       recipe_name = shorten_name(name) 
       
@@ -164,7 +164,7 @@ class Chef
       end
       Chef::Log.debug("Found recipe #{recipe_name} in cookbook #{cookbook_name}") if Chef::Log.debug?
       recipe = Chef::Recipe.new(cookbook_name, recipe_name, node, 
-                                collection, definitions, cookbook_loader)
+                                collection, cookbook_loader)
       recipe.from_file(@recipe_files[@recipe_names[recipe_name]])
       recipe
     end

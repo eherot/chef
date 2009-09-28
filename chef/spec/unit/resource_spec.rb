@@ -34,7 +34,6 @@ class RecipeDSLIncluder
   
   def initialize(*args)
     super(*args)
-    @definitions = {}
     @collection = []
   end
 end

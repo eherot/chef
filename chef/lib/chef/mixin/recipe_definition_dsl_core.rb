@@ -40,7 +40,7 @@ class Chef
             new_defn = Chef::Mixin::RecipeDefinitionDSLCore.resource_defn_prototypes[:#{name.to_s}].new
             new_defn.node = node
             new_defn.instance_eval(&block) if block
-            new_recipe = Chef::Recipe.new(cookbook_name, recipe_name, node, collection, definitions, cookbook_loader)
+            new_recipe = Chef::Recipe.new(cookbook_name, recipe_name, node, collection, cookbook_loader)
             new_recipe.params = new_defn.params
             new_recipe.params[:name] = args[0]
             new_recipe.instance_eval(&new_defn.recipe)
@@ -82,10 +82,6 @@ class Chef
       
       def collection
         @collection ||= Chef::ResourceCollection.new
-      end
-      
-      def definitions
-        @definitions ||= {}
       end
       
       def node

@@ -37,14 +37,13 @@ class Chef
     include Chef::Mixin::RecipeDefinitionDSLCore
     
     attr_accessor :cookbook_name, :recipe_name, :recipe, :node, :collection, 
-                  :definitions, :params, :cookbook_loader
+                  :params, :cookbook_loader
     
-    def initialize(cookbook_name, recipe_name, node, collection=nil, definitions=nil, cookbook_loader=nil)
+    def initialize(cookbook_name, recipe_name, node, collection=nil, cookbook_loader=nil)
       @cookbook_name = cookbook_name
       @recipe_name = recipe_name
       @node = node
       @collection = collection || Chef::ResourceCollection.new
-      @definitions = definitions || Hash.new
       @cookbook_loader = cookbook_loader || Chef::CookbookLoader.new
       @params = Hash.new      
     end
@@ -61,10 +60,10 @@ class Chef
         
         if rmatch = recipe.match(/(.+?)::(.+)/)
           cookbook = @cookbook_loader[rmatch[1]]
-          cookbook.load_recipe(rmatch[2], @node, @collection, @definitions, @cookbook_loader)
+          cookbook.load_recipe(rmatch[2], @node, @collection, @cookbook_loader)
         else
           cookbook = @cookbook_loader[recipe]
-          cookbook.load_recipe("default", @node, @collection, @definitions, @cookbook_loader)
+          cookbook.load_recipe("default", @node, @collection, @cookbook_loader)
         end
       end
     end

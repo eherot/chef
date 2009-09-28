@@ -30,12 +30,8 @@ class Chef
       
       attr_reader :scm_provider, :release_path
       
-      def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
-        super(node, new_resource, collection, definitions, cookbook_loader)
-        
-        # NOTE: workaround for CHEF-577
-        @definitions ||= Hash.new
-        @collection = Chef::ResourceCollection.new
+      def initialize(node, new_resource, collection=nil, cookbook_loader=nil)
+        super(node, new_resource, collection, cookbook_loader)
         
         @scm_provider = @new_resource.scm_provider.new(@node, @new_resource)
         

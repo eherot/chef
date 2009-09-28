@@ -314,7 +314,7 @@ class Chef
       compile = Chef::Compile.new(@node)
       
       Chef::Log.debug("Converging node #{@safe_name}")
-      cr = Chef::Runner.new(@node, compile.collection, compile.definitions, compile.cookbook_loader)
+      cr = Chef::Runner.new(@node, compile.collection, compile.cookbook_loader)
       cr.converge
       true
     end
