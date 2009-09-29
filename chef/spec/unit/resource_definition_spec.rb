@@ -107,10 +107,17 @@ describe Chef::ResourceDefinition do
   
   it "defines a method on RecipeDefinitionDSLCore for itself" do
     dsl_core = Chef::Mixin::RecipeDefinitionDSLCore
-    dsl_core.should_receive(:add_definition_to_dsl).with(:metaprogramming_ftw, @def)
+    dsl_core.should_receive(:add_definition_to_dsl).with(:metaprogramming_ftw)
     @def.define :metaprogramming_ftw do
       :noop
     end
+  end
+  
+  it "stores itself as a prototype in the class" do
+    @def.define :metaprogramming_ftw do
+      :noop
+    end
+    Chef::ResourceDefinition.prototype_for(:metaprogramming_ftw).should == @def
   end
   
   it "should load a description from a file" do
@@ -131,6 +138,28 @@ describe Chef::ResourceDefinition do
       new_def.should_not equal(@def)
       new_def.params.should_not equal(@def)
       new_def.params.should == @def.params
+    end
+    
+  end
+  
+  describe "handling resource definition prototypes" do
+    
+    it "stores resource definition prototypes in the class" do
+      @def.name = :foobaz
+      Chef::ResourceDefinition.add_prototype_for(@def)
+      Chef::ResourceDefinition.prototype_for(:foobaz).should == @def
+    end
+    
+    it "creates a new resource definition from a prototype" do
+      @def.name   = :mew
+      Chef::ResourceDefinition.add_prototype_for(@def)
+      new_defn_block = lambda { snitch }
+      new_defn = mock("cloned resource defn")
+      new_defn.should_receive(:node=).with(:a_node)
+      new_defn.should_receive(:snitch)
+      @def.should_receive(:new).and_return(new_defn)
+      result = Chef::ResourceDefinition.from_prototype(:mew, :a_node, &new_defn_block)
+      result.should == new_defn
     end
     
   end

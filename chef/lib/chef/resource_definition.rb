@@ -26,6 +26,31 @@ class Chef
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
     
+    class << self
+      
+      def add_prototype_for(resource_definition)
+        prototypes[resource_definition.name] = resource_definition
+      end
+      
+      def prototype_for(defn_name)
+        prototypes[defn_name]
+      end
+      
+      def from_prototype(defn_name, node, &block)
+        new_defn = prototype_for(defn_name).new
+        new_defn.node = node
+        new_defn.instance_eval(&block) if block
+        new_defn
+      end
+      
+      protected
+      
+      def prototypes
+        @prototypes ||= {}
+      end
+      
+    end
+    
     attr_accessor :name, :params, :recipe, :node
     
     def initialize(node=nil)
@@ -51,7 +76,8 @@ class Chef
       else
         raise ArgumentError, "You must pass a block to a definition."
       end
-      Mixin::RecipeDefinitionDSLCore.add_definition_to_dsl(resource_name, self)
+      self.class.add_prototype_for(self)
+      Mixin::RecipeDefinitionDSLCore.add_definition_to_dsl(resource_name)
       true
     end
     

@@ -28,18 +28,11 @@ class Chef
       extend Chef::Mixin::ConvertToClassName
       
       class << self
-        def resource_defn_prototypes
-          @@resource_defn_prototypes ||= {}
-        end
     
-        def add_definition_to_dsl(name, prototype)
-         RecipeDefinitionDSLCore.resource_defn_prototypes[name.to_sym] = prototype
-      
+        def add_definition_to_dsl(name)
           method_body=<<-METHOD_BODY
           def #{name}(*args, &block)
-            new_defn = Chef::Mixin::RecipeDefinitionDSLCore.resource_defn_prototypes[:#{name.to_s}].new
-            new_defn.node = node
-            new_defn.instance_eval(&block) if block
+            new_defn = Chef::ResourceDefinition.from_prototype(:#{name.to_s}, node, &block)
             new_recipe = Chef::Recipe.new(cookbook_name, recipe_name, node, collection, cookbook_loader)
             new_recipe.params = new_defn.params
             new_recipe.params[:name] = args[0]
