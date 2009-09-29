@@ -30,9 +30,8 @@ class Chef
       
       attr_reader :scm_provider, :release_path
       
-      def initialize(node, new_resource, collection=nil, cookbook_loader=nil)
-        super(node, new_resource, collection, cookbook_loader)
-        
+      def initialize(node, new_resource, collection=nil)
+        super(node, new_resource, collection)
         @scm_provider = @new_resource.scm_provider.new(@node, @new_resource)
         
         # @configuration is not used by Deploy, it is only for backwards compat with

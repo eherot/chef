@@ -33,7 +33,7 @@ class Chef
           method_body=<<-METHOD_BODY
           def #{name}(*args, &block)
             new_defn = Chef::ResourceDefinition.from_prototype(:#{name.to_s}, node, &block)
-            new_recipe = Chef::Recipe.new(cookbook_name, recipe_name, node, collection, cookbook_loader)
+            new_recipe = Chef::Recipe.new(cookbook_name, recipe_name, node, collection)
             new_recipe.params = new_defn.params
             new_recipe.params[:name] = args[0]
             new_recipe.instance_eval(&new_defn.recipe)
@@ -83,10 +83,6 @@ class Chef
       
       def params
         @params ||= {}
-      end
-      
-      def cookbook_loader
-        @cookbook_loader ||= nil
       end
       
       def method_missing(method_symbol, *args, &block)

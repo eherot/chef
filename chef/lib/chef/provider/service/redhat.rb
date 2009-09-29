@@ -25,8 +25,8 @@ class Chef
     class Service
       class Redhat < Chef::Provider::Service::Init
         
-        def initialize(node, new_resource, collection=nil, cookbook_loader=nil)
-          super(node, new_resource, collection, cookbook_loader)
+        def initialize(node, new_resource, collection=nil)
+          super(node, new_resource, collection)
            @init_command = "/sbin/service #{@new_resource.service_name}"
          end
         
