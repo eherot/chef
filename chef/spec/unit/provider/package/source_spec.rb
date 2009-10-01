@@ -379,11 +379,20 @@ describe Chef::Provider::Package::Source do
       @resource.build_command "true"
       @resource.install_command "true"
       @provider.action_install
-      puts 
+      # Current resource needs to be reloaded after install
+      @provider.load_current_resource
     end
     
     it "should not run any commands" do
       @provider.should_not_receive(:run_command)
+      @provider.new_resource.configure.should be_true
+      @provider.current_resource.configured.should be_true
+      @provider.current_resource.version.should == @provider.new_resource.version
+      @provider.current_resource.configure.should == @provider.new_resource.configure
+      @provider.should_unpack?.should be_false
+      @provider.should_configure?.should be_false
+      @provider.should_build?.should be_false
+      @provider.should_install?.should be_false
       @provider.action_install
     end
   end

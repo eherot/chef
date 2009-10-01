@@ -36,6 +36,7 @@ class Chef::Provider::Package::Source < Chef::Provider::Package
       Chef::Log.debug("Loading stored source package state from #{serialize_path}")
       JSON.parse(Chef::FileCache.load(serialize_path))
     else
+      Chef::Log.debug("Stored package state for #{@new_resource.name} not found in #{serialize_path}")
       Chef::Resource::SourcePackage.new(@new_resource.name)
     end
   end
@@ -45,12 +46,14 @@ class Chef::Provider::Package::Source < Chef::Provider::Package
     file.source(@new_resource.source)
     file.cookbook(@new_resource.cookbook) if @new_resource.cookbook
     file.backup(false)
+    
     result = file.run_action(:create_if_missing)
-    if result
+    if file.updated
+      Chef::Log.debug("Updated source package archive")
       @current_resource.reset!
       serialize_resource
       @new_resource.updated = true
-    elsif result.nil?
+    else
       true
     end
   end
@@ -79,6 +82,7 @@ class Chef::Provider::Package::Source < Chef::Provider::Package
   def action_configure
     if action_unpack
       if should_configure?
+        Chef::Log.debug("Configuring source package #{@new_resource.name}")
         if configure_package(unpack_path, @new_resource.configure_command, @new_resource.configure)
           @new_resource.configured true
           serialize_resource
@@ -159,14 +163,17 @@ class Chef::Provider::Package::Source < Chef::Provider::Package
 
   def configure_package(dir, command, config)
     command = "#{command} #{Autoconf.switches(config)}".strip
+    Chef::Log.debug("Configuring #{@new_resource.name} in #{dir} with #{command}")
     run_command(:command => command, :cwd => dir, :environment => @new_resource.environment)
   end
 
   def build_package(dir, command)
+    Chef::Log.debug("Building #{@new_resource.name} in #{dir} with #{command}")
     run_command(:command => command, :cwd => dir, :environment => @new_resource.environment)
   end
 
   def install_package(dir, command)
+    Chef::Log.debug("Installing #{@new_resource.name} from #{dir} with #{command}")
     run_command(:command => command, :cwd => dir, :environment => @new_resource.environment)
   end
 
@@ -175,23 +182,23 @@ class Chef::Provider::Package::Source < Chef::Provider::Package
   end
 
   def should_configure?
-    @new_resource.configure && (
-      !@current_resource.configured ||
-      @new_resource.version != @current_resource.version ||
-      @new_resource.configure != @current_resource.configure
+    @new_resource.configure && !(
+      @current_resource.configured &&
+      @new_resource.version == @current_resource.version &&
+      @new_resource.configure == @current_resource.configure
     )
   end
 
   def should_build?
-    !@current_resource.built || 
-    @new_resource.version != @current_resource.version ||
-    @new_resource.configure != @current_resource.configure
+    !(@current_resource.built &&
+    @new_resource.version == @current_resource.version &&
+    @new_resource.configure == @current_resource.configure)
   end
 
   def should_install?
-    !@current_resource.installed ||
-    @new_resource.version != @current_resource.version ||
-    @new_resource.configure != @current_resource.configure
+    !(@current_resource.installed &&
+    @new_resource.version == @current_resource.version &&
+    @new_resource.configure == @current_resource.configure)
   end
 
   def unpack_path
