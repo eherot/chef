@@ -48,7 +48,7 @@ describe Chef::Provider do
   end
   
   it "sets @cookbook_name to the cookbook name given by @new_resource" do
-    @provider.instance_variable_get(:@cookbook_name).should == "a_delicious_pie"
+    @provider.cookbook_name.should == "a_delicious_pie"
   end
   
   it "evals embedded recipes with a pristine resource collection" do

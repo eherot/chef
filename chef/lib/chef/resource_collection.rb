@@ -145,6 +145,10 @@ class Chef
       flat_results.length == 1 ? flat_results[0] : flat_results
     end
     
+    def all
+      @resources
+    end
+    
     # Serialize this object as a hash 
     def to_json(*a)
       instance_vars = Hash.new

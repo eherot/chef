@@ -35,6 +35,10 @@ class Chef
       @collection = collection
     end
     
+    def cookbook_name
+      @new_resource.cookbook_name
+    end
+    
     def load_current_resource
       raise Chef::Exceptions::Override, "You must override load_current_resource in #{self.to_s}"
     end

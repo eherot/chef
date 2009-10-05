@@ -55,7 +55,7 @@ class Chef
             r.params        = params
             r.instance_eval(&block) if block
 
-            collection << r
+            collection.insert(r)
             r
           end
           RESOURCE_METHOD
