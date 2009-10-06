@@ -44,12 +44,8 @@ class Chef
     
     def initialize(name, collection=nil, node=nil)
       @name = name
-      if collection
-        @collection = collection
-      else
-        @collection = Chef::ResourceCollection.new()
-      end      
-      @node = node ? node : Chef::Node.new
+      @collection = collection || Chef::ResourceCollection.new()
+      @node = node || Chef::Node.new
       @noop = nil
       @before = nil
       @actions = Hash.new
