@@ -164,4 +164,17 @@ describe Chef::ResourceDefinition do
     
   end
   
+  describe "converting to a recipe" do
+    it "takes the parameters for a recipe and creates one" do
+      @def.name = :staying_fat
+      snitch = nil
+      @def.recipe = lambda { snitch = 4815162342 }
+      new_defn = @def.new
+      def_as_recipe = @def.to_recipe("delicious_foodz", :fat_kitteh, Chef::Node.new, nil)
+      snitch.should == 4815162342
+      def_as_recipe.params[:name].should == :fat_kitteh
+      def_as_recipe.params.should == @def.params
+    end
+  end
+  
 end

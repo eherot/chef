@@ -63,14 +63,12 @@ describe Chef::Mixin::RecipeDefinitionDSLCore do
     end
     
     it "defines a method for a resource definition" do
-      snitch = nil
-      recipe = lambda {snitch = 4815162342}
-      defn_clone = mock("cloned resource defn from prototype", :params=> {:tasty=>:cake}, :recipe=>recipe)
+      defn_clone = mock("cloned resource defn from prototype", :params=> {:tasty=>:cake}, :recipe=>nil)
       Chef::ResourceDefinition.should_receive(:from_prototype).with(:foobar, :sawks).and_return(defn_clone)
+      defn_clone.should_receive(:to_recipe).with("","baz",:sawks,an_instance_of(Chef::ResourceCollection))
       @dsl_core.add_definition_to_dsl(:foobar)
       @implementer.should respond_to(:foobar)
       @implementer.foobar("baz")
-      snitch.should == 4815162342
     end
     
     it "defines a method for a resource" do

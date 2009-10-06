@@ -87,6 +87,14 @@ class Chef
       new_defn
     end
     
+    def to_recipe(cookbook_name, recipe_name, node, collection)
+      new_recipe = Chef::Recipe.new(cookbook_name, recipe_name, node, collection)
+      new_recipe.params = params
+      new_recipe.params[:name] = recipe_name
+      new_recipe.instance_eval(&self.recipe)
+      new_recipe
+    end
+    
     # When we do the resource definition, we're really just setting new values for
     # the paramaters we prototyped at the top.  This method missing is as simple as
     # it gets.

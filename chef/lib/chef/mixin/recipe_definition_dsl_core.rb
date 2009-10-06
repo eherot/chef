@@ -33,10 +33,7 @@ class Chef
           method_body=<<-METHOD_BODY
           def #{name}(*args, &block)
             new_defn = Chef::ResourceDefinition.from_prototype(:#{name.to_s}, node, &block)
-            new_recipe = Chef::Recipe.new(cookbook_name, recipe_name, node, collection)
-            new_recipe.params = new_defn.params
-            new_recipe.params[:name] = args[0]
-            new_recipe.instance_eval(&new_defn.recipe)
+            new_defn.to_recipe(cookbook_name, args[0], node, collection)
           end
           METHOD_BODY
           module_eval(method_body)
