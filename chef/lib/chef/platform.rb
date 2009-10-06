@@ -145,7 +145,14 @@ class Chef
               :service => Chef::Provider::Service::Windows
             }
           },
-          :solaris  => {},
+          :solaris  => {
+            # Putting these here for now, since that's where they appeared in
+            # the original patch. When I had a Sol9 box, it showed up as
+            # solaris2 in ohai...
+            :package => Chef::Provider::Package::Opensolaris,
+            :service => Chef::Provider::Service::Opensolaris,
+            :group => Chef::Provider::Group::Opensolaris
+          },
           :solaris2 => {
             :default => {
               :service => Chef::Provider::Service::Solaris
