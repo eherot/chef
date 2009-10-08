@@ -37,6 +37,13 @@ class Chef::Application::Client < Chef::Application
     :long         => "--log_level LEVEL",
     :description  => "Set the log level (debug, info, warn, error, fatal)",
     :proc         => lambda { |l| l.to_sym }
+    
+  option :noop,
+    :short        => "-N",
+    :long         => "--noop",
+    :description  => "show the action that would be taken without actually doing it",
+    :boolean      => true
+    
 
   option :log_location,
     :short        => "-L LOGLOCATION",

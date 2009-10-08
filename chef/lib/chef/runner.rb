@@ -58,23 +58,26 @@ class Chef
 
     def run_action(resource, ra)
       provider = build_provider(resource)
-      provider.send("action_#{ra}")
+      Chef::Log.debug("Running action #{ra} on Provider #{provider}")
+      unless Chef::Config[:noop]
+        provider.send("action_#{ra}") 
 
-      if resource.updated
-        resource.actions.each_key do |action|
-          if resource.actions[action].has_key?(:immediate)
-            resource.actions[action][:immediate].each do |r|
-              Chef::Log.info("#{resource} sending #{action} action to #{r} (immediate)")
-              run_action(r, action)
+        if resource.updated
+          resource.actions.each_key do |action|
+            if resource.actions[action].has_key?(:immediate)
+              resource.actions[action][:immediate].each do |r|
+                Chef::Log.info("#{resource} sending #{action} action to #{r} (immediate)")
+                run_action(r, action)
+              end
             end
-          end
-          if resource.actions[action].has_key?(:delayed)
-            resource.actions[action][:delayed].each do |r|
-              @delayed_actions[r] = Hash.new unless @delayed_actions.has_key?(r)
-              @delayed_actions[r][action] = Array.new unless @delayed_actions[r].has_key?(action)
-              @delayed_actions[r][action] << lambda {
-                Chef::Log.info("#{resource} sending #{action} action to #{r} (delayed)")
-              } 
+            if resource.actions[action].has_key?(:delayed)
+              resource.actions[action][:delayed].each do |r|
+                @delayed_actions[r] = Hash.new unless @delayed_actions.has_key?(r)
+                @delayed_actions[r][action] = Array.new unless @delayed_actions[r].has_key?(action)
+                @delayed_actions[r][action] << lambda {
+                  Chef::Log.info("#{resource} sending #{action} action to #{r} (delayed)")
+                } 
+              end
             end
           end
         end
