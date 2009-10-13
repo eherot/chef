@@ -36,15 +36,11 @@ class Chef
     include Chef::Mixin::LanguageIncludeRecipe
     include Chef::Mixin::RecipeDefinitionDSLCore
     
-    attr_accessor :cookbook_name, :recipe_name, :recipe, :node, :collection, 
-                  :params, :cookbook_loader
+    attr_accessor :cookbook_name, :recipe_name, :recipe, :node, :params
     
     def initialize(cookbook_name, recipe_name, node, collection=nil, cookbook_loader=nil)
-      @cookbook_name = cookbook_name
-      @recipe_name = recipe_name
-      @node = node
-      @collection = collection || Chef::ResourceCollection.new
-      @cookbook_loader = cookbook_loader || Chef::CookbookLoader.new
+      @cookbook_name, @recipe_name, @node = cookbook_name, recipe_name, node
+      @collection, @cookbook_loader = collection, cookbook_loader
       @params = Hash.new      
     end
     
@@ -59,17 +55,21 @@ class Chef
         @node.run_state[:seen_recipes][recipe] = true
         
         if rmatch = recipe.match(/(.+?)::(.+)/)
-          cookbook = @cookbook_loader[rmatch[1]]
-          cookbook.load_recipe(rmatch[2], @node, @collection, @cookbook_loader)
+          cookbook = cookbook_loader[rmatch[1]]
+          cookbook.load_recipe(rmatch[2], node, collection, cookbook_loader)
         else
-          cookbook = @cookbook_loader[recipe]
-          cookbook.load_recipe("default", @node, @collection, @cookbook_loader)
+          cookbook = cookbook_loader[recipe]
+          cookbook.load_recipe("default", node, collection, cookbook_loader)
         end
       end
     end
     
     def require_recipe(*args)
       include_recipe(*args)
+    end
+    
+    def cookbook_loader
+      @cookbook_loader ||= Chef::CookbookLoader.new
     end
     
     def resources(*args)
