@@ -356,6 +356,28 @@ describe Chef::Node do
         Chef::Node.create_design_document
       end
     end
+    
+    describe "as a psuedo-singleton for client/solo runs" do
+      
+      before do
+        Chef::Node.reset_instance!
+      end
+      
+      it "creates or returns a psuedo-singleton node for client use" do
+        n = Chef::Node.instance
+        n.should be_an_instance_of(Chef::Node)
+        Chef::Node.instance.should equal(n)
+      end
+      
+      it "resets the singleton node instance" do
+        n = Chef::Node.instance
+        n.recipe_list = "goodbye cruel world"
+        Chef::Node.reset_instance!
+        Chef::Node.instance.should_not equal(n)
+        Chef::Node.instance.recipe_list.should be_nil
+      end
+      
+    end
 
   end
 

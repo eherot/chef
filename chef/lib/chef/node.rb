@@ -119,6 +119,14 @@ class Chef
       },
     }
     
+    def self.instance
+      @instance ||= new
+    end
+    
+    def self.reset_instance!
+      @instance = nil
+    end
+    
     # Create a new Chef::Node object.
     def initialize()
       @name = nil
