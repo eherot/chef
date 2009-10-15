@@ -123,6 +123,10 @@ class Chef
       @instance ||= new
     end
     
+    def self.update_instance(updated_node)
+      @instance = updated_node
+    end
+    
     def self.reset_instance!
       @instance = nil
     end
@@ -134,6 +138,7 @@ class Chef
       @attribute = Mash.new
       @override = Mash.new
       @default = Mash.new
+      self[:tags] = []
       @run_list = Chef::RunList.new 
 
       @couchdb_rev = nil
@@ -365,7 +370,7 @@ class Chef
       if o.has_key?("run_list")
         node.run_list.reset(o["run_list"])
       else
-        o["recipes"].each { |r| node.recipes << r }
+        o["recipes"] && o["recipes"].each { |r| node.recipes << r }
       end
       node.couchdb_rev = o["_rev"] if o.has_key?("_rev")
       node

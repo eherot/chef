@@ -136,7 +136,13 @@ describe Chef::Node do
       seen_attributes["canada"].should == "is a nice place"
     end
   end
-
+  
+  describe "tags" do
+    it "has a tags attribute that is an empty array after create" do
+      @node[:tags].should == []
+    end
+  end
+  
   describe "recipes" do
     it "should have a RunList of recipes that should be applied" do
       @node.recipes.should be_a_kind_of(Chef::RunList)
@@ -270,7 +276,9 @@ describe Chef::Node do
     
     it "should return a hash with :index attributes" do
       @node.name("airplane")
-      @node.to_index.should == { "foo" => "bar", "index_name" => "node", "id" => "node_airplane", "name" => "airplane" }
+      @node.to_index.should == {"foo" => "bar", "index_name" => "node", 
+                                "id" => "node_airplane", "name" => "airplane",  
+                                "tags" => []}
     end
   end
 
@@ -375,6 +383,14 @@ describe Chef::Node do
         Chef::Node.reset_instance!
         Chef::Node.instance.should_not equal(n)
         Chef::Node.instance.recipe_list.should be_nil
+      end
+      
+      it "updates the singleton node instance" do
+        Chef::Node.instance
+        updated_node = Chef::Node.new
+        updated_node.name "the node is reborn"
+        Chef::Node.update_instance(updated_node)
+        Chef::Node.instance.name.should == "the node is reborn"   
       end
       
     end
