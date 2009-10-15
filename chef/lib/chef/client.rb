@@ -36,11 +36,10 @@ class Chef
     include Chef::Mixin::GenerateURL
     include Chef::Mixin::Checksum
     
-    attr_accessor :node, :registration, :safe_name, :json_attribs, :validation_token, :node_name, :ohai
+    attr_accessor :registration, :safe_name, :json_attribs, :validation_token, :node_name, :ohai
     
     # Creates a new Chef::Client.
     def initialize()
-      @node = nil
       @safe_name = nil
       @validation_token = nil
       @registration = nil
@@ -121,6 +120,16 @@ class Chef
         @ohai.all_plugins
       end
     end
+    
+    # A shortcut to the singleton-flavored Chef::Node.instance
+    def node
+      Chef::Node.instance
+    end
+    
+    # A shortcut for updating the singleton-flavored Chef::Node instance
+    def update_node(*args)
+      Chef::Node.update_instance(*args)
+    end
 
     def determine_node_name
       run_ohai
@@ -145,44 +154,48 @@ class Chef
       Chef::Log.debug("Building node object for #{@safe_name}")
       unless solo
         begin
-          @node = @rest.get_rest("nodes/#{@safe_name}")
+          update_node @rest.get_rest("nodes/#{@safe_name}")
         rescue Net::HTTPServerException => e
           unless e.message =~ /^404/
             raise e
           end
         end
       end
-      unless @node
+      unless node.name
         @node_exists = false
-        @node ||= Chef::Node.new
-        @node.name(node_name)
+        node.name(node_name)
       end
       if @json_attribs
         Chef::Log.debug("Adding JSON Attributes")
         @json_attribs.each do |key, value|
           if key == "recipes" || key == "run_list"
             value.each do |recipe|
-              unless @node.recipes.detect { |r| r == recipe }
+              unless node.recipes.detect { |r| r == recipe }
                 Chef::Log.debug("Adding recipe #{recipe}")
-                @node.recipes << recipe
+                node.recipes << recipe
               end
             end
           else
             Chef::Log.debug("JSON Attribute: #{key} - #{value.inspect}")
-            @node[key] = value
+            node[key] = value
           end
         end
       end
       ohai.each do |field, value|
         Chef::Log.debug("Ohai Attribute: #{field} - #{value.inspect}")
-        @node[field] = value
+        node[field] = value
       end
-      platform, version = Chef::Platform.find_platform_and_version(@node)
+      # p "--------"
+      # p node
+      # #p node.tags
+      # p "========"
+      
+      platform, version = Chef::Platform.find_platform_and_version(node)
       Chef::Log.debug("Platform is #{platform} version #{version}")
-      @node[:platform] = platform
-      @node[:platform_version] = version
-      @node[:tags] = Array.new unless @node.attribute?(:tags)
-      @node
+      node[:platform] = platform
+      node[:platform_version] = version
+      #node[:tags] = Array.new unless node.attribute?(:tags)
+      node
     end
     
     # If this node has been registered before, this method will fetch the current registration
@@ -274,7 +287,7 @@ class Chef
           rf['name'], 
           rf['cookbook'], 
           segment, 
-          @node, 
+          node, 
           current_checksum ? { 'checksum' => current_checksum } : nil
         )
         Chef::Log.debug(rf_url)
@@ -317,7 +330,7 @@ class Chef
     # true:: Always returns true
     def sync_attribute_files
       Chef::Log.debug("Synchronizing attributes")
-      update_file_cache("attributes", @rest.get_rest("cookbooks/_attribute_files?node=#{@node.name}"))
+      update_file_cache("attributes", @rest.get_rest("cookbooks/_attribute_files?node=#{node.name}"))
       true
     end
     
@@ -328,7 +341,7 @@ class Chef
     # true:: Always returns true
     def sync_library_files
       Chef::Log.debug("Synchronizing libraries")
-      update_file_cache("libraries", @rest.get_rest("cookbooks/_library_files?node=#{@node.name}"))
+      update_file_cache("libraries", @rest.get_rest("cookbooks/_library_files?node=#{node.name}"))
       true
     end
 
@@ -339,7 +352,7 @@ class Chef
     # true:: Always returns true
     def sync_provider_files
       Chef::Log.debug("Synchronizing providers") 
-      update_file_cache("providers", @rest.get_rest("cookbooks/_provider_files?node=#{@node.name}"))
+      update_file_cache("providers", @rest.get_rest("cookbooks/_provider_files?node=#{node.name}"))
       true
     end
     
@@ -350,7 +363,7 @@ class Chef
     # true:: Always returns true
     def sync_resource_files
       Chef::Log.debug("Synchronizing resources")
-      update_file_cache("resources", @rest.get_rest("cookbooks/_resource_files?node=#{@node.name}"))
+      update_file_cache("resources", @rest.get_rest("cookbooks/_resource_files?node=#{node.name}"))
       true
     end
 
@@ -361,7 +374,7 @@ class Chef
     # true:: Always returns true
     def sync_definitions
       Chef::Log.debug("Synchronizing definitions") 
-      update_file_cache("definitions", @rest.get_rest("cookbooks/_definition_files?node=#{@node.name}"))
+      update_file_cache("definitions", @rest.get_rest("cookbooks/_definition_files?node=#{node.name}"))
     end
     
     # Gets all the recipe files included in all the cookbooks available on the server,
@@ -371,7 +384,7 @@ class Chef
     # true:: Always returns true
     def sync_recipes
       Chef::Log.debug("Synchronizing recipes")
-      update_file_cache("recipes", @rest.get_rest("cookbooks/_recipe_files?node=#{@node.name}"))
+      update_file_cache("recipes", @rest.get_rest("cookbooks/_recipe_files?node=#{node.name}"))
     end
     
     # Updates the current node configuration on the server.
@@ -381,10 +394,10 @@ class Chef
     def save_node
       Chef::Log.debug("Saving the current state of node #{@safe_name}")
       if @node_exists
-        @node = @rest.put_rest("nodes/#{@safe_name}", @node)
+        update_node @rest.put_rest("nodes/#{@safe_name}", node)
       else
-        result = @rest.post_rest("nodes", @node)
-        @node = @rest.get_rest(result['uri'])
+        result = @rest.post_rest("nodes", node)
+        update_node @rest.get_rest(result['uri'])
         @node_exists = true
       end
       true
@@ -400,10 +413,10 @@ class Chef
       unless solo
         Chef::Config[:cookbook_path] = File.join(Chef::Config[:file_cache_path], "cookbooks")
       end
-      compile = Chef::Compile.new(@node)
+      compile = Chef::Compile.new(node)
       
       Chef::Log.debug("Converging node #{@safe_name}")
-      cr = Chef::Runner.new(@node, compile.collection, compile.definitions, compile.cookbook_loader)
+      cr = Chef::Runner.new(node, compile.collection, compile.definitions, compile.cookbook_loader)
       cr.converge
       true
     end

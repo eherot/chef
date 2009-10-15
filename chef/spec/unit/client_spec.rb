@@ -155,6 +155,7 @@ end
 
 describe Chef::Client, "build_node" do
   before(:each) do
+    Chef::Node.reset_instance!
     @mock_ohai = {
       :fqdn => "foo.bar.com",
       :hostname => "foo"
@@ -166,17 +167,18 @@ describe Chef::Client, "build_node" do
     Chef::REST.stub!(:new).and_return(@mock_rest)
     @client = Chef::Client.new
     Chef::Platform.stub!(:find_platform_and_version).and_return(["FooOS", "1.3.3.7"])
+    @client404 = Net::HTTPServerException.new("404 foobar dawg", nil)
   end
   
   it "should set the name equal to the FQDN" do
-    @mock_rest.stub!(:get_rest).and_return(nil)
+    @mock_rest.stub!(:get_rest).and_raise(@client404)
     @client.build_node
     @client.node.name.should eql("foo.bar.com")
   end
   
   it "should set the name equal to the hostname if FQDN is not available" do
     @mock_ohai[:fqdn] = nil
-    @mock_rest.stub!(:get_rest).and_return(nil)
+    @mock_rest.stub!(:get_rest).and_raise(@client404)
     @client.build_node
     @client.node.name.should eql("foo")
   end
@@ -201,7 +203,6 @@ describe Chef::Client, "build_node" do
   end
   
   it "should not add duplicate recipes from the json attributes" do
-    @client.node = Chef::Node.new
     @client.node.recipes << "one"
     @client.json_attribs = { "recipes" => [ "one", "two", "three" ]}
     @client.build_node
@@ -214,10 +215,9 @@ describe Chef::Client, "build_node" do
   end
   
   it "should not set the tags attribute to an empty array if it is already defined" do
-    @client.node = @node
-    @client.node[:tags] = [ "radiohead" ]
+    @node[:tags] = ["radiohead"]
     @client.build_node
-    @client.node.tags.should eql([ "radiohead" ])
+    @client.node["tags"].should eql([ "radiohead" ])
   end
 end
 
