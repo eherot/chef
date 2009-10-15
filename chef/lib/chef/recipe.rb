@@ -34,36 +34,39 @@ class Chef
     include Chef::Mixin::Language
     include Chef::Mixin::RecipeDefinitionDSLCore
     
-    attr_accessor :cookbook_name, :recipe_name, :recipe, :node, :collection, 
+    attr_accessor :cookbook_name, :recipe_name, :recipe, :collection, 
                   :definitions, :params, :cookbook_loader
     
     def initialize(cookbook_name, recipe_name, node, collection=nil, definitions=nil, cookbook_loader=nil)
       @cookbook_name = cookbook_name
       @recipe_name = recipe_name
-      @node = node
       @collection = collection || Chef::ResourceCollection.new
       @definitions = definitions || Hash.new
       @cookbook_loader = cookbook_loader || Chef::CookbookLoader.new
       @params = Hash.new      
     end
     
+    def node
+      Chef::Node.instance
+    end
+    
     def include_recipe(*args)
       args.flatten.each do |recipe|
-        if @node.run_state[:seen_recipes].has_key?(recipe)
+        if node.run_state[:seen_recipes].has_key?(recipe)
           Chef::Log.debug("I am not loading #{recipe}, because I have already seen it.")
           next
         end        
 
         Chef::Log.debug("Loading Recipe #{recipe} via include_recipe")
-        @node.run_state[:seen_recipes][recipe] = true
+        node.run_state[:seen_recipes][recipe] = true
         
         rmatch = recipe.match(/(.+?)::(.+)/)
         if rmatch
           cookbook = @cookbook_loader[rmatch[1]]
-          cookbook.load_recipe(rmatch[2], @node, @collection, @definitions, @cookbook_loader)
+          cookbook.load_recipe(rmatch[2], node, @collection, @definitions, @cookbook_loader)
         else
           cookbook = @cookbook_loader[recipe]
-          cookbook.load_recipe("default", @node, @collection, @definitions, @cookbook_loader)
+          cookbook.load_recipe("default", node, @collection, @definitions, @cookbook_loader)
         end
       end
     end
@@ -92,7 +95,7 @@ class Chef
     end
     
     # Sets a tag, or list of tags, for this node.  Syntactic sugar for
-    # @node[:tags].  
+    # node[:tags].  
     #
     # With no arguments, returns the list of tags.
     #
@@ -100,15 +103,15 @@ class Chef
     # tags<Array>:: A list of tags to add - can be a single string
     #
     # === Returns
-    # tags<Array>:: The contents of @node[:tags]
+    # tags<Array>:: The contents of node[:tags]
     def tag(*args)
       if args.length > 0
         args.each do |tag|
-          @node[:tags] << tag unless @node[:tags].include?(tag)
+          node[:tags] << tag unless node[:tags].include?(tag)
         end
-        @node[:tags]
+        node[:tags]
       else
-        @node[:tags]
+        node[:tags]
       end
     end
     
@@ -122,7 +125,7 @@ class Chef
     # false<FalseClass>:: If any of the parameters are missing
     def tagged?(*args)
       args.each do |tag|
-        return false unless @node[:tags].include?(tag)
+        return false unless node[:tags].include?(tag)
       end
       true
     end
@@ -133,10 +136,10 @@ class Chef
     # tags<Array>:: A list of tags
     #
     # === Returns
-    # tags<Array>:: The current list of @node[:tags]
+    # tags<Array>:: The current list of node[:tags]
     def untag(*args)
       args.each do |tag|
-        @node[:tags].delete(tag)
+        node[:tags].delete(tag)
       end
     end
     
