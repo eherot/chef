@@ -21,12 +21,13 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Provider::Git do
   
   before(:each) do
+    Chef::Node.reset_instance!
     @resource = Chef::Resource::Git.new("web2.0 app")
     @resource.repository "git://github.com/opscode/chef.git"
     @resource.destination "/my/deploy/dir"
     @resource.revision "d35af14d41ae22b19da05d7d03a0bafc321b244c"
-    @node = Chef::Node.new
-    @provider = Chef::Provider::Git.new(@node, @resource)
+    @provider = Chef::Provider::Git.new(nil, @resource)
+    @node = @provider.node
   end
   
   context "determining the revision of the currently deployed checkout" do

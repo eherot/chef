@@ -43,6 +43,7 @@ describe Chef::Provider::Service::Freebsd, "load_current_resource" do
     )
 
     @provider = Chef::Provider::Service::Freebsd.new(@node, @new_resource)
+    @provider.stub!(:node).and_return(@node)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
 
     @status = mock("Status", :exitstatus => 0)

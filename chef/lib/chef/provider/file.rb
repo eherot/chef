@@ -183,7 +183,7 @@ class Chef
       
       def generate_url(url, type, args=nil)
         cookbook_name = (@new_resource.respond_to?(:cookbook) && @new_resource.cookbook) ? @new_resource.cookbook : @new_resource.cookbook_name
-        generate_cookbook_url(url, cookbook_name, type, @node, args)
+        generate_cookbook_url(url, cookbook_name, type, node, args)
       end
       
     end

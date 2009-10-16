@@ -20,9 +20,9 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Recipe do
   before(:each) do
-    @node = Chef::Node.new
-    @recipe = Chef::Recipe.new("hjk", "test", @node)
-    @recipe.node[:tags] = Array.new
+    Chef::Node.reset_instance!
+    @recipe = Chef::Recipe.new("hjk", "test", nil)
+    @node = @recipe.node
   end
  
   describe "method_missing" do

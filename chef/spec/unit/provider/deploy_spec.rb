@@ -21,12 +21,15 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 describe Chef::Provider::Deploy do
   
   before do
+    Chef::Node.reset_instance!
     @release_time = Time.utc( 2004, 8, 15, 16, 23, 42)
     Time.stub!(:now).and_return(@release_time)
     @expected_release_dir = "/my/deploy/dir/releases/20040815162342"
     @resource = Chef::Resource::Deploy.new("/my/deploy/dir")
-    @node = Chef::Node.new
-    @provider = Chef::Provider::Deploy.new(@node, @resource)
+    @provider = Chef::Provider::Deploy.new(nil, @resource)
+    
+    @node = @provider.node
+    
     @provider.stub!(:release_slug)
     @provider.stub!(:release_path).and_return(@expected_release_dir)
     @runner = mock("runnah", :null_object => true)

@@ -40,6 +40,7 @@ describe Chef::Provider::Script, "action_run" do
     Tempfile.stub!(:new).with("chef-script").and_return(@tempfile)
     File.stub!(:chown).and_return(true)
     @provider = Chef::Provider::Script.new(@node, @new_resource)
+    @provider.stub!(:node).and_return(@node)
     @provider.stub!(:run_command).and_return(true)
   end
 

@@ -330,6 +330,7 @@ describe Chef::Provider::Package, "get_preseed_file" do
       :cookbook_name => "java"
     )
     @provider = Chef::Provider::Package.new(@node, @new_resource)
+    @provider.stub!(:node).and_return(@node)
     @provider.candidate_version = "1.0"
     @provider.current_resource = @current_resource
     

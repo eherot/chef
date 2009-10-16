@@ -37,7 +37,7 @@ class Chef
         @definitions ||= Hash.new
         @collection = Chef::ResourceCollection.new
         
-        @scm_provider = @new_resource.scm_provider.new(@node, @new_resource)
+        @scm_provider = @new_resource.scm_provider.new(node, @new_resource)
         
         # @configuration is not used by Deploy, it is only for backwards compat with
         # chef-deploy or capistrano hooks that might use it to get environment information
@@ -244,7 +244,7 @@ class Chef
       def install_gems
         gems_collection = Chef::ResourceCollection.new
         gem_packages.each { |rbgem| gems_collection << rbgem }
-        Chef::Runner.new(@node, gems_collection).converge
+        Chef::Runner.new(node, gems_collection).converge
       end
       
       def gem_packages

@@ -34,7 +34,7 @@ class Chef
       include Chef::Mixin::FindPreferredFile
       
       def action_create
-        Chef::Log.debug(@node.run_state.inspect)
+        Chef::Log.debug(node.run_state.inspect)
         raw_template_file = nil
         
         cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name
@@ -49,13 +49,13 @@ class Chef
             cookbook_name,
             :template,
             @new_resource.source,
-            @node[:fqdn],
-            @node[:platform],
-            @node[:platform_version]
+            node[:fqdn],
+            node[:platform],
+            node[:platform_version]
           )
           Chef::Log.debug("Using local file for template:#{filename}")
           cache_file_name = Pathname.new(filename).relative_path_from(Pathname.new(Chef::Config[:file_cache_path])).to_s
-        elsif @node.run_state[:template_cache].has_key?(template_cache_name)
+        elsif node.run_state[:template_cache].has_key?(template_cache_name)
           Chef::Log.debug("I have already fetched the template for #{@new_resource} once this run, not checking again.")
           template_updated = false
         else
@@ -90,7 +90,7 @@ class Chef
           end
           
           # We have checked the cache for this template this run
-          @node.run_state[:template_cache][template_cache_name] = true
+          node.run_state[:template_cache][template_cache_name] = true
         end  
         
         if template_updated
@@ -100,7 +100,7 @@ class Chef
 
         context = {}
         context.merge!(@new_resource.variables)
-        context[:node] = @node
+        context[:node] = node
         template_file = render_template(Chef::FileCache.load(cache_file_name), context)
 
         update = false

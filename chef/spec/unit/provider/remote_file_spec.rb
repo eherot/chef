@@ -20,13 +20,14 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Provider::RemoteFile, "action_create" do
   before(:each) do
+    Chef::Node.reset_instance!
+    
     @resource = Chef::Resource::RemoteFile.new("seattle")
     @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
     @resource.source("http://foo")
-    @node = Chef::Node.new
-    @node.name "latte"
-    @provider = Chef::Provider::RemoteFile.new(@node, @resource)
+    @provider = Chef::Provider::RemoteFile.new(nil, @resource)
     @provider.current_resource = @resource.clone
+    @node = @provider.node
   end
   
   it "should call do_remote_file" do
@@ -48,10 +49,10 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
     @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
     @resource.source("foo")
     @resource.cookbook_name = "monkey"
-    @node = Chef::Node.new
+    @provider = Chef::Provider::RemoteFile.new(nil, @resource)
+    @node = @provider.node
     @node.name "latte"
     @node.fqdn "latte.local"
-    @provider = Chef::Provider::RemoteFile.new(@node, @resource)
     @provider.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
     @provider.current_resource = @resource.clone
     @provider.current_resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")

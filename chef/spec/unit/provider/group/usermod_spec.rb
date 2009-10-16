@@ -29,6 +29,7 @@ describe Chef::Provider::Group::Usermod, "modify_group_members" do
     )
     @new_resource.stub!(:to_s).and_return("group[aj]")
     @provider = Chef::Provider::Group::Usermod.new(@node, @new_resource)
+    @provider.stub!(:node).and_return(@node)
     @provider.stub!(:run_command).and_return(true)
   end
   

@@ -127,9 +127,9 @@ class Chef
             cookbook_name,
             :remote_file,
             source,
-            @node[:fqdn],
-            @node[:platform],
-            @node[:platform_version]
+            node[:fqdn],
+            node[:platform],
+            node[:platform_version]
           )
           Chef::Log.debug("Using local file for remote_file:#{filename}")
           ::File.open(filename)

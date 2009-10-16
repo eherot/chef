@@ -134,13 +134,13 @@ class Chef
         remote_file = Chef::Resource::RemoteFile.new(
           full_cache_file,
           nil,
-          @node
+          node
         )
         remote_file.cookbook_name = @new_resource.cookbook_name
         remote_file.source(@new_resource.response_file)
         remote_file.backup(false)
         
-        rf_provider = Chef::Platform.provider_for_node(@node, remote_file)
+        rf_provider = Chef::Platform.provider_for_node(node, remote_file)
         rf_provider.load_current_resource
         rf_provider.action_create
         

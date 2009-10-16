@@ -24,9 +24,9 @@ describe Chef::Provider::File do
   before(:each) do
     @resource = Chef::Resource::File.new("seattle")
     @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
-    @node = Chef::Node.new
+    @provider = Chef::Provider::File.new(nil, @resource)
+    @node = @provider.node
     @node.name "latte"
-    @provider = Chef::Provider::File.new(@node, @resource)
   end
   
   it "should return a Chef::Provider::File" do

@@ -20,6 +20,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::ResourceDefinition do
   before(:each) do
+    Chef::Node.reset_instance!
     @def = Chef::ResourceDefinition.new()
   end
   
@@ -28,30 +29,11 @@ describe Chef::ResourceDefinition do
       @def.should be_a_kind_of(Chef::ResourceDefinition)
     end
     
-    it "should not initialize a new node if one is not provided" do
-      @def.node.should eql(nil)
+    it "gets its node from Chef::Node.instance" do
+      Chef::Node.should_receive(:instance)
+      @def.node
     end
     
-    it "should accept a node as an argument" do
-      node = Chef::Node.new
-      node.name("bobo")
-      @def = Chef::ResourceDefinition.new(node)
-      @def.node.name.should == "bobo"
-    end
-  end
-  
-  describe "node" do
-    it "should set the node with node=" do
-      node = Chef::Node.new
-      node.name("bobo")
-      @def.node = node
-      @def.node.name.should == "bobo"
-    end
-    
-    it "should return the node" do
-      @def.node = Chef::Node.new
-      @def.node.should be_a_kind_of(Chef::Node)
-    end
   end
   
   it "should accept a new definition with a symbol for a name" do

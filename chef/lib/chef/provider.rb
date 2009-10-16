@@ -26,16 +26,19 @@ class Chef
     
     include Chef::Mixin::RecipeDefinitionDSLCore
     
-    attr_accessor :node, :new_resource, :current_resource
+    attr_accessor :new_resource, :current_resource
     
     def initialize(node, new_resource, collection=nil, definitions={}, cookbook_loader=nil)
-      @node = node
       @new_resource = new_resource
       @current_resource = nil
       @collection = collection
       @definitions = definitions
       @cookbook_loader = cookbook_loader
       @cookbook_name = @new_resource.cookbook_name
+    end
+    
+    def node
+      Chef::Node.instance
     end
     
     def load_current_resource
@@ -53,7 +56,7 @@ class Chef
       provider_collection, @collection = @collection, Chef::ResourceCollection.new
       
       instance_eval(*args, &block)
-      Chef::Runner.new(@node, @collection).converge
+      Chef::Runner.new(node, @collection).converge
       
       @collection = provider_collection
     end

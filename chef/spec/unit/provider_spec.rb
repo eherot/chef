@@ -22,9 +22,9 @@ describe Chef::Provider do
   before(:each) do
     @resource = Chef::Resource.new("funk")
     @resource.cookbook_name = "a_delicious_pie"
-    @node = Chef::Node.new
+    @provider = Chef::Provider.new(nil, @resource)
+    @node = @provider.node
     @node.name "latte"
-    @provider = Chef::Provider.new(@node, @resource)
   end
   
   it "should return a Chef::Provider" do
@@ -35,8 +35,9 @@ describe Chef::Provider do
     @provider.new_resource.should eql(@resource)
   end
   
-  it "should store the node passed to new as node" do
-    @provider.node.should eql(@node)
+  it "should get the singleton node instance" do
+    Chef::Node.should_receive(:instance)
+    @provider.node
   end
   
   it "should have nil for current_resource by default" do

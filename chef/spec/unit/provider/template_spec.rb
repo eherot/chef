@@ -20,6 +20,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_hel
 
 describe Chef::Provider::Template, "action_create" do
   before(:each) do
+    Chef::Node.reset_instance!
+    
     @rest = mock(Chef::REST, { :get_rest => "/tmp/foobar" })
     @tempfile = mock(Tempfile, { :path => "/tmp/foo", :print => true, :close => true })
     Tempfile.stub!(:new).and_return(@tempfile)
@@ -32,6 +34,7 @@ describe Chef::Provider::Template, "action_create" do
     @node = Chef::Node.new
     @node.name "latte"
     @provider = Chef::Provider::Template.new(@node, @resource)
+    @provider.stub!(:node).and_return(@node)
     @provider.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
     @provider.current_resource = @resource.clone
     @provider.current_resource.checksum("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
@@ -138,12 +141,14 @@ end
 
 describe Chef::Provider::Template, "action_create_if_missing" do
   before(:each) do
+    Chef::Node.reset_instance!
+    
     @resource = Chef::Resource::Template.new("seattle")
     @resource.cookbook_name = "daft"
     @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
-    @node = Chef::Node.new
+    @provider = Chef::Provider::Template.new(nil, @resource)
+    @node = @provider.node
     @node.name "latte"
-    @provider = Chef::Provider::Template.new(@node, @resource)
   end
   
   it "should not call action_create if the new resources path exists" do
@@ -161,12 +166,14 @@ end
 
 describe Chef::Provider::Template, "generate_url" do
   before(:each) do
+    Chef::Node.reset_instance!
+    
     @resource = Chef::Resource::Template.new("seattle")
     @resource.cookbook_name = "daft"
     @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
-    @node = Chef::Node.new
+    @provider = Chef::Provider::Template.new(nil, @resource)
+    @node = @provider.node
     @node.name "latte"
-    @provider = Chef::Provider::Template.new(@node, @resource)
   end
   
   it "should return a raw url if it starts with http" do

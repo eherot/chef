@@ -41,6 +41,7 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
     )
 
     @provider = Chef::Provider::Service::Simple.new(@node, @new_resource)
+    @provider.stub!(:node).and_return(@node)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
 
     @status = mock("Status", :exitstatus => 0)
