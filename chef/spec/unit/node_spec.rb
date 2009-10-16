@@ -394,6 +394,24 @@ describe Chef::Node do
       end
       
     end
+    
+    describe "implementing comparision operators" do
+      it "is equal to another node if it has the same name, attribute, recipe_list, run_list, override, and default" do
+        @node  = Chef::Node.new
+        @other = Chef::Node.new
+        [@node, @other].each do |node|
+          node.name("same_name")
+          node.attribute = {:the_same_attrs => {}}
+          node.recipe_list = [:same, :list]
+          node.run_list = [:same, :list]
+          node.override = {:identical=>:override}
+          node.default = {:the_same_defaults => {}}
+        end
+        @node.should == @other
+        @other.recipe_list = %w{not even close}
+        @node.should_not == @other
+      end
+    end
 
   end
 

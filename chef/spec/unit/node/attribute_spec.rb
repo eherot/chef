@@ -980,4 +980,14 @@ describe Chef::Node::Attribute do
       @attributes.should_not be_a_kind_of(Chef::Node)
     end
   end
+  
+  describe "making comparisons" do
+    it "is equal to another attribute object if it has the same value for each kv pair" do
+      @doppleganger = Chef::Node::Attribute.new({}, {}, {})
+      @attributes.each_pair do |key, value|
+        @doppleganger[key] = value
+      end
+      @doppleganger.should == @attributes
+    end
+  end
 end

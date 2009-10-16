@@ -149,6 +149,14 @@ class Chef
       }
     end
     
+    def ==(other)
+      return false unless other.kind_of?(Chef::Node)
+      [:attribute, :recipe_list, :run_state, :run_list, :override, :default].each do |node_attr|
+        return false unless self.send(node_attr) == other.send(node_attr)
+      end
+      return true
+    end
+    
     # Find a recipe for this Chef::Node by fqdn.  Will search first for 
     # Chef::Config["node_path"]/fqdn.rb, then hostname.rb, then default.rb.
     # 

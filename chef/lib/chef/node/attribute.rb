@@ -57,6 +57,14 @@ class Chef
         @has_been_read = false
         @state = []
       end
+      
+      def ==(other)
+        return false unless other.respond_to?(:each_pair)
+        each_key do |key|
+          return false unless other[key] == self[key]
+        end
+        return true
+      end
 
       def [](key)
         @state << key
