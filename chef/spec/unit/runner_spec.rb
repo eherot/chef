@@ -60,7 +60,7 @@ describe Chef::Runner do
   end
   
   it "should use the provider specified by the resource (if it has one)" do
-    provider = Chef::Provider::Easy.new(@node, @collection[0])
+    provider = Chef::Provider::Easy.new(@collection[0])
     @collection[0].should_receive(:provider).once.and_return(Chef::Provider::Easy)
     Chef::Provider::Easy.should_receive(:new).once.and_return(provider)
     @runner.converge
@@ -73,7 +73,7 @@ describe Chef::Runner do
   
   it "should run the action for each resource" do
     Chef::Platform.should_receive(:find_provider_for_node).once.and_return(Chef::Provider::SnakeOil)
-    provider = Chef::Provider::SnakeOil.new(@node, @collection[0])
+    provider = Chef::Provider::SnakeOil.new(@collection[0])
     provider.should_receive(:action_sell).once.and_return(true)
     Chef::Provider::SnakeOil.should_receive(:new).once.and_return(provider)
     @runner.converge
@@ -103,7 +103,7 @@ describe Chef::Runner do
   
   it "should raise exceptions as thrown by a provider" do
     Chef::Platform.stub!(:find_provider_for_node).once.and_return(Chef::Provider::SnakeOil)
-    provider = Chef::Provider::SnakeOil.new(@node, @collection[0])
+    provider = Chef::Provider::SnakeOil.new(@collection[0])
     Chef::Provider::SnakeOil.stub!(:new).once.and_return(provider)
     provider.stub!(:action_sell).once.and_raise(ArgumentError)
     lambda { @runner.converge }.should raise_error(ArgumentError)
@@ -112,7 +112,7 @@ describe Chef::Runner do
   it "should not raise exceptions thrown by providers if the resource has ignore_failure set to true" do
     Chef::Platform.stub!(:find_provider_for_node).once.and_return(Chef::Provider::SnakeOil)
     @collection[0].stub!(:ignore_failure).and_return(true)
-    provider = Chef::Provider::SnakeOil.new(@node, @collection[0])
+    provider = Chef::Provider::SnakeOil.new(@collection[0])
     Chef::Provider::SnakeOil.stub!(:new).once.and_return(provider)
     provider.stub!(:action_sell).once.and_raise(ArgumentError)
     lambda { @runner.converge }.should_not raise_error(ArgumentError)
@@ -120,7 +120,7 @@ describe Chef::Runner do
   
   it "should execute immediate actions on changed resources" do
     Chef::Platform.should_receive(:find_provider_for_node).exactly(3).times.and_return(Chef::Provider::SnakeOil)
-    provider = Chef::Provider::SnakeOil.new(@node, @collection[0])
+    provider = Chef::Provider::SnakeOil.new(@collection[0])
     Chef::Provider::SnakeOil.should_receive(:new).exactly(3).times.and_return(provider)   
     @collection << Chef::Resource::Cat.new("peanut", @collection)
     @collection[1].notifies :buy, @collection[0], :immediately
@@ -136,9 +136,9 @@ describe Chef::Runner do
     @collection << Chef::Resource::Cat.new("snuffles", @collection)
     @collection[2].notifies :purr, @collection[1], :immediately
     @collection[2].updated = true
-    provider = Chef::Provider::SnakeOil.new(@node, @collection[0])
-    p1 = Chef::Provider::SnakeOil.new(@node, @collection[1])
-    p2 = Chef::Provider::SnakeOil.new(@node, @collection[2])
+    provider = Chef::Provider::SnakeOil.new(@collection[0])
+    p1 = Chef::Provider::SnakeOil.new(@collection[1])
+    p2 = Chef::Provider::SnakeOil.new(@collection[2])
     Chef::Provider::SnakeOil.should_receive(:new).exactly(5).times.and_return(provider, p1, p2, p1, provider)   
     provider.should_receive(:action_buy).once.and_return(true)
     @runner.converge
@@ -146,7 +146,7 @@ describe Chef::Runner do
   
   it "should execute delayed actions on changed resources" do
     Chef::Platform.should_receive(:find_provider_for_node).exactly(3).times.and_return(Chef::Provider::SnakeOil)
-    provider = Chef::Provider::SnakeOil.new(@node, @collection[0])
+    provider = Chef::Provider::SnakeOil.new(@collection[0])
     Chef::Provider::SnakeOil.should_receive(:new).exactly(3).times.and_return(provider)   
     @collection << Chef::Resource::Cat.new("peanut", @collection)
     @collection[1].notifies :buy, @collection[0], :delayed
@@ -157,7 +157,7 @@ describe Chef::Runner do
   
   it "should collapse delayed actions on changed resources" do
     Chef::Platform.stub!(:find_provider_for_node).and_return(Chef::Provider::SnakeOil)
-    provider = Chef::Provider::SnakeOil.new(@node, @collection[0])
+    provider = Chef::Provider::SnakeOil.new(@collection[0])
     Chef::Provider::SnakeOil.stub!(:new).and_return(provider)   
     cat = Chef::Resource::Cat.new("peanut", @collection)
     cat.notifies :buy, @collection[0], :delayed

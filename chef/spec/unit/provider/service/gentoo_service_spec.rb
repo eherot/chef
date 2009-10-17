@@ -27,7 +27,7 @@ describe Chef::Provider::Service::Gentoo do
     @new_resource     = mock("Chef::Resource::Service", resource_opts)
     @current_resource = mock("Chef::Resource::Service", resource_opts)
     
-    @provider = Chef::Provider::Service::Gentoo.new(@node, @new_resource)
+    @provider = Chef::Provider::Service::Gentoo.new(@new_resource)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
     @provider.stub!(:popen4).and_return(@status)
     @provider.stub!(:run_command).with(:command => "/etc/init.d/chef status").and_return(true)

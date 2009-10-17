@@ -25,7 +25,7 @@ describe Chef::Provider::Cron, "initialize" do
   end
 
   it "should return a Chef::Provider::Cron object" do
-    provider = Chef::Provider::Cron.new(@node, @new_resource)
+    provider = Chef::Provider::Cron.new(@new_resource)
     provider.should be_a_kind_of(Chef::Provider::Cron)
   end
 
@@ -47,7 +47,7 @@ describe Chef::Provider::Cron, "load_current_resource" do
       :minute => "30",
       :command => "/bin/true"
     )
-    @provider = Chef::Provider::Cron.new(@node, @new_resource)
+    @provider = Chef::Provider::Cron.new(@new_resource)
   end
 
   it "should report if it can't find the cron entry" do
@@ -112,7 +112,7 @@ describe Chef::Provider::Cron, "compare_cron" do
       :shell => "/bin/zsh",
       :home => "/home/thom"
     )
-    @provider = Chef::Provider::Cron.new(@node, @new_resource)
+    @provider = Chef::Provider::Cron.new(@new_resource)
     @provider.current_resource = @current_resource
   end
 
@@ -161,7 +161,7 @@ describe Chef::Provider::Cron, "action_create" do
       :home => nil,
       :command => "/bin/true"
     )
-    @provider = Chef::Provider::Cron.new(@node, @new_resource)
+    @provider = Chef::Provider::Cron.new(@new_resource)
   end
 
   it "should add the cron entry if cron exists" do
@@ -263,7 +263,7 @@ describe Chef::Provider::Cron, "action_create" do
       :home => nil,
       :command => "/bin/true"
     )
-    provider = Chef::Provider::Cron.new(@node, resource)
+    provider = Chef::Provider::Cron.new(resource)
     provider.current_resource = @current_resource
 
     @status = mock("Status", :exitstatus => 0)
@@ -299,7 +299,7 @@ describe Chef::Provider::Cron, "action_delete" do
       :minute => "30",
       :command => "/bin/true"
     )
-    @provider = Chef::Provider::Cron.new(@node, @new_resource)
+    @provider = Chef::Provider::Cron.new(@new_resource)
 
   end
 

@@ -22,7 +22,7 @@ describe Chef::Provider do
   before(:each) do
     @resource = Chef::Resource.new("funk")
     @resource.cookbook_name = "a_delicious_pie"
-    @provider = Chef::Provider.new(nil, @resource)
+    @provider = Chef::Provider.new(@resource)
     @node = @provider.node
     @node.name "latte"
   end

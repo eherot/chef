@@ -26,7 +26,7 @@ describe Chef::Provider::Mount, "initialize" do
   end
   
   it "should return a Chef::Provider::Mount object" do
-    provider = Chef::Provider::Mount.new(@node, @new_resource)
+    provider = Chef::Provider::Mount.new(@new_resource)
     provider.should be_a_kind_of(Chef::Provider::Mount)
   end
   
@@ -53,7 +53,7 @@ describe Chef::Provider::Mount, "action_mount" do
     :mounted => false,
     :enabled => false
     )
-    @provider = Chef::Provider::Mount.new(@node, @new_resource)
+    @provider = Chef::Provider::Mount.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:mount_fs).and_return(true)
   end
@@ -93,7 +93,7 @@ describe Chef::Provider::Mount, "action_umount" do
     :mounted => false,
     :enabled => false
     )
-    @provider = Chef::Provider::Mount.new(@node, @new_resource)
+    @provider = Chef::Provider::Mount.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:umount_fs).and_return(true)
   end
@@ -132,7 +132,7 @@ describe Chef::Provider::Mount, "action_remount" do
     :mounted => false,
     :enabled => false
     )
-    @provider = Chef::Provider::Mount.new(@node, @new_resource)
+    @provider = Chef::Provider::Mount.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:remount_fs).and_return(true)
     @current_resource.stub!(:supports).and_return({:remount => true})
@@ -172,7 +172,7 @@ describe Chef::Provider::Mount, "action_enable" do
     :mounted => false,
     :enabled => false
     )
-    @provider = Chef::Provider::Mount.new(@node, @new_resource)
+    @provider = Chef::Provider::Mount.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:enable_fs).and_return(true)
   end
@@ -211,7 +211,7 @@ describe Chef::Provider::Mount, "action_disable" do
     :mounted => false,
     :enabled => false
     )
-    @provider = Chef::Provider::Mount.new(@node, @new_resource)
+    @provider = Chef::Provider::Mount.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:disable_fs).and_return(true)
   end
@@ -251,7 +251,7 @@ end
       :fstype => "ext3",
       :mounted => false
       )
-      @provider = Chef::Provider::Mount.new(@node, @new_resource)
+      @provider = Chef::Provider::Mount.new(@new_resource)
       @provider.current_resource = @current_resource
       
     end

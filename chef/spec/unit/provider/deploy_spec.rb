@@ -26,7 +26,7 @@ describe Chef::Provider::Deploy do
     Time.stub!(:now).and_return(@release_time)
     @expected_release_dir = "/my/deploy/dir/releases/20040815162342"
     @resource = Chef::Resource::Deploy.new("/my/deploy/dir")
-    @provider = Chef::Provider::Deploy.new(nil, @resource)
+    @provider = Chef::Provider::Deploy.new(@resource)
     
     @node = @provider.node
     
@@ -287,7 +287,7 @@ describe Chef::Provider::Deploy do
   it "sets @configuration[:environment] to the value of RAILS_ENV for backwards compat reasons" do
     resource = Chef::Resource::Deploy.new("/my/deploy/dir")
     resource.environment "production" 
-    provider = Chef::Provider::Deploy.new(@node, resource)
+    provider = Chef::Provider::Deploy.new(resource)
     provider.instance_variable_get(:@configuration)[:environment].should eql("production")
   end
   

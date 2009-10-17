@@ -26,7 +26,7 @@ describe Chef::Provider::Deploy::Timestamped do
     @expected_release_dir = "/my/deploy/dir/releases/20040815162342"
     @resource = Chef::Resource::Deploy.new("/my/deploy/dir")
     @node = Chef::Node.new
-    @timestamped_deploy = Chef::Provider::Deploy::Timestamped.new(@node, @resource)
+    @timestamped_deploy = Chef::Provider::Deploy::Timestamped.new(@resource)
     @runner = mock("runnah", :null_object => true)
     Chef::Runner.stub!(:new).and_return(@runner)
   end

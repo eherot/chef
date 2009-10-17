@@ -27,7 +27,7 @@ describe Chef::Provider::Subversion do
     @resource.destination "/my/deploy/dir"
     @resource.revision "12345"
     @node = Chef::Node.new
-    @provider = Chef::Provider::Subversion.new(@node, @resource)
+    @provider = Chef::Provider::Subversion.new(@resource)
   end
   
   it "converts resource attributes to options for run_command and popen4" do

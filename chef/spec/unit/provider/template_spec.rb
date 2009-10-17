@@ -33,7 +33,7 @@ describe Chef::Provider::Template, "action_create" do
     @resource.source("http://foo")
     @node = Chef::Node.new
     @node.name "latte"
-    @provider = Chef::Provider::Template.new(@node, @resource)
+    @provider = Chef::Provider::Template.new(@resource)
     @provider.stub!(:node).and_return(@node)
     @provider.stub!(:checksum).and_return("0fd012fdc96e96f8f7cf2046522a54aed0ce470224513e45da6bc1a17a4924aa")
     @provider.current_resource = @resource.clone
@@ -146,7 +146,7 @@ describe Chef::Provider::Template, "action_create_if_missing" do
     @resource = Chef::Resource::Template.new("seattle")
     @resource.cookbook_name = "daft"
     @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
-    @provider = Chef::Provider::Template.new(nil, @resource)
+    @provider = Chef::Provider::Template.new(@resource)
     @node = @provider.node
     @node.name "latte"
   end
@@ -171,7 +171,7 @@ describe Chef::Provider::Template, "generate_url" do
     @resource = Chef::Resource::Template.new("seattle")
     @resource.cookbook_name = "daft"
     @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
-    @provider = Chef::Provider::Template.new(nil, @resource)
+    @provider = Chef::Provider::Template.new(@resource)
     @node = @provider.node
     @node.name "latte"
   end

@@ -35,7 +35,7 @@ describe Chef::Provider::Package::Freebsd, "load_current_resource" do
       :version => nil
     )
 
-    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)    
+    @provider = Chef::Provider::Package::Freebsd.new(@new_resource)    
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
 
     @provider.should_receive(:ports_candidate_version).and_return("4.3.6")
@@ -75,7 +75,7 @@ describe Chef::Provider::Package::Freebsd, "system call wrappers" do
       :version => nil
     )
 
-    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)    
+    @provider = Chef::Provider::Package::Freebsd.new(@new_resource)    
 
     @status = mock("Status", :exitstatus => 0)
     @stdin = mock("STDIN", :null_object => true)
@@ -131,7 +131,7 @@ describe Chef::Provider::Package::Freebsd, "install_package" do
       :package_name => "zsh",
       :version => nil
     )
-    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Freebsd.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:package_name).and_return("zsh")
     @provider.stub!(:latest_link_name).and_return("zsh")
@@ -157,7 +157,7 @@ describe Chef::Provider::Package::Freebsd, "port path" do
     @new_resource = mock( "Chef::Resource::Package", 
                           :package_name => "zsh", 
                           :cookbook_name => "adventureclub")
-    @provider = Chef::Provider::Package::Freebsd.new(mock("Chef::Node"), @new_resource)
+    @provider = Chef::Provider::Package::Freebsd.new(@new_resource)
     @provider.should_receive(:popen4).with("whereis -s zsh").and_yield(nil, nil, ["zsh: /usr/ports/shells/zsh"], nil)
     @provider.port_path.should == "/usr/ports/shells/zsh"
   end
@@ -166,7 +166,7 @@ describe Chef::Provider::Package::Freebsd, "port path" do
     @new_resource = mock( "Chef::Resource::Package", 
                           :package_name => "/usr/ports/www/wordpress",
                           :cookbook_name => "adventureclub")
-    @provider = Chef::Provider::Package::Freebsd.new(mock("Chef::Node"), @new_resource)
+    @provider = Chef::Provider::Package::Freebsd.new(@new_resource)
     @provider.should_not_receive(:popen4)
     @provider.port_path.should == "/usr/ports/www/wordpress"
   end
@@ -175,7 +175,7 @@ describe Chef::Provider::Package::Freebsd, "port path" do
     @new_resource = mock( "Chef::Resource::Package", 
                           :package_name => "www/wordpress",
                           :cookbook_name => "xenoparadox")
-    @provider = Chef::Provider::Package::Freebsd.new(mock("Chef::Node"), @new_resource)
+    @provider = Chef::Provider::Package::Freebsd.new(@new_resource)
     @provider.should_not_receive(:popen4)
     @provider.port_path.should == "/usr/ports/www/wordpress"
   end 
@@ -196,7 +196,7 @@ describe Chef::Provider::Package::Freebsd, "ruby-iconv (package with a dash in t
       :package_name => "ruby-iconv",
       :version => nil
     )
-    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Freebsd.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:port_path).and_return("/usr/ports/converters/ruby-iconv")
     @provider.stub!(:package_name).and_return("ruby18-iconv")
@@ -230,7 +230,7 @@ describe Chef::Provider::Package::Freebsd, "remove_package" do
       :package_name => "zsh",
       :version => "4.3.6_7"
     )
-    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Freebsd.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:package_name).and_return("zsh")
   end
@@ -275,7 +275,7 @@ describe Chef::Provider::Package::Freebsd, "install_package latest link fixes" d
       :package_name => "perl5.8",
       :version => nil
     )
-    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Freebsd.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:package_name).and_return("perl")
     @provider.stub!(:latest_link_name).and_return("perl")
@@ -300,7 +300,7 @@ describe Chef::Provider::Package::Freebsd, "install_package latest link fixes" d
       :package_name => "mysql50-server",
       :version => nil
     )
-    @provider = Chef::Provider::Package::Freebsd.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Freebsd.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:package_name).and_return("mysql-server")
     @provider.stub!(:latest_link_name).and_return("mysql50-server")

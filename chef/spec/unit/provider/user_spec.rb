@@ -33,7 +33,7 @@ describe Chef::Provider::User, "initialize" do
       :updated => nil
     )
 
-    @provider = Chef::Provider::User.new(@node, @new_resource)
+    @provider = Chef::Provider::User.new(@new_resource)
   end
   
   it "should return a Chef::Provider::User" do
@@ -86,7 +86,7 @@ describe Chef::Provider::User, "load_current_resource" do
     )
     Etc.stub!(:getpwnam).and_return(@pw_user)
 
-    @provider = Chef::Provider::User.new(@node, @new_resource)
+    @provider = Chef::Provider::User.new(@new_resource)
   end
  
   it "should create a current resource with the same name as the new resource" do
@@ -166,7 +166,7 @@ describe Chef::Provider::User, "compare_user" do
       :password => nil,
       :updated => nil
     )
-    @provider = Chef::Provider::User.new(@node, @new_resource)
+    @provider = Chef::Provider::User.new(@new_resource)
     @provider.current_resource = @current_resource
   end
   
@@ -208,7 +208,7 @@ describe Chef::Provider::User, "action_create" do
       :password => nil,
       :updated => nil
     )
-    @provider = Chef::Provider::User.new(@node, @new_resource)
+    @provider = Chef::Provider::User.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.user_exists = false
     @provider.stub!(:create_user).and_return(true)
@@ -256,7 +256,7 @@ describe Chef::Provider::User, "action_remove" do
     @current_resource = mock("Chef::Resource::User", 
       :null_object => true
     )
-    @provider = Chef::Provider::User.new(@node, @new_resource)
+    @provider = Chef::Provider::User.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.user_exists = false
     @provider.stub!(:remove_user).and_return(true)
@@ -289,7 +289,7 @@ describe Chef::Provider::User, "action_manage" do
     @current_resource = mock("Chef::Resource::User", 
       :null_object => true
     )
-    @provider = Chef::Provider::User.new(@node, @new_resource)
+    @provider = Chef::Provider::User.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.user_exists = true
     @provider.stub!(:manage_user).and_return(true)
@@ -330,7 +330,7 @@ describe Chef::Provider::User, "action_modify" do
     @current_resource = mock("Chef::Resource::User", 
       :null_object => true
     )
-    @provider = Chef::Provider::User.new(@node, @new_resource)
+    @provider = Chef::Provider::User.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.user_exists = true
     @provider.stub!(:manage_user).and_return(true)
@@ -371,7 +371,7 @@ describe Chef::Provider::User, "action_lock" do
     @current_resource = mock("Chef::Resource::User", 
       :null_object => true
     )
-    @provider = Chef::Provider::User.new(@node, @new_resource)
+    @provider = Chef::Provider::User.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.user_exists = true
     @provider.stub!(:check_lock).and_return(true)
@@ -405,7 +405,7 @@ describe Chef::Provider::User, "action_unlock" do
     @current_resource = mock("Chef::Resource::User", 
       :null_object => true
     )
-    @provider = Chef::Provider::User.new(@node, @new_resource)
+    @provider = Chef::Provider::User.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.user_exists = true
     @provider.stub!(:check_lock).and_return(true)
@@ -434,7 +434,7 @@ describe Chef::Provider::User, "convert_group_name" do
     @new_resource = mock("Chef::Resource::User", :null_object => true, :gid => "lololo")
     @new_resource.stub!(:to_s).and_return("user[lololo]")
     @current_resource = mock("Chef::Resource::User", :null_object => true)
-    @provider = Chef::Provider::User.new(@node, @new_resource)
+    @provider = Chef::Provider::User.new(@new_resource)
     @provider.current_resource = @current_resource
     @group = mock("Struct::Group", :null_object => true, :gid => 999)
     Etc.stub!(:getgrnam).with("lololo").and_return(@group)

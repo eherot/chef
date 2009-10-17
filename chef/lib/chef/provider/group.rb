@@ -27,8 +27,8 @@ class Chef
       include Chef::Mixin::Command
       attr_accessor :group_exists
       
-      def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
-        super(node, new_resource, collection, definitions, cookbook_loader)
+      def initialize(*args)
+        super(*args)
         @group_exists = true
       end
       

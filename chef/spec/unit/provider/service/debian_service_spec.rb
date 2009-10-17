@@ -38,7 +38,7 @@ describe Chef::Provider::Service::Debian, "load_current_resource" do
       :status_command => false
     )
 
-    @provider = Chef::Provider::Service::Debian.new(@node, @new_resource)
+    @provider = Chef::Provider::Service::Debian.new(@new_resource)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
     File.stub!(:exists?).and_return(true)
 
@@ -111,7 +111,7 @@ describe Chef::Provider::Service::Debian, "enable_service" do
       :status_command => false
     )
 
-    @provider = Chef::Provider::Service::Debian.new(@node, @new_resource)
+    @provider = Chef::Provider::Service::Debian.new(@new_resource)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
   end
 
@@ -131,7 +131,7 @@ describe Chef::Provider::Service::Debian, "disable_service" do
       :status_command => false
     )
 
-    @provider = Chef::Provider::Service::Debian.new(@node, @new_resource)
+    @provider = Chef::Provider::Service::Debian.new(@new_resource)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
   end
 

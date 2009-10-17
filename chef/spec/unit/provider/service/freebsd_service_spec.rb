@@ -42,7 +42,7 @@ describe Chef::Provider::Service::Freebsd, "load_current_resource" do
       :enabled => false
     )
 
-    @provider = Chef::Provider::Service::Freebsd.new(@node, @new_resource)
+    @provider = Chef::Provider::Service::Freebsd.new(@new_resource)
     @provider.stub!(:node).and_return(@node)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
 
@@ -187,7 +187,7 @@ describe Chef::Provider::Service::Freebsd, "enable_service" do
       :enabled => false
     )
 
-    @provider = Chef::Provider::Service::Freebsd.new(@node, @new_resource)
+    @provider = Chef::Provider::Service::Freebsd.new(@new_resource)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
     @provider.stub!(:service_enable_variable_name).and_return("apache22_enable")
     @provider.current_resource = @current_resource
@@ -233,7 +233,7 @@ describe Chef::Provider::Service::Freebsd, "disable_service" do
       :enabled => false
     )
 
-    @provider = Chef::Provider::Service::Freebsd.new(@node, @new_resource)
+    @provider = Chef::Provider::Service::Freebsd.new(@new_resource)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
     @provider.stub!(:service_enable_variable_name).and_return("apache22_enable")
     @provider.current_resource = @current_resource

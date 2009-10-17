@@ -30,8 +30,8 @@ class Chef
       
       attr_accessor :candidate_version
       
-      def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)
-        super(node, new_resource, collection, definitions, cookbook_loader)
+      def initialize(*args)
+        super(*args)
         @candidate_version = nil
       end
       

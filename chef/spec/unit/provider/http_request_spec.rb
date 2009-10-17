@@ -27,7 +27,7 @@ describe Chef::Provider::HttpRequest, "initialize" do
       :url => "http://www.opscode.com",
       :message => "is cool"
     )
-    @provider = Chef::Provider::HttpRequest.new(@node, @new_resource)
+    @provider = Chef::Provider::HttpRequest.new(@new_resource)
   end
   
   it "should return a Chef::Provider::HttpRequest" do
@@ -44,7 +44,7 @@ describe Chef::Provider::HttpRequest, "load_current_resource" do
       :url => "http://www.opscode.com",
       :message => "is cool"
     )
-    @provider = Chef::Provider::HttpRequest.new(@node, @new_resource)
+    @provider = Chef::Provider::HttpRequest.new(@new_resource)
   end
   
   it "should set up a Chef::REST client" do
@@ -67,7 +67,7 @@ describe Chef::Provider::HttpRequest, "action_get" do
       :create_url => "http://www.opscode.com",
       :run_request => "you made it!"
     )
-    @provider = Chef::Provider::HttpRequest.new(@node, @new_resource)
+    @provider = Chef::Provider::HttpRequest.new(@new_resource)
     @provider.rest = @rest
   end
   
@@ -107,7 +107,7 @@ describe Chef::Provider::HttpRequest, "action_put" do
       :create_url => "http://www.opscode.com",
       :run_request => "you made it!"
     )
-    @provider = Chef::Provider::HttpRequest.new(@node, @new_resource)
+    @provider = Chef::Provider::HttpRequest.new(@new_resource)
     @provider.rest = @rest
   end
   
@@ -147,7 +147,7 @@ describe Chef::Provider::HttpRequest, "action_post" do
       :create_url => "http://www.opscode.com",
       :run_request => "you made it!"
     )
-    @provider = Chef::Provider::HttpRequest.new(@node, @new_resource)
+    @provider = Chef::Provider::HttpRequest.new(@new_resource)
     @provider.rest = @rest
   end
   
@@ -187,7 +187,7 @@ describe Chef::Provider::HttpRequest, "action_delete" do
       :create_url => "http://www.opscode.com",
       :run_request => "you made it!"
     )
-    @provider = Chef::Provider::HttpRequest.new(@node, @new_resource)
+    @provider = Chef::Provider::HttpRequest.new(@new_resource)
     @provider.rest = @rest
   end
   

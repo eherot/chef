@@ -33,7 +33,7 @@ describe Chef::Provider::Group::Pw, "set_options" do
       :gid => 50,
       :members => [ "root", "aj"]
     )
-    @provider = Chef::Provider::Group::Pw.new(@node, @new_resource)
+    @provider = Chef::Provider::Group::Pw.new(@new_resource)
     @provider.current_resource = @current_resource
   end
   
@@ -67,7 +67,7 @@ describe Chef::Provider::Group::Pw, "create_group" do
   before do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Group", :null_object => true)
-    @provider = Chef::Provider::Group::Pw.new(@node, @new_resource)
+    @provider = Chef::Provider::Group::Pw.new(@new_resource)
     @provider.stub!(:run_command).and_return(true)
     @provider.stub!(:set_options).and_return(" monkey")
     @provider.stub!(:set_members_option).and_return(" -M purple")
@@ -83,7 +83,7 @@ describe Chef::Provider::Group::Pw, "manage_group" do
   before do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Group", :null_object => true)
-    @provider = Chef::Provider::Group::Pw.new(@node, @new_resource)
+    @provider = Chef::Provider::Group::Pw.new(@new_resource)
     @provider.stub!(:run_command).and_return(true)
     @provider.stub!(:set_options).and_return(" monkey")
     @provider.stub!(:set_members_option).and_return(" -M purple")
@@ -103,7 +103,7 @@ describe Chef::Provider::Group::Pw, "remove_group" do
       :null_object => true,
       :group_name => "aj"
     )
-    @provider = Chef::Provider::Group::Pw.new(@node, @new_resource)
+    @provider = Chef::Provider::Group::Pw.new(@new_resource)
     @provider.stub!(:run_command).and_return(true)
   end
   
@@ -127,7 +127,7 @@ describe Chef::Provider::Group::Pw, "set_members_option" do
       :members => [ "all", "your", "base" ]
     )
     @new_resource.stub!(:to_s).and_return("group[aj]")
-    @provider = Chef::Provider::Group::Pw.new(@node, @new_resource)
+    @provider = Chef::Provider::Group::Pw.new(@new_resource)
     @provider.current_resource = @current_resource
   end
   
@@ -184,7 +184,7 @@ describe Chef::Provider::Group::Pw, "load_current_resource" do
   before do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::Group", :null_object => true, :group_name => "aj")
-    @provider = Chef::Provider::Group::Pw.new(@node, @new_resource)
+    @provider = Chef::Provider::Group::Pw.new(@new_resource)
     File.stub!(:exists?).and_return(false)
   end
 

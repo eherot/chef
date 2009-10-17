@@ -28,7 +28,7 @@ describe Chef::Provider::User, "initialize" do
       :gid => 20,
       :members => [ "root", "aj"]
     )
-    @provider = Chef::Provider::Group.new(@node, @new_resource)
+    @provider = Chef::Provider::Group.new(@new_resource)
   end
   
   it "should return a Chef::Provider::Group" do
@@ -64,7 +64,7 @@ describe Chef::Provider::User, "load_current_resource" do
       :mem => [ "root", "aj" ]
       )
     Etc.stub!(:getgrnam).and_return(@pw_group)
-    @provider = Chef::Provider::Group.new(@node, @new_resource)
+    @provider = Chef::Provider::Group.new(@new_resource)
   end
   
   it "should create a current resource with the same group_name as the new resource" do
@@ -118,7 +118,7 @@ describe Chef::Provider::Group, "compare_group" do
       :gid => 50,
       :members => [ "root", "aj"]
     )
-    @provider = Chef::Provider::Group.new(@node, @new_resource)
+    @provider = Chef::Provider::Group.new(@new_resource)
     @provider.current_resource = @current_resource
   end
   
@@ -162,7 +162,7 @@ describe Chef::Provider::Group, "action_create" do
       :gid => 50,
       :members => [ "root", "aj"]
     )
-    @provider = Chef::Provider::Group.new(@node, @new_resource)
+    @provider = Chef::Provider::Group.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.group_exists = false
     @provider.stub!(:create_group).and_return(true)
@@ -210,7 +210,7 @@ describe Chef::Provider::Group, "action_remove" do
     @current_resource = mock("Chef::Resource::Group", 
       :null_object => true
     )
-    @provider = Chef::Provider::Group.new(@node, @new_resource)
+    @provider = Chef::Provider::Group.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.group_exists = false
     @provider.stub!(:remove_group).and_return(true)
@@ -243,7 +243,7 @@ describe Chef::Provider::Group, "action_manage" do
     @current_resource = mock("Chef::Resource::Group", 
       :null_object => true
     )
-    @provider = Chef::Provider::Group.new(@node, @new_resource)
+    @provider = Chef::Provider::Group.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.group_exists = true
     @provider.stub!(:manage_group).and_return(true)
@@ -284,7 +284,7 @@ describe Chef::Provider::Group, "action_modify" do
     @current_resource = mock("Chef::Resource::Group", 
       :null_object => true
     )
-    @provider = Chef::Provider::Group.new(@node, @new_resource)
+    @provider = Chef::Provider::Group.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.group_exists = true
     @provider.stub!(:manage_group).and_return(true)

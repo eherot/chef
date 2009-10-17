@@ -26,7 +26,7 @@ describe Chef::Provider::Git do
     @resource.repository "git://github.com/opscode/chef.git"
     @resource.destination "/my/deploy/dir"
     @resource.revision "d35af14d41ae22b19da05d7d03a0bafc321b244c"
-    @provider = Chef::Provider::Git.new(nil, @resource)
+    @provider = Chef::Provider::Git.new(@resource)
     @node = @provider.node
   end
   

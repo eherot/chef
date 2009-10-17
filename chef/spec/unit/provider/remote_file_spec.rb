@@ -25,7 +25,7 @@ describe Chef::Provider::RemoteFile, "action_create" do
     @resource = Chef::Resource::RemoteFile.new("seattle")
     @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
     @resource.source("http://foo")
-    @provider = Chef::Provider::RemoteFile.new(nil, @resource)
+    @provider = Chef::Provider::RemoteFile.new(@resource)
     @provider.current_resource = @resource.clone
     @node = @provider.node
   end
@@ -49,7 +49,7 @@ describe Chef::Provider::RemoteFile, "do_remote_file" do
     @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
     @resource.source("foo")
     @resource.cookbook_name = "monkey"
-    @provider = Chef::Provider::RemoteFile.new(nil, @resource)
+    @provider = Chef::Provider::RemoteFile.new(@resource)
     @node = @provider.node
     @node.name "latte"
     @node.fqdn "latte.local"

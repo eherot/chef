@@ -30,7 +30,7 @@ describe Chef::Provider::Package::Dpkg, "load_current_resource" do
       :source => "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
     )
 
-    @provider = Chef::Provider::Package::Dpkg.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Dpkg.new(@new_resource)
 
     @stdin = mock("STDIN", :null_object => true)
     @stdout = mock("STDOUT", :null_object => true)
@@ -76,7 +76,7 @@ describe Chef::Provider::Package::Dpkg, "load_current_resource" do
       :updated => nil,
       :source => nil
     )
-    @provider = Chef::Provider::Package::Dpkg.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Dpkg.new(@new_resource)
     lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)
 
   end
@@ -118,7 +118,7 @@ describe Chef::Provider::Package::Dpkg, "install and upgrade" do
       :source => "/tmp/wget_1.11.4-1ubuntu1_amd64.deb",
       :options => nil
     )
-    @provider = Chef::Provider::Package::Dpkg.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Dpkg.new(@new_resource)
   end
 
   it "should run dpkg -i with the package source" do
@@ -159,7 +159,7 @@ describe Chef::Provider::Package::Dpkg, "remove and purge" do
       :updated => nil,
       :options => nil
     )
-    @provider = Chef::Provider::Package::Dpkg.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Dpkg.new(@new_resource)
   end
 
   it "should run dpkg -r to remove the package" do

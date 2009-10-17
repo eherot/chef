@@ -36,7 +36,7 @@ describe Chef::Provider::Package::Apt, "load_current_resource" do
       :updated => nil
     )
     @status = mock("Status", :exitstatus => 0)
-    @provider = Chef::Provider::Package::Apt.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Apt.new(@new_resource)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
     @provider.stub!(:popen4).and_return(@status)
     @stdin = mock("STDIN", :null_object => true)
@@ -132,7 +132,7 @@ describe Chef::Provider::Package::Apt, "install_package" do
       :updated => nil,
       :options => nil
     )
-    @provider = Chef::Provider::Package::Apt.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Apt.new(@new_resource)
   end
   
   it "should run apt-get install with the package name and version" do
@@ -170,7 +170,7 @@ describe Chef::Provider::Package::Apt, "upgrade_package" do
       :updated => nil,
       :options => nil
     )
-    @provider = Chef::Provider::Package::Apt.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Apt.new(@new_resource)
   end
   
   it "should run install_package with the name and version" do
@@ -190,7 +190,7 @@ describe Chef::Provider::Package::Apt, "remove_package" do
       :updated => nil,
       :options => nil
     )
-    @provider = Chef::Provider::Package::Apt.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Apt.new(@new_resource)
   end
   
   it "should run apt-get remove with the package name" do
@@ -227,7 +227,7 @@ describe Chef::Provider::Package::Apt, "purge_package" do
       :updated => nil,
       :options => nil
     )
-    @provider = Chef::Provider::Package::Apt.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Apt.new(@new_resource)
   end
   
   it "should run apt-get purge with the package name" do
@@ -264,7 +264,7 @@ describe Chef::Provider::Package::Apt, "preseed_package" do
       :updated => nil,
       :response_file => "emacs-10.seed"
     )
-    @provider = Chef::Provider::Package::Apt.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Apt.new(@new_resource)
     @provider.stub!(:get_preseed_file).and_return("/tmp/emacs-10.seed")
     @provider.stub!(:run_command_with_systems_locale).and_return(true)
   end

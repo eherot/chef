@@ -36,7 +36,7 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
       :updated => nil
     )
     
-    @provider = Chef::Provider::Package::Portage.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Portage.new(@new_resource)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
     
     ::File.stub!(:exists?).and_return(true)
@@ -78,7 +78,7 @@ describe Chef::Provider::Package::Portage, "candidate_version" do
       :package_name => "dev-util/git",
       :updated => nil
     )
-    @provider = Chef::Provider::Package::Portage.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Portage.new(@new_resource)
   end
   
   it "should return the candidate_version variable if already setup" do
@@ -113,7 +113,7 @@ describe Chef::Provider::Package::Portage, "install_package" do
       :updated => nil,
       :options => nil
     )
-    @provider = Chef::Provider::Package::Portage.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Portage.new(@new_resource)
   end
 
   it "should install a normally versioned package using portage" do
@@ -152,7 +152,7 @@ describe Chef::Provider::Package::Portage, "remove_package" do
       :updated => nil,
       :options => nil
     )
-    @provider = Chef::Provider::Package::Portage.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Portage.new(@new_resource)
   end
 
   it "should un-emerge the package with no version specified" do

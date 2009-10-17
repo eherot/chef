@@ -176,7 +176,7 @@ class Chef
       end
       
       def provider_for_node(node, resource_type)
-        find_provider_for_node(node, resource_type).new(node, resource_type)
+        find_provider_for_node(node, resource_type).new(resource_type)
       end
 
       def find_provider_for_node(node, resource_type)

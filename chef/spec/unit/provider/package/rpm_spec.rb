@@ -37,7 +37,7 @@ describe Chef::Provider::Package::Rpm, "load_current_resource" do
       :updated => nil
     )
     
-    @provider = Chef::Provider::Package::Rpm.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Rpm.new(@new_resource)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
     
     @stdin = mock("STDIN", :null_object => true)
@@ -88,7 +88,7 @@ describe Chef::Provider::Package::Rpm, "load_current_resource" do
       :updated => nil,
       :source => nil
     )
-    @provider = Chef::Provider::Package::Rpm.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Rpm.new(@new_resource)
     lambda { @provider.load_current_resource }.should raise_error(Chef::Exceptions::Package)  
   end
   
@@ -110,7 +110,7 @@ describe Chef::Provider::Package::Rpm, "install and upgrade" do
       :updated => nil,
       :source => "/tmp/emacs-21.4-20.el5.i386.rpm"
     )
-    @provider = Chef::Provider::Package::Rpm.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Rpm.new(@new_resource)
   end
   
   it "should run rpm -i with the package source to install" do
@@ -138,7 +138,7 @@ describe Chef::Provider::Package::Rpm, "remove" do
       :package_name => "emacs",
       :updated => nil
     )
-    @provider = Chef::Provider::Package::Rpm.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Rpm.new(@new_resource)
   end
 
   it "should run rpm -e to remove the package" do

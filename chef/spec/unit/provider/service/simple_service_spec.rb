@@ -40,7 +40,7 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
       :running => false
     )
 
-    @provider = Chef::Provider::Service::Simple.new(@node, @new_resource)
+    @provider = Chef::Provider::Service::Simple.new(@new_resource)
     @provider.stub!(:node).and_return(@node)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
 
@@ -128,7 +128,7 @@ describe Chef::Provider::Service::Simple, "start_service" do
     )
     @new_resource.stub!(:start_command).and_return(false)
 
-    @provider = Chef::Provider::Service::Simple.new(@node, @new_resource)
+    @provider = Chef::Provider::Service::Simple.new(@new_resource)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
   end
   
@@ -154,7 +154,7 @@ describe Chef::Provider::Service::Simple, "stop_service" do
     )
     @new_resource.stub!(:stop_command).and_return(false)
 
-    @provider = Chef::Provider::Service::Simple.new(@node, @new_resource)
+    @provider = Chef::Provider::Service::Simple.new(@new_resource)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
   end
 
@@ -181,7 +181,7 @@ describe Chef::Provider::Service::Simple, "restart_service" do
     @new_resource.stub!(:restart_command).and_return(false)
     @new_resource.stub!(:supports).and_return({:restart => false})
 
-    @provider = Chef::Provider::Service::Simple.new(@node, @new_resource)
+    @provider = Chef::Provider::Service::Simple.new(@new_resource)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
   end
 
@@ -210,7 +210,7 @@ describe Chef::Provider::Service::Simple, "reload_service" do
     )
     @new_resource.stub!(:reload_command).and_return(false)
 
-    @provider = Chef::Provider::Service::Simple.new(@node, @new_resource)
+    @provider = Chef::Provider::Service::Simple.new(@new_resource)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
   end
 

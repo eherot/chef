@@ -25,7 +25,7 @@ describe Chef::Provider::Link, "initialize" do
   end
   
   it "should return a Chef::Provider::Link object" do
-    provider = Chef::Provider::Link.new(@node, @new_resource)
+    provider = Chef::Provider::Link.new(@new_resource)
     provider.should be_a_kind_of(Chef::Provider::Link)
   end
 end
@@ -52,7 +52,7 @@ describe Chef::Provider::Link, "load_current_resource" do
       :updated => false
     )
 
-    @provider = Chef::Provider::Link.new(@node, @new_resource)
+    @provider = Chef::Provider::Link.new(@new_resource)
     Chef::Resource::Link.stub!(:new).and_return(@current_resource)  
     File.stub!(:exists?).and_return(true)
     File.stub!(:symlink?).and_return(true)
@@ -221,7 +221,7 @@ describe Chef::Provider::Link, "action_create" do
       :group => 501
     )
 
-    @provider = Chef::Provider::Link.new(@node, @new_resource)
+    @provider = Chef::Provider::Link.new(@new_resource)
     Chef::Resource::Link.stub!(:new).and_return(@current_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:run_command).and_return(true)
@@ -387,7 +387,7 @@ describe Chef::Provider::Link, "action_delete" do
       :updated => false
     )
 
-    @provider = Chef::Provider::Link.new(@node, @new_resource)
+    @provider = Chef::Provider::Link.new(@new_resource)
     Chef::Resource::Link.stub!(:new).and_return(@current_resource)
     @provider.current_resource = @current_resource
     @new_resource.stub!(:to_s).and_return("link[/tmp/fofile]")

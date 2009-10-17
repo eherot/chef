@@ -44,7 +44,7 @@ describe Chef::Provider::User::Useradd, "set_options" do
       :updated => nil
     )
     @new_resource.stub!(:supports).and_return({:manage_home => false})
-    @provider = Chef::Provider::User::Useradd.new(@node, @new_resource)
+    @provider = Chef::Provider::User::Useradd.new(@new_resource)
     @provider.current_resource = @current_resource
   end
   
@@ -100,7 +100,7 @@ describe Chef::Provider::User::Useradd, "create_user" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::User", :null_object => true)
-    @provider = Chef::Provider::User::Useradd.new(@node, @new_resource)
+    @provider = Chef::Provider::User::Useradd.new(@new_resource)
     @provider.stub!(:set_options).and_return(" monkey")
   end
   
@@ -114,7 +114,7 @@ describe Chef::Provider::User::Useradd, "manage_user" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::User", :null_object => true)
-    @provider = Chef::Provider::User::Useradd.new(@node, @new_resource)
+    @provider = Chef::Provider::User::Useradd.new(@new_resource)
     @provider.stub!(:set_options).and_return(" monkey")
   end
   
@@ -132,7 +132,7 @@ describe Chef::Provider::User::Useradd, "remove_user" do
       :username => "adam",
       :supports => { :manage_home => false }
     )
-    @provider = Chef::Provider::User::Useradd.new(@node, @new_resource)
+    @provider = Chef::Provider::User::Useradd.new(@new_resource)
   end
   
   it "should run userdel with the new resources user name" do
@@ -155,7 +155,7 @@ describe Chef::Provider::User::Useradd, "check_lock" do
       :username => "adam"
     )
     @status = mock("Status", :exitstatus => 0)
-    @provider = Chef::Provider::User::Useradd.new(@node, @new_resource)
+    @provider = Chef::Provider::User::Useradd.new(@new_resource)
     @provider.stub!(:popen4).and_return(@status)
     @stdin = mock("STDIN", :null_object => true)
     @stdout = mock("STDOUT", :null_object => true)
@@ -205,7 +205,7 @@ describe Chef::Provider::User::Useradd, "lock_user" do
       :null_object => true,
       :username => "adam"
     )
-    @provider = Chef::Provider::User::Useradd.new(@node, @new_resource)
+    @provider = Chef::Provider::User::Useradd.new(@new_resource)
   end
   
   it "should run usermod -L with the new resources username" do
@@ -221,7 +221,7 @@ describe Chef::Provider::User::Useradd, "unlock_user" do
       :null_object => true,
       :username => "adam"
     )
-    @provider = Chef::Provider::User::Useradd.new(@node, @new_resource)
+    @provider = Chef::Provider::User::Useradd.new(@new_resource)
   end
   
   it "should run usermod -L with the new resources username" do

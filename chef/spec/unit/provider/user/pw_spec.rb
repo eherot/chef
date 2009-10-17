@@ -43,7 +43,7 @@ describe Chef::Provider::User::Pw, "set_options" do
       :password => "abracadabra",
       :updated => nil
     )
-    @provider = Chef::Provider::User::Pw.new(@node, @new_resource)
+    @provider = Chef::Provider::User::Pw.new(@new_resource)
     @provider.current_resource = @current_resource
   end
   
@@ -88,7 +88,7 @@ describe Chef::Provider::User::Pw, "create_user" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::User", :null_object => true)
-    @provider = Chef::Provider::User::Pw.new(@node, @new_resource)
+    @provider = Chef::Provider::User::Pw.new(@new_resource)
     @provider.stub!(:run_command).and_return(true)
     @provider.stub!(:set_options).and_return(" monkey")
     @provider.stub!(:modify_password).and_return(true)
@@ -109,7 +109,7 @@ describe Chef::Provider::User::Pw, "manage_user" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::User", :null_object => true)
-    @provider = Chef::Provider::User::Pw.new(@node, @new_resource)
+    @provider = Chef::Provider::User::Pw.new(@new_resource)
     @provider.stub!(:run_command).and_return(true)
     @provider.stub!(:set_options).and_return(" monkey")
     @provider.stub!(:modify_password).and_return(true)
@@ -134,7 +134,7 @@ describe Chef::Provider::User::Pw, "remove_user" do
       :username => "adam",
       :supports => { :manage_home => false }
     )
-    @provider = Chef::Provider::User::Pw.new(@node, @new_resource)
+    @provider = Chef::Provider::User::Pw.new(@new_resource)
   end
   
   it "should run pw userdel with the new resources user name" do
@@ -157,7 +157,7 @@ describe Chef::Provider::User::Pw, "check_lock" do
       :null_object => true,
       :password => "abracadabra"
     )
-    @provider = Chef::Provider::User::Pw.new(@node, @new_resource)
+    @provider = Chef::Provider::User::Pw.new(@new_resource)
     @provider.current_resource = @current_resource
   end
 
@@ -179,7 +179,7 @@ describe Chef::Provider::User::Pw, "lock_user" do
       :null_object => true,
       :username => "adam"
     )
-    @provider = Chef::Provider::User::Pw.new(@node, @new_resource)
+    @provider = Chef::Provider::User::Pw.new(@new_resource)
   end
   
   it "should run pw lock with the new resources username" do
@@ -195,7 +195,7 @@ describe Chef::Provider::User::Pw, "unlock_user" do
       :null_object => true,
       :username => "adam"
     )
-    @provider = Chef::Provider::User::Pw.new(@node, @new_resource)
+    @provider = Chef::Provider::User::Pw.new(@new_resource)
   end
   
   it "should run pw unlock with the new resources username" do
@@ -218,7 +218,7 @@ describe Chef::Provider::User::Pw, "modify_password" do
       :password => "abracadabra"
     )
     @new_resource.stub!(:to_s).and_return("user[adam]")
-    @provider = Chef::Provider::User::Pw.new(@node, @new_resource)
+    @provider = Chef::Provider::User::Pw.new(@new_resource)
     @provider.current_resource = @current_resource
     @status = mock("Status", :exitstatus => 0)
     @provider.stub!(:popen4).and_return(@status)
@@ -284,7 +284,7 @@ describe Chef::Provider::User::Pw, "load_current_resource" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
     @new_resource = mock("Chef::Resource::User", :null_object => true, :username => "adam")
-    @provider = Chef::Provider::User::Pw.new(@node, @new_resource)
+    @provider = Chef::Provider::User::Pw.new(@new_resource)
     File.stub!(:exists?).and_return(false)
   end
   

@@ -24,7 +24,7 @@ describe Chef::Provider::File do
   before(:each) do
     @resource = Chef::Resource::File.new("seattle")
     @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
-    @provider = Chef::Provider::File.new(nil, @resource)
+    @provider = Chef::Provider::File.new(@resource)
     @node = @provider.node
     @node.name "latte"
   end
@@ -56,7 +56,7 @@ describe Chef::Provider::File do
     resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "woot.txt"))
     node = Chef::Node.new
     node.name "latte"
-    provider = Chef::Provider::File.new(node, resource)
+    provider = Chef::Provider::File.new(resource)
     provider.load_current_resource
     provider.current_resource.should be_a_kind_of(Chef::Resource::File)
     provider.current_resource.name.should eql(resource.name)
@@ -75,7 +75,7 @@ describe Chef::Provider::File do
     @resource.path(path)
     @node = Chef::Node.new
     @node.name "latte"
-    @provider = Chef::Provider::File.new(@node, @resource)
+    @provider = Chef::Provider::File.new(@resource)
 
     ::File.stub!(:symlink?).and_return(true)
     @provider.should_not_receive(:backup)
@@ -254,7 +254,7 @@ describe Chef::Provider::File, "action_create_if_missing" do
     @resource.path(File.join(File.dirname(__FILE__), "..", "..", "data", "seattle.txt"))
     @node = Chef::Node.new
     @node.name "latte"
-    @provider = Chef::Provider::File.new(@node, @resource)
+    @provider = Chef::Provider::File.new(@resource)
   end
   
   it "should call action create, since File can only touch" do

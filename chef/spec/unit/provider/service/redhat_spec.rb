@@ -38,7 +38,7 @@ describe Chef::Provider::Service::Redhat, "load_current_resource" do
       :status_command => false
     )
 
-    @provider = Chef::Provider::Service::Redhat.new(@node, @new_resource)
+    @provider = Chef::Provider::Service::Redhat.new(@new_resource)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
     File.stub!(:exists?).and_return(true)
 
@@ -97,7 +97,7 @@ describe Chef::Provider::Service::Redhat, "enable_service" do
       :status_command => false
     )
 
-    @provider = Chef::Provider::Service::Redhat.new(@node, @new_resource)
+    @provider = Chef::Provider::Service::Redhat.new(@new_resource)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
   end
 
@@ -117,7 +117,7 @@ describe Chef::Provider::Service::Redhat, "disable_service" do
       :status_command => false
     )
 
-    @provider = Chef::Provider::Service::Redhat.new(@node, @new_resource)
+    @provider = Chef::Provider::Service::Redhat.new(@new_resource)
     Chef::Resource::Service.stub!(:new).and_return(@current_resource)
   end
 

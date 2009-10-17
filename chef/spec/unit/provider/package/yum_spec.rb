@@ -44,7 +44,7 @@ describe Chef::Provider::Package::Yum, "load_current_resource" do
 		  :candidate_version => "1.2.4-11.18.el5_2.3"
 		)
 		Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
-    @provider = Chef::Provider::Package::Yum.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Yum.new(@new_resource)
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
     @stderr = mock("STDERR", :null_object => true)
     @pid = mock("PID", :null_object => true)
@@ -100,7 +100,7 @@ describe Chef::Provider::Package::Yum, "install_package" do
 		  :candidate_version => "1.2.4-11.18.el5_2.3"
 		)
 		Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
-    @provider = Chef::Provider::Package::Yum.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Yum.new(@new_resource)
   end
   
   it "should run yum install with the package name and version" do
@@ -137,7 +137,7 @@ describe Chef::Provider::Package::Yum, "upgrade_package" do
       :package_name => "emacs",
       :updated => nil
     )
-    @provider = Chef::Provider::Package::Yum.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Yum.new(@new_resource)
     @provider.candidate_version = "11"
     @provider.current_resource = @current_resource
   end
@@ -176,7 +176,7 @@ describe Chef::Provider::Package::Yum, "remove_package" do
 		  :candidate_version => "1.2.4-11.18.el5_2.3"
 		)
 		Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
-    @provider = Chef::Provider::Package::Yum.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Yum.new(@new_resource)
   end
   
   it "should run yum remove with the package name" do
@@ -205,7 +205,7 @@ describe Chef::Provider::Package::Yum, "purge_package" do
 		  :candidate_version => "1.2.4-11.18.el5_2.3"
 		)
 		Chef::Provider::Package::Yum::YumCache.stub!(:instance).and_return(@yum_cache)
-    @provider = Chef::Provider::Package::Yum.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Yum.new(@new_resource)
   end
   
   it "should run yum remove with the package name" do

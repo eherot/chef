@@ -25,7 +25,7 @@ describe Chef::Provider::Route, "initialize" do
   end
 
   it "should return a Chef::Provider::Route object" do
-    provider = Chef::Provider::Route.new(@node, @new_resource)
+    provider = Chef::Provider::Route.new(@new_resource)
     provider.should be_a_kind_of(Chef::Provider::Route)
   end
 
@@ -47,7 +47,7 @@ describe Chef::Provider::Route, "action_add" do
       :gateway => "10.0.0.9"
     )
 
-    @provider = Chef::Provider::Route.new(@node, @new_resource)
+    @provider = Chef::Provider::Route.new(@new_resource)
     @provider.current_resource = @current_resource
   end
 
@@ -81,7 +81,7 @@ describe Chef::Provider::Route, "action_delete" do
       :gateway => "10.0.0.9"
     )
 
-    @provider = Chef::Provider::Route.new(@node, @new_resource)
+    @provider = Chef::Provider::Route.new(@new_resource)
     @provider.current_resource = @current_resource
   end
 

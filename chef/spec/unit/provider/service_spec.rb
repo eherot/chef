@@ -25,7 +25,7 @@ describe Chef::Provider::Service, "initialize" do
   end
   
   it "should return a Chef::Provider::Service object" do
-    provider = Chef::Provider::Service.new(@node, @new_resource)
+    provider = Chef::Provider::Service.new(@new_resource)
     provider.should be_a_kind_of(Chef::Provider::Service)
   end  
   
@@ -46,7 +46,7 @@ describe Chef::Provider::Service, "action_enable" do
       :service_name => "chef",
       :status_command => false
     )
-    @provider = Chef::Provider::Service.new(@node, @new_resource)
+    @provider = Chef::Provider::Service.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:enable_service).and_return(true)
   end
@@ -82,7 +82,7 @@ describe Chef::Provider::Service, "action_disable" do
       :service_name => "chef",
       :status_command => false
     )
-    @provider = Chef::Provider::Service.new(@node, @new_resource)
+    @provider = Chef::Provider::Service.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:disable_service).and_return(true)
   end
@@ -117,7 +117,7 @@ describe Chef::Provider::Service, "action_start" do
       :service_name => "chef",
       :status_command => false
     )
-    @provider = Chef::Provider::Service.new(@node, @new_resource)
+    @provider = Chef::Provider::Service.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:start_service).and_return(true)
   end
@@ -152,7 +152,7 @@ describe Chef::Provider::Service, "action_stop" do
       :service_name => "chef",
       :status_command => false
     )
-    @provider = Chef::Provider::Service.new(@node, @new_resource)
+    @provider = Chef::Provider::Service.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:stop_service).and_return(true)
   end
@@ -188,7 +188,7 @@ before(:each) do
       :supports => { :restart => false },
       :status_command => false
     )
-    @provider = Chef::Provider::Service.new(@node, @new_resource)
+    @provider = Chef::Provider::Service.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:restart_service).and_return(true)
     @current_resource.stub!(:supports).and_return({:restart => true})
@@ -224,7 +224,7 @@ before(:each) do
       :supports => { :reload => false},
       :status_command => false
     )
-    @provider = Chef::Provider::Service.new(@node, @new_resource)
+    @provider = Chef::Provider::Service.new(@new_resource)
     @provider.current_resource = @current_resource
     @provider.stub!(:reload_service).and_return(true)
     @current_resource.stub!(:supports).and_return({:reload => true})
@@ -269,7 +269,7 @@ end
         :service_name => "chef",
         :status_command => false
       )
-      @provider = Chef::Provider::Service.new(@node, @new_resource)
+      @provider = Chef::Provider::Service.new(@new_resource)
       @provider.current_resource = @current_resource
     end
 

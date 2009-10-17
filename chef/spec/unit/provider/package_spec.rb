@@ -25,7 +25,7 @@ describe Chef::Provider::Package, "initialize" do
   end
   
   it "should return a Chef::Provider::Package object" do
-    provider = Chef::Provider::Package.new(@node, @new_resource)
+    provider = Chef::Provider::Package.new(@new_resource)
     provider.should be_a_kind_of(Chef::Provider::Package)
   end  
 end
@@ -47,7 +47,7 @@ describe Chef::Provider::Package, "action_install" do
       :version => nil,
       :package_name => "emacs"
     )
-    @provider = Chef::Provider::Package.new(@node, @new_resource)
+    @provider = Chef::Provider::Package.new(@new_resource)
     @provider.candidate_version = "1.0"
     @provider.current_resource = @current_resource
     @provider.stub!(:install_package).and_return(true)
@@ -166,7 +166,7 @@ describe Chef::Provider::Package, "action_upgrade" do
       :version => "0.99",
       :package_name => "emacs"
     )
-    @provider = Chef::Provider::Package.new(@node, @new_resource)
+    @provider = Chef::Provider::Package.new(@new_resource)
     @provider.candidate_version = "1.0"
     @provider.current_resource = @current_resource
     @provider.stub!(:upgrade_package).and_return(true)
@@ -220,7 +220,7 @@ end
         :version => "0.99",
         :package_name => "emacs"
       )
-      @provider = Chef::Provider::Package.new(@node, @new_resource)
+      @provider = Chef::Provider::Package.new(@new_resource)
       @provider.candidate_version = "1.0"
       @provider.current_resource = @current_resource
       @provider.stub!(act_method).and_return(true)
@@ -283,7 +283,7 @@ end
         :version => "0.99",
         :package_name => "emacs"
       )
-      @provider = Chef::Provider::Package.new(@node, @new_resource)
+      @provider = Chef::Provider::Package.new(@new_resource)
       @provider.candidate_version = "1.0"
       @provider.current_resource = @current_resource
     end
@@ -309,7 +309,7 @@ describe Chef::Provider::Package, "preseed_package" do
       :version => "0.99",
       :package_name => "emacs"
     )
-    @provider = Chef::Provider::Package.new(@node, @new_resource)
+    @provider = Chef::Provider::Package.new(@new_resource)
     @provider.candidate_version = "1.0"
     @provider.current_resource = @current_resource
   end
@@ -329,7 +329,7 @@ describe Chef::Provider::Package, "get_preseed_file" do
       :package_name => "java",
       :cookbook_name => "java"
     )
-    @provider = Chef::Provider::Package.new(@node, @new_resource)
+    @provider = Chef::Provider::Package.new(@new_resource)
     @provider.stub!(:node).and_return(@node)
     @provider.candidate_version = "1.0"
     @provider.current_resource = @current_resource
@@ -388,7 +388,7 @@ describe Chef::Provider::Package, "get_preseed_file" do
   end
   
   it "should create a new provider for the remote file" do
-    Chef::Provider::RemoteFile.should_receive(:new).with(@node, @remote_file).and_return(@rf_provider)
+    Chef::Provider::RemoteFile.should_receive(:new).with(@remote_file).and_return(@rf_provider)
     @provider.get_preseed_file("java", "6")
   end
   

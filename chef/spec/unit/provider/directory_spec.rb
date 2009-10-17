@@ -31,7 +31,7 @@ describe Chef::Provider::Directory do
     @new_resource.stub!(:updated).and_return(false)
     @node = Chef::Node.new
     @node.name "latte"
-    @directory = Chef::Provider::Directory.new(@node, @new_resource)
+    @directory = Chef::Provider::Directory.new(@new_resource)
   end
   
   it "should load the current resource based on the new resource" do

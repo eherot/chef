@@ -51,7 +51,7 @@ class Chef
       provider_klass = resource.provider
       provider_klass ||= Chef::Platform.find_provider_for_node(@node, resource)
       Chef::Log.debug("#{resource} using #{provider_klass.to_s}")
-      provider = provider_klass.new(@node, resource, @collection, @definitions, @cookbook_loader)
+      provider = provider_klass.new(resource, @collection, @definitions, @cookbook_loader)
       provider.load_current_resource
       provider
     end

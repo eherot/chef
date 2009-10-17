@@ -30,7 +30,7 @@ describe Chef::Provider::Package::Rubygems, "gem_binary_path" do
       :updated => nil,
       :gem_binary => nil
     )
-    @provider = Chef::Provider::Package::Rubygems.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Rubygems.new(@new_resource)
   end
 
   it "should return a relative path to gem if no gem_binary is given" do
@@ -55,7 +55,7 @@ describe Chef::Provider::Package::Rubygems, "install_package" do
       :gem_binary => nil,
       :source => nil
     )
-    @provider = Chef::Provider::Package::Rubygems.new(@node, @new_resource)
+    @provider = Chef::Provider::Package::Rubygems.new(@new_resource)
   end
 
   it "should run gem install with the package name and version" do

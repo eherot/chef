@@ -34,7 +34,7 @@ describe Chef::Provider::Package::Macports do
       :version => nil
     )
 
-    @provider = Chef::Provider::Package::Macports.new(@node, @new_resource)    
+    @provider = Chef::Provider::Package::Macports.new(@new_resource)    
     Chef::Resource::Package.stub!(:new).and_return(@current_resource)
 
     @status = mock("Status", :exitstatus => 0)
