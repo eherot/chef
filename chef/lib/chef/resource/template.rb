@@ -22,8 +22,8 @@ class Chef
   class Resource
     class Template < Chef::Resource::File
         
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      def initialize(*args)
+        super
         @resource_name = :template
         @action = "create"
         @source = "#{::File.basename(name)}.erb"

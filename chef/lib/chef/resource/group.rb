@@ -20,8 +20,8 @@ class Chef
   class Resource
     class Group < Chef::Resource
         
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      def initialize(*args)
+        super
         @resource_name = :group
         @group_name = name
         @gid = nil

@@ -22,8 +22,8 @@ class Chef
   class Resource
     class Directory < Chef::Resource
             
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      def initialize(*args)
+        super
         @resource_name = :directory
         @path = name
         @action = :create

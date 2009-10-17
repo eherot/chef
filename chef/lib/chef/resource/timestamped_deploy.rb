@@ -23,7 +23,7 @@ class Chef
     # deployment strategy (provider) 
     class TimestampedDeploy < Chef::Resource::Deploy
       def initialize(*args, &block)
-        super(*args, &block)
+        super
         @provider = Chef::Provider::Deploy::Timestamped
       end
     end

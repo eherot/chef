@@ -22,8 +22,8 @@ class Chef
   class Resource
     class Bash < Chef::Resource::Script
         
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      def initialize(*args)
+        super
         @resource_name = :bash
         @interpreter = "bash"
       end

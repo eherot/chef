@@ -34,7 +34,7 @@ describe Chef::Provider::Script, "action_run" do
       :close => true,
       :path => "/tmp/perlscript"
     )
-    @fr = Chef::Resource::File.new(@tempfile.path, nil, @node)
+    @fr = Chef::Resource::File.new(@tempfile.path, nil)
     Chef::Resource::File.stub!(:new).and_return(@fr)
     @fr.stub!(:run_action).and_return(true)
     Tempfile.stub!(:new).with("chef-script").and_return(@tempfile)

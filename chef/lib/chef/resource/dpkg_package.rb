@@ -23,8 +23,8 @@ class Chef
   class Resource
     class DpkgPackage < Chef::Resource::Package
         
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      def initialize(*args)
+        super
         @resource_name = :dpkg_package
         @provider = Chef::Provider::Package::Dpkg
       end

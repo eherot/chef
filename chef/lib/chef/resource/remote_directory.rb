@@ -22,8 +22,8 @@ class Chef
   class Resource
     class RemoteDirectory < Chef::Resource::Directory
             
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      def initialize(name, *args)
+        super
         @resource_name = :remote_directory
         @path = name
         @source = ::File.basename(name)

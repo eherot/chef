@@ -22,8 +22,8 @@ class Chef
   class Resource
     class Csh < Chef::Resource::Script
         
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      def initialize(*args)
+        super
         @resource_name = :csh
         @interpreter = "csh"
       end

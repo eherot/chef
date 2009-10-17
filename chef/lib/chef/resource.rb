@@ -33,16 +33,19 @@ class Chef
     include Chef::Mixin::ConvertToClassName
     
     attr_accessor :actions, :params, :provider, :updated, :allowed_actions, :collection, :cookbook_name, :recipe_name, :enclosing_provider
-    attr_reader :resource_name, :source_line, :node
+    attr_reader :resource_name, :source_line
     
-    def initialize(name, collection=nil, node=nil)
+    def node
+      Chef::Node.instance
+    end
+    
+    def initialize(name, collection=nil)
       @name = name
       if collection
         @collection = collection
       else
         @collection = Chef::ResourceCollection.new()
       end      
-      @node = node ? node : Chef::Node.new
       @noop = nil
       @before = nil
       @actions = Hash.new
@@ -280,8 +283,8 @@ class Chef
           # default initialize method that ensures that when initialize is finally
           # wrapped (see below), super is called in the event that the resource
           # definer does not implement initialize
-          def initialize(name, collection=nil, node=nil)
-            super(name, collection, node)
+          def initialize(*args)
+            super
           end
           
           @actions_to_create = []
@@ -307,9 +310,8 @@ class Chef
 
           define_method(:initialize) do |name, *optional_args|
             collection = optional_args.shift
-            node = optional_args.shift
             @resource_name = rname.to_sym
-            old_init.bind(self).call(name, collection, node)
+            old_init.bind(self).call(name, collection)
             allowed_actions.push(self.class.actions_to_create).flatten!
           end
         end

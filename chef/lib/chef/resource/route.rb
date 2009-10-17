@@ -22,8 +22,8 @@ class Chef
   class Resource
     class Route < Chef::Resource
 
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      def initialize(name, *args)
+        super
         @resource_name = :route
         @target = name
         @action = :add

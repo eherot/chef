@@ -22,8 +22,8 @@ class Chef
   class Resource
     class Script < Chef::Resource::Execute
         
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      def initialize(name, *args)
+        super
         @resource_name = :script
         @command = name
         @code = nil

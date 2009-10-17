@@ -50,7 +50,6 @@ class Chef
           # If we have a resource like this one, we want to steal its state
           resource = begin
                        args << @collection
-                       args << @node
                        Chef::Resource.const_get(rname).new(*args)
                      rescue NameError => e
                        if e.to_s =~ /Chef::Resource/

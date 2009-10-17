@@ -23,8 +23,8 @@ class Chef
   class Resource
     class Scm < Chef::Resource
       
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      def initialize(name, *args)
+        super
         @destination = name
         @resource_name = :scm
         @enable_submodules = false

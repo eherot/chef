@@ -22,8 +22,8 @@ class Chef
   class Resource
     class GemPackage < Chef::Resource::Package
         
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      def initialize(*args)
+        super
         @resource_name = :gem_package
         @provider = Chef::Provider::Package::Rubygems
       end

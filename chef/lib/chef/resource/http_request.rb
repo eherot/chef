@@ -22,8 +22,8 @@ class Chef
   class Resource
     class HttpRequest < Chef::Resource
             
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      def initialize(*args)
+        super
         @resource_name = :http_request
         @message = name
         @url = nil

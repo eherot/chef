@@ -22,8 +22,8 @@ class Chef
   class Resource
     class Python < Chef::Resource::Script
         
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      def initialize(*args)
+        super
         @resource_name = :python
         @interpreter = "python"
       end

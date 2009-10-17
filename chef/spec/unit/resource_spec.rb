@@ -172,8 +172,8 @@ describe Chef::Resource do
     it "should convert to a hash" do
       hash = @resource.to_hash
       hash.keys.should include( :only_if, :allowed_actions, :params, :provider, 
-                                :updated, :before, :not_if, :supports, :node, 
-                                :actions, :noop, :ignore_failure, :name, :source_line, :action)
+                                :updated, :before, :not_if, :supports, :actions, 
+                                :noop, :ignore_failure, :name, :source_line, :action)
       hash[:name].should eql("funk")
     end
   end

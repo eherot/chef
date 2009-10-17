@@ -22,8 +22,8 @@ class Chef
   class Resource
     class Link < Chef::Resource
             
-      def initialize(name, collection=nil, node=nil)
-        super(name, collection, node)
+      def initialize(name, collection=nil)
+        super
         @resource_name = :link
         @to = nil
         @action = :create
