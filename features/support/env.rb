@@ -92,6 +92,7 @@ end
 World(ChefWorld)
 
 After do
+  Chef::Node.reset_instance!
   cleanup_files.each do |file|
     system("rm #{file}")
   end
