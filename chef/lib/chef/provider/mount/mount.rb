@@ -28,7 +28,7 @@ class Chef
         include Chef::Mixin::Command
 
         def initialize(*args)
-          super(*args)
+          super
           @real_device = nil
         end
         attr_accessor :real_device

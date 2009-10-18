@@ -28,7 +28,7 @@ class Chef
       attr_accessor :group_exists
       
       def initialize(*args)
-        super(*args)
+        super
         @group_exists = true
       end
       

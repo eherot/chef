@@ -26,7 +26,7 @@ class Chef
       include Chef::Mixin::Command
 
       def initialize(*args)
-        super(*args)
+        super
         @cron_exists = false
         @cron_empty = false
       end

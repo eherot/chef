@@ -108,7 +108,7 @@ class Chef
 
         def initialize(*args)
           @yum = YumCache.instance
-          super(*args)
+          super
         end
       
         def load_current_resource

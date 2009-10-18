@@ -31,7 +31,7 @@ class Chef
       attr_reader :scm_provider, :release_path
       
       def initialize(*args)
-        super(*args)
+        super
         
         # NOTE: workaround for CHEF-577
         @definitions ||= Hash.new

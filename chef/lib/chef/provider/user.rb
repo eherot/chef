@@ -30,7 +30,7 @@ class Chef
       attr_accessor :user_exists, :locked
       
       def initialize(*args)
-        super(*args)
+        super
         @user_exists = true
         @locked = nil
       end

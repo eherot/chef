@@ -26,7 +26,7 @@ class Chef
       class Redhat < Chef::Provider::Service::Init
         
         def initialize(*args)
-          super(*args)
+          super
            @init_command = "/sbin/service #{@new_resource.service_name}"
          end
         
