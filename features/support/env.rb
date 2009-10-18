@@ -204,6 +204,7 @@ After do
   s = Chef::Solr.new
   s.solr_delete_by_query("*:*")
   s.solr_commit
+  
   gemserver.shutdown
   gemserver_thread && gemserver_thread.join
   
