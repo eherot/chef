@@ -244,7 +244,7 @@ class Chef
       def install_gems
         gems_collection = Chef::ResourceCollection.new
         gem_packages.each { |rbgem| gems_collection << rbgem }
-        Chef::Runner.new(node, gems_collection).converge
+        Chef::Runner.new(gems_collection).converge
       end
       
       def gem_packages

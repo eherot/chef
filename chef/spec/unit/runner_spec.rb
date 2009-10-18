@@ -20,7 +20,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
 describe Chef::Runner do
   def new_runner
-    @node = Chef::Node.new
+    Chef::Node.reset_instance!
+    @node = Chef::Node.instance
     @node.name "latte"
     @node.platform "mac_os_x"
     @node.platform_version "10.5.1"
@@ -30,7 +31,7 @@ describe Chef::Runner do
       :resource => :cat,
       :provider => Chef::Provider::SnakeOil
     )
-    @runner = Chef::Runner.new(@node, @collection)
+    @runner = Chef::Runner.new(@collection)
   end
   
   before(:each) do
@@ -42,16 +43,15 @@ describe Chef::Runner do
   end
   
   it "should require a Node and a ResourceCollection" do
-    @mock_node.should_receive(:kind_of?).once.and_return(true)
     @mock_collection.should_receive(:kind_of?).once.and_return(true)
-    runner = Chef::Runner.new(@mock_node, @mock_collection)
+    runner = Chef::Runner.new(@mock_collection)
     runner.should be_a_kind_of(Chef::Runner)
   end
   
   it "should raise an exception if you pass the wrong kind of object to new" do
     @mock_node.stub!(:kind_of?).and_return(false)
     @mock_collecton.stub!(:kind_of?).and_return(false)
-    lambda { Chef::Runner.new(@mock_node, @mock_collection) }.should raise_error(ArgumentError)    
+    lambda { Chef::Runner.new(@mock_collection) }.should raise_error(ArgumentError)    
   end
   
   it "should pass each resource in the collection to a provider" do

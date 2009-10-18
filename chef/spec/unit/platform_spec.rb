@@ -90,22 +90,26 @@ describe Chef::Platform do
     Chef::Platform.find_provider("Darwin", "9.2.2", kitty).should eql("nice")
   end
   
-  it "should look up a provider with a node and a Chef::Resource object" do
-    kitty = Chef::Resource::Cat.new("loulou")    
-    node = Chef::Node.new
-    node.name("Intel")
-    node.platform("mac_os_x")
-    node.platform_version("9.2.2")
-    Chef::Platform.find_provider_for_node(node, kitty).should eql("nice")
-  end
-  
-  it "should return a provider object given the node and a Chef::Resource object" do
-    file = Chef::Resource::File.new("whateva")
-    node = Chef::Node.new
-    node.name("Intel")
-    node.platform("mac_os_x")
-    node.platform_version("9.2.2")
-    Chef::Platform.provider_for_node(node, file).should be_an_instance_of(Chef::Provider::File)
+  describe "finding node-specific providers" do
+    
+    before do
+      Chef::Node.reset_instance!
+      node = Chef::Platform.node
+      node.name("Intel")
+      node.platform("mac_os_x")
+      node.platform_version("9.2.2")
+    end
+    
+    it "should look up a provider with a node and a Chef::Resource object" do
+      kitty = Chef::Resource::Cat.new("loulou")    
+      Chef::Platform.find_provider_for_node(kitty).should eql("nice")
+    end
+
+    it "should return a provider object given the node and a Chef::Resource object" do
+      file = Chef::Resource::File.new("whateva")
+      Chef::Platform.provider_for_node(file).should be_an_instance_of(Chef::Provider::File)
+    end
+    
   end
 
   it "should update the provider map with map" do  

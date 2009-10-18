@@ -380,7 +380,7 @@ describe Chef::Provider::Deploy do
       YAML.stub!(:load).and_return(@gem_list)
       gem_resources = @provider.send(:gem_packages)
       run4r = mock("Chef::Runner")
-      Chef::Runner.should_receive(:new).with(@node, an_instance_of(Chef::ResourceCollection)).and_return(run4r)
+      Chef::Runner.should_receive(:new).with(an_instance_of(Chef::ResourceCollection)).and_return(run4r)
       run4r.should_receive(:converge)
       @provider.send(:install_gems)
     end

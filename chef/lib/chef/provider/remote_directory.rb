@@ -65,7 +65,7 @@ class Chef
           create_directory(full_dir)
         end
 
-        remote_file = Chef::Resource::RemoteFile.new(full_path, nil, @node)
+        remote_file = Chef::Resource::RemoteFile.new(full_path, nil)
         remote_file.cookbook_name = @new_resource.cookbook || @new_resource.cookbook_name           
         remote_file.source(::File.join(@new_resource.source, remote_file_source))
         remote_file.mode(@new_resource.files_mode) if @new_resource.files_mode
@@ -73,7 +73,7 @@ class Chef
         remote_file.owner(@new_resource.files_owner) if @new_resource.files_owner
         remote_file.backup(@new_resource.files_backup) if @new_resource.files_backup
         
-        rf_provider = Chef::Platform.provider_for_node(@node, remote_file)
+        rf_provider = Chef::Platform.provider_for_node(remote_file)
         rf_provider.load_current_resource
         rf_provider.action_create
         @new_resource.updated = true if rf_provider.new_resource.updated        
@@ -87,7 +87,7 @@ class Chef
         new_dir.owner(@new_resource.owner)
         new_dir.recursive(true)
         
-        d_provider = Chef::Platform.provider_for_node(@node, new_dir)
+        d_provider = Chef::Platform.provider_for_node(new_dir)
         d_provider.load_current_resource
         d_provider.action_create
         @new_resource.updated = true if d_provider.new_resource.updated  

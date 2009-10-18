@@ -74,7 +74,7 @@ describe Chef::Provider do
     rc.insert(injector)
     rc.insert(dummy)
     
-    Chef::Runner.new(node, rc).converge
+    Chef::Runner.new(rc).converge
     
     rc[0].should eql(injector)
     rc[1].name.should eql(:prepared_thumbs)
@@ -99,7 +99,7 @@ describe Chef::Provider do
     rc.insert(dummy)
     rc.insert(injector2)
     
-    Chef::Runner.new(node, rc).converge
+    Chef::Runner.new(rc).converge
     
     rc[0].should eql(injector)
     rc[1].name.should eql(:prepared_thumbs)
@@ -122,7 +122,7 @@ describe Chef::Provider do
 
     STDOUT.should_receive(:write).with("my monkey's name is 'bob'").exactly(:once)
     STDOUT.should_receive(:write).with("\n").exactly(:once)
-    Chef::Runner.new(node, rc).converge
+    Chef::Runner.new(rc).converge
   end
 
   it "should properly handle an embedded Resource accessing the enclosing Provider's scope" do
@@ -137,7 +137,7 @@ describe Chef::Provider do
     
     STDOUT.should_receive(:write).with("my monkey's name is 'bob, the monkey'").exactly(:once)
     STDOUT.should_receive(:write).with("\n").exactly(:once)
-    Chef::Runner.new(node, rc).converge
+    Chef::Runner.new(rc).converge
   end
   
 end

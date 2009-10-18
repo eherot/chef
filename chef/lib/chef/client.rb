@@ -190,7 +190,7 @@ class Chef
       # #p node.tags
       # p "========"
       
-      platform, version = Chef::Platform.find_platform_and_version(node)
+      platform, version = Chef::Platform.find_platform_and_version
       Chef::Log.debug("Platform is #{platform} version #{version}")
       node[:platform] = platform
       node[:platform_version] = version
@@ -416,7 +416,7 @@ class Chef
       compile = Chef::Compile.new(node)
       
       Chef::Log.debug("Converging node #{@safe_name}")
-      cr = Chef::Runner.new(node, compile.collection, compile.definitions, compile.cookbook_loader)
+      cr = Chef::Runner.new(compile.collection, compile.definitions, compile.cookbook_loader)
       cr.converge
       true
     end

@@ -30,7 +30,7 @@ class Chef
         else
           new_url = "cookbooks/#{cookbook}/#{type}?"
           new_url += "id=#{url}"
-          platform, version = Chef::Platform.find_platform_and_version(node)
+          platform, version = Chef::Platform.find_platform_and_version
           if type == "files" || type == "templates"
             new_url += "&platform=#{platform}&version=#{version}&fqdn=#{node[:fqdn]}&node_name=#{node.name}"
           end

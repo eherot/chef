@@ -105,6 +105,10 @@ class Chef
       attr_accessor :platforms
       
       include Chef::Mixin::ParamsValidate
+      
+      def node
+        Chef::Node.instance
+      end
             
       def find(name, version)
         provider_map = @platforms[:default].clone
@@ -150,7 +154,7 @@ class Chef
         end
       end
       
-      def find_platform_and_version(node)
+      def find_platform_and_version
         platform = nil
         version = nil
         
@@ -175,12 +179,12 @@ class Chef
         return platform, version
       end
       
-      def provider_for_node(node, resource_type)
-        find_provider_for_node(node, resource_type).new(resource_type)
+      def provider_for_node(resource_type)
+        find_provider_for_node(resource_type).new(resource_type)
       end
 
-      def find_provider_for_node(node, resource_type)
-        platform, version = find_platform_and_version(node)        
+      def find_provider_for_node(resource_type)
+        platform, version = find_platform_and_version
         provider = find_provider(platform, version, resource_type)
       end
       

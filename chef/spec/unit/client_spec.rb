@@ -219,6 +219,10 @@ describe Chef::Client, "build_node" do
     @client.build_node
     @client.node["tags"].should eql([ "radiohead" ])
   end
+  
+  it "should use the correct method signature for Platform.find_platform_and_version" do
+    pending
+  end
 end
 
 describe Chef::Client, "register" do
@@ -254,6 +258,14 @@ describe Chef::Client, "register" do
     Chef::FileCache.stub!(:load).with(File.join("registration", "testnode")).and_raise(Chef::Exceptions::FileNotFound)
     Chef::Application.should_receive(:fatal!).with(/^.*$/, 3).and_return(true) 
     @chef_client.register
+  end
+  
+  describe "converge" do
+    
+    it "should have spec coverage" do
+      pending
+    end
+    
   end
 
 end
