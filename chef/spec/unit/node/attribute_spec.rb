@@ -289,58 +289,26 @@ describe Chef::Node::Attribute do
     end
   end
 
-  describe "auto_vivifiy" do
-    it "should set the hash key to a mash if it does not exist" do
-      @attributes.auto_vivifiy({}, "one")["one"].should be_a_kind_of(Mash)
-    end
-
-    it "should raise an exception if the key does exist and does not respond to has_key?" do
-      lambda { @attributes.auto_vivifiy({ "one" => "value" }) }.should raise_error(ArgumentError)
-    end
-
-    it "should not alter the value if the key exists and responds to has_key?" do
-      @attributes.auto_vivifiy({ "one" => { "will" => true } }, "one")["one"].should have_key("will")
-    end
-  end
-
-  describe "set_value" do
-    it "should set the value for a top level key" do
-      to_check = {}
-      @attributes.set_value(to_check, "one", "some value")
-      to_check["one"].should == "some value"
-    end
-
-    it "should set the value for a second level key" do
-      to_check = {}
-      @attributes.state = [ "one" ]
-      @attributes.set_value(to_check, "two", "some value")
-      to_check["one"]["two"].should == "some value"
-    end
-
-    it "should set the value for a very deep key" do
-      to_check = {}
-      @attributes.state = [ "one", "two", "three", "four", "five" ]
-      @attributes.set_value(to_check, "six", "some value")
-      to_check["one"]["two"]["three"]["four"]["five"]["six"].should == "some value"
-    end
-  end
-
   describe "[]=" do
     it "should set the attribute value" do
       @attributes["longboard"] = "surfing"
       @attributes["longboard"].should == "surfing"
-      @attributes.attribute["longboard"].should == "surfing"
-      @attributes.override["longboard"].should == "surfing"
     end
 
     it "should set deeply nested attribute value when auto_vivifiy_on_read is true" do
       @attributes.auto_vivifiy_on_read = true
       @attributes["longboard"]["hunters"]["comics"] = "surfing"
       @attributes["longboard"]["hunters"]["comics"].should == "surfing"
-      @attributes.attribute["longboard"]["hunters"]["comics"].should == "surfing"
-      @attributes.override["longboard"]["hunters"]["comics"].should == "surfing"
     end
 
+    it "should set deeply nested attribute value when using set_with_vivifiy" do
+      attr_proxy = @attributes.set_with_vivifiy
+      # the fail here is that #[]("longboard") runs in set with vivifiy
+      # but the next method call doesn't
+      attr_proxy["longboard"]["hunters"]["comics"] = "surfing"
+      attr_proxy["longboard"]["hunters"]["comics"].should == "surfing"
+    end
+    
     it "should die if you try and do nested attributes that do not exist without read vivification" do
       lambda { @attributes["foo"]["bar"] = :baz }.should raise_error
     end
@@ -379,28 +347,6 @@ describe Chef::Node::Attribute do
       @attributes["foo"] = Mash.new
       @attributes["foo"]["bar"] ||= "stop the world"
       @attributes["foo"]["bar"].should == "stop the world"
-    end
-  end
-
-  describe "get_value" do
-    it "should get a value from a top level key" do
-      @attributes.get_value(@default_hash, "domain").should == "opscode.com"
-    end
-
-    it "should return nil for a top level key that does not exist" do
-      @attributes.get_value(@default_hash, "domainz").should == nil
-    end
-
-    it "should get a value based on the state of the object" do
-      @attributes.auto_vivifiy_on_read = true
-      @attributes[:foo][:bar][:baz] = "snack"
-      @attributes.get_value(@attribute_hash, :baz).should == "snack"
-    end
-
-    it "should return nil based on the state of the object if the key does not exist" do
-      @attributes.auto_vivifiy_on_read = true
-      @attributes[:foo][:bar][:baz] = "snack"
-      @attributes.get_value(@attribute_hash, :baznatch).should == nil
     end
   end
 
@@ -465,20 +411,17 @@ describe Chef::Node::Attribute do
 
     it "should behave like a []= lookup if the last method has an argument" do
       @attributes.music.mastodon(["dream", "still", "shining"])
-      @attributes.reset
       @attributes.music.mastodon.should == ["dream", "still", "shining"]
     end
 
     it "should allow the last method to set a value if it has an = sign on the end" do
       @attributes.music.mastodon = [ "dream", "still", "shining" ]
-      @attributes.reset
       @attributes.music.mastodon.should == [ "dream", "still", "shining" ]
     end
 
     it "should honor auto-vivifiy on read" do
       @attributes.auto_vivifiy_on_read = true
       @attributes.rock.and.roll = "boom boom yeah"
-      @attributes.reset
       @attributes.rock.and.roll.should == "boom boom yeah"
     end
   end
@@ -980,4 +923,64 @@ describe Chef::Node::Attribute do
       @attributes.should_not be_a_kind_of(Chef::Node)
     end
   end
+  
+  describe "setting defaults" do
+    
+    it "evals a block with auto-vivifiy and set unless enabled" do
+      vivifiy_snitch, set_unless_snitch = nil, nil
+      @attributes.eval_defaults do
+        vivifiy_snitch = self.auto_vivifiy_on_read
+        set_unless_snitch = self.set_unless_value_present
+      end
+      @attributes.auto_vivifiy_on_read.should be_false
+      vivifiy_snitch.should == true
+      @attributes.set_unless_value_present.should be_false
+      set_unless_snitch.should == true
+    end
+    
+    it "creates a proxy object which funnels all method calls through the eval_defaults method" do
+      @attributes.auto_vivifiy_on_read.should be_false
+      snitch = nil
+      @attributes.set_defaults.instance_eval {snitch = self.auto_vivifiy_on_read}
+      snitch.should be_true
+      @attributes.auto_vivifiy_on_read.should be_false
+      
+      @attributes.set_unless_value_present.should be_false
+      snitch = nil
+      @attributes.set_defaults.instance_eval{ snitch = self.set_unless_value_present}
+      snitch.should be_true
+      @attributes.set_unless_value_present.should be_false
+    end
+    
+    it "evals a block with auto-vivifiy enabled" do
+      @attributes.auto_vivifiy_on_read.should be_false
+      snitch = nil
+      @attributes.eval_with_vivifiy do
+        snitch = self.auto_vivifiy_on_read
+      end
+      snitch.should be_true
+      @attributes.auto_vivifiy_on_read.should be_false
+    end
+    
+    it "creates a proxy object which funnels method calls through eval_with_vivifiy" do
+      @attributes.auto_vivifiy_on_read.should be_false
+      snitch = nil
+      @attributes.set_with_vivifiy.instance_eval {snitch = self.auto_vivifiy_on_read}
+      snitch.should be_true
+      @attributes.auto_vivifiy_on_read.should be_false
+    end
+  end
+end
+
+describe Chef::Node::VividMash do
+  
+  it "only reports VividMashes as vivid_mash?(obj)" do
+    mash = Mash.new
+    attrs = Chef::Node::Attribute.new({}, {}, {})
+    vivid_mash = Chef::Node::VividMash.new
+    vivid_mash.vivid_mash?(mash).should be_false
+    vivid_mash.vivid_mash?(attrs).should be_false
+    vivid_mash.vivid_mash?(vivid_mash).should be_true
+  end
+  
 end

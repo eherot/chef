@@ -123,9 +123,9 @@ class Chef
     def initialize()
       @name = nil
 
-      @attribute = Mash.new
-      @override = Mash.new
-      @default = Mash.new
+      @attribute = Attribute.new({}, {}, {})
+      #@override = Mash.new
+      #@default = Mash.new
       @run_list = Chef::RunList.new 
 
       @couchdb_rev = nil
@@ -179,31 +179,26 @@ class Chef
     
     # Return an attribute of this node.  Returns nil if the attribute is not found.
     def [](attrib)
-      attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
-      attrs[attrib] 
+      #attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
+      @attribute[attrib] 
     end
     
     # Set an attribute of this node
     def []=(attrib, value)
-      attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
-      attrs[attrib] = value
+      #attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
+      @attribute[attrib] = value
     end
 
     # Set an attribute of this node, but auto-vivifiy any Mashes that might
     # be missing
     def set
-      attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
-      attrs.auto_vivifiy_on_read = true
-      attrs
+      @attribute.set_with_vivifiy
     end
 
     # Set an attribute of this node, auto-vivifiying any mashes that are
     # missing, but if the final value already exists, don't set it
     def set_unless
-      attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
-      attrs.auto_vivifiy_on_read = true
-      attrs.set_unless_value_present = true
-      attrs
+      @attribute.set_defaults
     end
 
     alias_method :default, :set_unless
@@ -214,28 +209,28 @@ class Chef
     # Only works on the top level. Preferred way is to use the normal [] style
     # lookup and call attribute?()
     def attribute?(attrib)
-      attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
-      attrs.attribute?(attrib)
+      #attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
+      @attribute.attribute?(attrib)
     end
   
     # Yield each key of the top level to the block. 
     def each(&block)
-      attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
-      attrs.each(&block)
+      #attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
+      @attribute.each(&block)
     end
     
     # Iterates over each attribute, passing the attribute and value to the block.
     def each_attribute(&block)
-      attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
-      attrs.each_attribute(&block)
+      #attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
+      @attribute.each_attribute(&block)
     end
 
     # Set an attribute based on the missing method.  If you pass an argument, we'll use that
     # to set the attribute values.  Otherwise, we'll wind up just returning the attributes
     # value.
     def method_missing(symbol, *args)
-      attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
-      attrs.send(symbol, *args)
+      #attrs = Chef::Node::Attribute.new(@attribute, @default, @override)
+      @attribute.send(symbol, *args)
     end
     
     # Returns true if this Node expects a given recipe, false if not.
