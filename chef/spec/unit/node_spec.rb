@@ -130,6 +130,7 @@ describe Chef::Node do
       @node.each_attribute do |a,v|
         seen_attributes[a] = v
       end
+      
       seen_attributes.should have_key("sunshine")
       seen_attributes.should have_key("canada")
       seen_attributes["sunshine"].should == "is bright"
@@ -243,7 +244,7 @@ describe Chef::Node do
   describe "json" do
     it "should serialize itself as json" do
       @node.find_file("test.example.com")
-      json = @node.to_json()
+      json = @node.to_json
       json.should =~ /json_class/
       json.should =~ /name/
       json.should =~ /attributes/

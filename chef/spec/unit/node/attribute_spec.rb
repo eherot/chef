@@ -227,15 +227,6 @@ describe Chef::Node::Attribute do
       end
     end
 
-    it "should set the state to an empty array" do
-      @attributes.state.should == []
-    end
-
-    it "should allow you to set the initial state" do
-      na = Chef::Node::Attribute.new({}, {}, {}, [ "first", "second", "third" ])
-      na.state.should == [ "first", "second", "third" ]
-    end
-
     it "should be enumerable" do
       @attributes.should be_is_a(Enumerable)
     end
@@ -305,6 +296,8 @@ describe Chef::Node::Attribute do
       attr_proxy = @attributes.set_with_vivifiy
       # the fail here is that #[]("longboard") runs in set with vivifiy
       # but the next method call doesn't
+      attr_proxy._is_secretly_a_vivifiy_proxy?.should be_true
+      attr_proxy["longboard"]._is_secretly_a_vivifiy_proxy?.should be_true
       attr_proxy["longboard"]["hunters"]["comics"] = "surfing"
       attr_proxy["longboard"]["hunters"]["comics"].should == "surfing"
     end
@@ -371,12 +364,6 @@ describe Chef::Node::Attribute do
       @attributes.has_key?("ninja").should == false
     end
 
-    it "should be looking at the current position of the object" do
-      @attributes["music"]
-      @attributes.has_key?("mastodon").should == true 
-      @attributes.has_key?("whitesnake").should == false
-    end
-
     [:include?, :key?, :member?].each do |method|
       it "should alias the method #{method} to itself" do
         @attributes.should respond_to(method) 
@@ -397,11 +384,6 @@ describe Chef::Node::Attribute do
       @attributes.attribute?("ninja").should == false
     end
 
-    it "should be looking at the current position of the object" do
-      @attributes["music"]
-      @attributes.attribute?("mastodon").should == true 
-      @attributes.attribute?("whitesnake").should == false
-    end
   end
 
   describe "method_missing" do
@@ -940,9 +922,7 @@ describe Chef::Node::Attribute do
     
     it "creates a proxy object which funnels all method calls through the eval_defaults method" do
       @attributes.auto_vivifiy_on_read.should be_false
-      snitch = nil
-      @attributes.set_defaults.instance_eval {snitch = self.auto_vivifiy_on_read}
-      snitch.should be_true
+      @attributes.set_defaults.auto_vivifiy_on_read.should be_true
       @attributes.auto_vivifiy_on_read.should be_false
       
       @attributes.set_unless_value_present.should be_false

@@ -28,18 +28,13 @@ class Chef
     end
     
     class Attribute
-      attr_accessor :state, :attribute, :default, :override, :current_attribute,
-                    :current_default, :current_override, :has_been_read
+      attr_accessor :attribute, :default, :override
                     
       def initialize(attribute, default, override, state=[])
         @attribute = attribute
-        @current_attribute = attribute
         @default = default
         @current_default = default
         @override = override
-        @current_override = override
-        @state = state
-        @has_been_read = false
         unify_attributes
       end
       
@@ -82,6 +77,14 @@ class Chef
       
       def set_with_vivifiy
         @unified_attributes.set_with_vivifiy
+      end
+      
+      def to_hash
+        @unified_attributes.to_hash
+      end
+      
+      def to_json
+        @unified_attributes.to_json
       end
       
     end
@@ -152,7 +155,9 @@ class Chef
       alias :value? :has_value?
 
       def fetch(key, default_value=nil, &block)
-       @mash.fetch(key, default_value, &block)
+       @mash.fetch(key, default_value) || 
+       block && block.call(key) || 
+       raise( ::IndexError, "Key #{key} does not exist")
       end
 
       def empty?
@@ -162,7 +167,6 @@ class Chef
       def each_value(&block)
        @mash.each_value(&block)
       end
-      alias :each_attribute :each_value
       
       def each_key(&block)
        @mash.each_key(&block)
@@ -171,6 +175,7 @@ class Chef
       def each_pair(&block)
        @mash.each_pair(&block)
       end
+      alias :each_attribute :each_pair
 
       def keys
        @mash.keys
@@ -198,6 +203,10 @@ class Chef
 
       def to_hash
        @mash.to_hash
+      end
+      
+      def to_json
+        @mash.to_json
       end
 
       def index(value)
@@ -242,12 +251,17 @@ class Chef
           @vivid_mash = vivid_mash
         end
         
-        def method_missing(method_name, *args, &block)
-          @vivid_mash.eval_defaults do
-            self.send(method_name, *args, &block)
-            return_obj.respond_to?(:set_defaults) ? return_obj.set_defaults : return_obj
-          end
+        def __is_secretly_a_set_defaults_proxy?
+          true
         end
+        
+        def method_missing(method_name, *args, &block)
+          return_obj = @vivid_mash.eval_defaults do
+            self.send(method_name, *args, &block)
+          end
+          return_obj.respond_to?(:set_defaults) ? return_obj.set_defaults : return_obj
+        end
+        
       end
       
       def set_with_vivifiy
@@ -259,12 +273,23 @@ class Chef
           @vivid_mash = vivid_mash
         end
         
-        def method_missing(method_name, *args, &block)
-          @vivid_mash.eval_with_vivifiy do
-            return_obj = self.send(method_name, *args, &block)
-            return_obj.respond_to?(:set_with_vivifiy) ? return_obj.set_with_vivifiy : return_obj
-          end
+        def _is_secretly_a_vivifiy_proxy?
+          # for testing and debugging you can have some visibility into
+          # the metaprogrammed madness. you're welcome :)
+          true
         end
+        
+        def inspect
+          "<SetWithVivify:#{@vivid_mash.inspect}>"
+        end
+        
+        def method_missing(method_name, *args, &block)
+          return_obj = @vivid_mash.eval_with_vivifiy do
+            return_obj = self.send(method_name, *args, &block)
+          end
+          return_obj.respond_to?(:set_with_vivifiy) ? return_obj.set_with_vivifiy : return_obj
+        end
+        
       end
       
       
@@ -273,16 +298,18 @@ class Chef
         current_set_unless = set_unless_value_present
         self.auto_vivifiy_on_read = true
         self.set_unless_value_present = true
-        instance_eval(&block)
+        return_obj = instance_eval(&block)
         self.auto_vivifiy_on_read = current_auto_viv
         self.set_unless_value_present = current_set_unless
+        return_obj
       end
       
       def eval_with_vivifiy(&block)
         current_auto_viv = auto_vivifiy_on_read
         self.auto_vivifiy_on_read = true
-        instance_eval(&block)
+        return_obj = instance_eval(&block)
         self.auto_vivifiy_on_read = current_auto_viv
+        return_obj
       end
 
       private
