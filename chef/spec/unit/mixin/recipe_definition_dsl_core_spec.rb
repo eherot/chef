@@ -55,6 +55,10 @@ describe Chef::Mixin::RecipeDefinitionDSLCore do
     it "provides a getter for params" do
       @dsl_user.params.should == {}
     end
+    
+    it "defines a set_enclosing_scope method" do
+      lambda {@dsl_user.set_enclosing_scope(nil)}.should_not raise_error
+    end
   end
   
   describe "defining DSL sugar methods for resources" do

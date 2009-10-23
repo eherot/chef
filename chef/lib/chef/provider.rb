@@ -59,6 +59,12 @@ class Chef
       @collection = provider_collection
     end
     
+    # visits a newly created resource and sets the resource's +enclosing_provider+
+    # attribute to +self+
+    def set_enclosing_scope(new_resource)
+      new_resource.enclosing_provider = self
+    end
+    
     public
     
     class << self

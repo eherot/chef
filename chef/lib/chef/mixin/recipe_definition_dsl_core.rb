@@ -46,6 +46,7 @@ class Chef
             args << collection << node
 
             r = #{resource_class}.new(*args)
+            set_enclosing_scope(r)
             r.load_prior_resource
             r.cookbook_name = cookbook_name
             r.recipe_name   = recipe_name
@@ -60,6 +61,11 @@ class Chef
           module_eval(method_body)
         
         end
+      end
+      
+      # This method may be overriden by classes including the module
+      # to set enclosing scope on a newly created resource
+      def set_enclosing_scope(new_resource)
       end
       
       def cookbook_name

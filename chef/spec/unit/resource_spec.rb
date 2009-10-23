@@ -238,7 +238,7 @@ describe Chef::Resource do
     end
     
     it "allows the base provider to be overriden by a " do
-      ResourceTestHarness.provider_base.should == Chef::Provider::Package
+      Chef::Resource::ResourceTestHarness.provider_base.should == Chef::Provider::Package
     end
   end
 
