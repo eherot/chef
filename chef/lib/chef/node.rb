@@ -123,9 +123,9 @@ class Chef
     def initialize()
       @name = nil
 
-      @attribute = Attribute.new({}, {}, {})
-      #@override = Mash.new
-      #@default = Mash.new
+      @override = Mash.new
+      @default = Mash.new
+      @attribute = Attribute.new({}, @default, @override)
       @run_list = Chef::RunList.new 
 
       @couchdb_rev = nil

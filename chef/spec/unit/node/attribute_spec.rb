@@ -950,6 +950,16 @@ describe Chef::Node::Attribute do
       @attributes.auto_vivifiy_on_read.should be_false
     end
   end
+  
+  describe "lazily computing unified attributes" do
+    it "allows override and default attributes to be modified before they're unified" do
+      @override_hash["hibernation"] = "sometimes necessary"
+      @attributes.hibernation.should == "sometimes necessary"
+      @default_hash["refactoring_eye"] = "+12"
+      @attributes.refactoring_eye.should == "+12"
+    end
+    
+  end
 end
 
 describe Chef::Node::VividMash do

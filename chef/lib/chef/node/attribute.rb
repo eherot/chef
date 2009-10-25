@@ -28,71 +28,79 @@ class Chef
     end
     
     class Attribute
-      attr_accessor :attribute, :default, :override
+      attr_accessor :attribute, :default, :override, :unified_attributes
                     
       def initialize(attribute, default, override, state=[])
         @attribute = attribute
         @default = default
         @current_default = default
         @override = override
-        unify_attributes
+        @unified_attributes = VividMash.new
       end
       
       def unify_attributes
-        unified_attributes = Mash.new
-        unified_attributes = Chef::Mixin::DeepMerge.merge(unified_attributes, default)
-        unified_attributes = Chef::Mixin::DeepMerge.merge(unified_attributes, attribute)
-        unified_attributes = Chef::Mixin::DeepMerge.merge(unified_attributes, override)
-        @unified_attributes = VividMash.new(unified_attributes)
+        unless @attributes_unified
+          unified_attrs = Mash.new
+          unified_attrs = Chef::Mixin::DeepMerge.merge(unified_attrs, default)
+          unified_attrs = Chef::Mixin::DeepMerge.merge(unified_attrs, attribute)
+          unified_attrs = Chef::Mixin::DeepMerge.merge(unified_attrs, override)
+          @attributes_unified = true
+          @unified_attributes = VividMash.new(unified_attrs)
+        end
+        @unified_attributes
       end
       
       def method_missing(method_name, *args, &block)
-        @unified_attributes.send(method_name, *args, &block)
+        unify_attributes
+        unified_attributes.send(method_name, *args, &block)
       end
       
       def respond_to?(method_name)
-        @unified_attributes.respond_to?(method_name)
+        unified_attributes.respond_to?(method_name)
       end
 
       def kind_of?(klass)
         return true if klass == Chef::Node::Attribute
-        @unified_attributes.kind_of?(klass)
+        unified_attributes.kind_of?(klass)
       end
       
       def is_a?(class_or_mod)
-        @unified_attributes.is_a?(class_or_mod)
+        unified_attributes.is_a?(class_or_mod)
       end
       
       def eval_defaults(&block)
-        @unified_attributes.eval_defaults(&block)
+        unify_attributes
+        unified_attributes.eval_defaults(&block)
       end
       
       def set_defaults
-        @unified_attributes.set_defaults
+        unify_attributes
+        unified_attributes.set_defaults
       end
       
       def eval_with_vivifiy(&block)
-        @unified_attributes.eval_with_vivifiy(&block)
+        unify_attributes
+        unified_attributes.eval_with_vivifiy(&block)
       end
       
       def set_with_vivifiy
-        @unified_attributes.set_with_vivifiy
+        unify_attributes
+        unified_attributes.set_with_vivifiy
       end
       
       def to_hash
-        @unified_attributes.to_hash
+        unify_attributes
+        unified_attributes.to_hash
       end
       
       def to_json
-        @unified_attributes.to_json
+        unify_attributes
+        unified_attributes.to_json
       end
       
     end
     
     class VividMash
-      
-      
-      
       attr_reader :mash, :auto_vivifiy_on_read, :set_unless_value_present
       
       include Enumerable
