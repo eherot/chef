@@ -29,72 +29,71 @@ rescue LoadError
 end
 
 class Chef
-  class Nanite 
+  module Nanite 
    
-    class << self
+    extend self
 
-      def start_mapper(config={})
-        Chef::Log.info("Running the Nanite Mapper")
-        ::Nanite::Log.logger = Chef::Log.logger
-        identity = get_identity
-        ::Nanite.start_mapper(
-          :host => Chef::Config[:nanite_host], 
-          :user => Chef::Config[:nanite_user],
-          :pass => Chef::Config[:nanite_pass], 
-          :vhost => Chef::Config[:nanite_vhost],
-          :identity => identity,
-          :format => :json,
-          :log_level => Chef::Config[:log_level] 
-        )
-      end
+    def start_mapper(config={})
+      Chef::Log.info("Running the Nanite Mapper")
+      ::Nanite::Log.logger = Chef::Log.logger
+      identity = get_identity
+      ::Nanite.start_mapper(
+        :host => Chef::Config[:nanite_host], 
+        :user => Chef::Config[:nanite_user],
+        :pass => Chef::Config[:nanite_pass], 
+        :vhost => Chef::Config[:nanite_vhost],
+        :identity => identity,
+        :format => :json,
+        :log_level => Chef::Config[:log_level] 
+      )
+    end
 
-      def get_identity(type="mapper")
-        id = nil
-        if Chef::Config[:nanite_persistent_mapper]
-          if Chef::FileCache.has_key?("nanite-#{type}-identity")
-            id = Chef::FileCache.load("nanite-#{type}-identity")
-          else
-            id = UUIDTools::UUID.random_create.to_s 
-            Chef::FileCache.store("nanite-#{type}-identity", id)
-          end
+    def get_identity(type="mapper")
+      id = nil
+      if Chef::Config[:nanite_persistent_mapper]
+        if Chef::FileCache.has_key?("nanite-#{type}-identity")
+          id = Chef::FileCache.load("nanite-#{type}-identity")
         else
-          id = Chef::Config[:nanite_identity] ? "#{Chef::Config[:nanite_identity]}-#{UUIDTools::UUID.random_create.to_s}" : UUIDTools::UUID.random_create.to_s 
+          id = UUIDTools::UUID.random_create.to_s 
+          Chef::FileCache.store("nanite-#{type}-identity", id)
         end
-        id
+      else
+        id = Chef::Config[:nanite_identity] ? "#{Chef::Config[:nanite_identity]}-#{UUIDTools::UUID.random_create.to_s}" : UUIDTools::UUID.random_create.to_s 
       end
-      
-      def request(*args)
-        in_event do
-          ::Nanite.request(*args)
-        end
+      id
+    end
+    
+    def request(*args)
+      in_event do
+        ::Nanite.request(*args)
       end
+    end
 
-      def push(*args)
-        in_event do
-          ::Nanite.push(*args)
-        end
+    def push(*args)
+      in_event do
+        ::Nanite.push(*args)
       end
+    end
 
-      def in_event(&block)
-        if EM.reactor_running?
-          begin
-            ::Nanite.ensure_mapper
-          rescue ::Nanite::MapperNotRunning
+    def in_event(&block)
+      if EM.reactor_running?
+        begin
+          ::Nanite.ensure_mapper
+        rescue ::Nanite::MapperNotRunning
+          start_mapper
+        end
+        block.call
+      else
+        Chef::Log.info("Starting Event Machine Loop")
+        Thread.new do
+          EM.run do
             start_mapper
-          end
-          block.call
-        else
-          Chef::Log.warn("Starting Event Machine Loop")
-          Thread.new do
-            EM.run do
-              start_mapper
-              block.call
-            end
+            block.call
           end
         end
       end
-
     end
 
   end
+
 end
