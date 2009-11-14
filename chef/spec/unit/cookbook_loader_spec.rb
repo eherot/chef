@@ -147,4 +147,17 @@ describe Chef::CookbookLoader do
 
   end
   
+  it "determines if it has all of the cookbooks in a given list" do
+    @cl.has_all_cookbooks?([]).should be_true
+    @cl.has_all_cookbooks?(:openldap).should be_true
+    @cl.has_all_cookbooks?(:openldap, :apache2).should be_true
+    @cl.has_all_cookbooks?('openldap', 'apache2').should be_true
+    @cl.has_all_cookbooks?([:openldap, :apache2]).should be_true
+    @cl.has_all_cookbooks?([:openldap, :apache2, :no_dice]).should be_false
+  end
+  
+  it "lists the missing cookbooks from a list" do
+    @cl.cookbooks_missing_from([:openldap, :apache2, :foobarred]).should == [:foobarred]
+  end
+  
 end

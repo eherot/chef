@@ -127,6 +127,18 @@ class Chef
       end
     end
     
+    def has_all_cookbooks?(*cookbooks_to_check)
+      cookbooks_to_check.flatten!
+      cookbooks_to_check.map! { |cb| cb.to_sym }
+      (cookbooks_to_check - @cookbook.keys).empty?
+    end
+    
+    def cookbooks_missing_from(*cookbook_list)
+      cookbook_list.flatten!
+      cookbook_list.map! { |cb| cb.to_sym }
+      cookbook_list - @cookbook.keys
+    end
+    
     def each
       @cookbook.keys.sort { |a,b| a.to_s <=> b.to_s }.each do |cname|
         yield @cookbook[cname]

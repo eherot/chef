@@ -272,14 +272,17 @@ class ChefServerApi::Application < Merb::Controller
   
   def load_all_files(node_name=nil)
     cl = Chef::CookbookLoader.new
-    valid_cookbooks = node_name ? specific_cookbooks(node_name, cl) : {} 
+    valid_cookbooks = node_name ? specific_cookbooks(node_name, cl) : {}
+    unless cl.has_all_cookbooks?(valid_cookbooks.keys)
+      raise NotFound, "cookbooks #{cl.cookbooks_missing_from(valid_cookbooks.keys)} not found on server"
+    end
     cookbook_list = Hash.new
     cl.each do |cookbook|
       if node_name
         next unless valid_cookbooks[cookbook.name.to_s]
       end
-      cookbook_list[cookbook.name.to_s] = load_cookbook_files(cookbook) 
     end
+    Chef::Log.debug("sending cookbook list: #{cookbook_list.inspect}")
     cookbook_list
   end
 
