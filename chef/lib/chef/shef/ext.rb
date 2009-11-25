@@ -226,7 +226,7 @@ class Object
     Chef::Log.level(:debug)
     session = Shef.session
     session.rebuild_collection
-    runrun = Chef::Runner.new(node, session.collection, session.definitions, session.cookbook_loader).converge
+    runrun = Chef::Runner.new(node, session.collection, session.cookbook_loader).converge
     Chef::Log.level(:info)
     runrun
   end

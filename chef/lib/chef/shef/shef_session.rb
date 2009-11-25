@@ -50,10 +50,6 @@ module Shef
       @collection || rebuild_collection
     end
     
-    def definitions
-      nil
-    end
-    
     def cookbook_loader
       nil
     end
@@ -127,10 +123,6 @@ module Shef
   end
   
   class SoloSession < ShefSession
-    
-    def definitions
-      @compile.definitions
-    end
     
     def cookbook_loader
       @compile.cookbook_loader

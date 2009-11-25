@@ -307,10 +307,6 @@ describe Shef do
       @client.collection.should == @recipe.collection
     end
     
-    it "gives nil for the definitions (for now)" do
-      @client.definitions.should be_nil
-    end
-    
     it "gives nil for the cookbook_loader" do
       @client.cookbook_loader.should be_nil
     end
@@ -322,7 +318,7 @@ describe Shef do
       # pre-heat resource collection cache
       @client.collection
       
-      Chef::Runner.should_receive(:new).with(@client.node, @recipe.collection, nil,nil).and_return(chef_runner)
+      Chef::Runner.should_receive(:new).with(@client.node, @recipe.collection, nil).and_return(chef_runner)
       @root_context.run_chef.should == :converged
     end
     
@@ -352,10 +348,6 @@ describe Shef do
       @client.collection.should include(kitteh)
     end
     
-    it "returns definitions from it's compilation object" do
-      @client.definitions.should == @compile.definitions
-    end
-    
     it "returns the cookbook_loader from it's compilation object" do
       @client.cookbook_loader.should == @compile.cookbook_loader
     end
@@ -381,7 +373,7 @@ describe Shef do
       Chef::Log.stub!(:level)
       chef_runner = mock("Chef::Runner.new", :converge => :converged)
       Chef::Runner.should_receive(:new).
-                    with(@client.node, an_instance_of(Chef::ResourceCollection), @client.definitions, an_instance_of(Chef::CookbookLoader)).
+                    with(@client.node, an_instance_of(Chef::ResourceCollection), an_instance_of(Chef::CookbookLoader)).
                     and_return(chef_runner)
       @root_context.run_chef.should == :converged
     end
