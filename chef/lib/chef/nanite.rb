@@ -39,12 +39,13 @@ class Chef
       identity = get_identity
       ::Nanite.start_mapper(
         :host => Chef::Config[:nanite_host], 
-        :user => Chef::Config[:nanite_user],
+        :user => Chef::Config[:nanite_mapper],
         :pass => Chef::Config[:nanite_pass], 
         :vhost => Chef::Config[:nanite_vhost],
         :identity => identity,
         :format => :json,
-        :log_level => Chef::Config[:log_level] 
+        :log_level => Chef::Config[:log_level],
+        :secure => true
       )
     end
 

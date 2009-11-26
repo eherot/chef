@@ -158,6 +158,7 @@ class Chef
     nanite_host '0.0.0.0'
     nanite_port '5672'
     nanite_user 'nanite'
+    nanite_mapper 'mapper'
     nanite_pass 'testing'
     nanite_vhost '/nanite'
     nanite_identity nil

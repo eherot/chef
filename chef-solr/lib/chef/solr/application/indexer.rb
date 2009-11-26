@@ -117,8 +117,9 @@ class Chef
             :user => Chef::Config[:nanite_user],
             :pass => Chef::Config[:nanite_pass],
             :vhost => Chef::Config[:nanite_vhost],
-            :identity => identity, 
-            :format => :json
+            :identity => identity,
+            :format => :json,
+            :secure => true
           }
           Chef::Log.level(Chef::Config[:log_level])
         end
@@ -129,6 +130,7 @@ class Chef
           end
 
           EM.run do
+            #::Nanite::Agent.start(@nanite_config)
             agent = ::Nanite::Agent.start(@nanite_config)
             agent.register(Chef::Solr::IndexActor.new, 'index')
             agent.send :advertise_services
