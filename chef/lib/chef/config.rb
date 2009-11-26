@@ -160,6 +160,7 @@ class Chef
     nanite_user 'nanite'
     nanite_mapper 'mapper'
     nanite_pass 'testing'
+    nanite_mapper_pass 'testing'
     nanite_vhost '/nanite'
     nanite_identity nil
     nanite_persistent_mapper false

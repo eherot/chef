@@ -40,7 +40,7 @@ class Chef
       ::Nanite.start_mapper(
         :host => Chef::Config[:nanite_host], 
         :user => Chef::Config[:nanite_mapper],
-        :pass => Chef::Config[:nanite_pass], 
+        :pass => Chef::Config[:nanite_mapper_pass], 
         :vhost => Chef::Config[:nanite_vhost],
         :identity => identity,
         :format => :json,
