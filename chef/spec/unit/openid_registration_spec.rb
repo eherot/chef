@@ -66,8 +66,7 @@ end
 
 describe Chef::OpenIDRegistration, "list" do  
   before(:each) do
-    @mock_couch = mock("Chef::CouchDB")
-    @mock_couch.stub!(:list).and_return({
+    Chef::OpenIDRegistration.couchdb.stub!(:list).and_return({
       "rows" => [
         {
           "value" => "a",
@@ -75,7 +74,7 @@ describe Chef::OpenIDRegistration, "list" do
         }
       ]
     })
-    Chef::CouchDB.stub!(:new).and_return(@mock_couch)
+    Chef::CouchDB.stub!(:new).and_return(Chef::OpenIDRegistration.couchdb)
   end
   
   it "should retrieve a list of nodes from CouchDB" do
@@ -93,18 +92,14 @@ end
 
 describe Chef::OpenIDRegistration, "load" do
   it "should load a registration from couchdb by name" do
-    @mock_couch = mock("Chef::CouchDB")
-    Chef::CouchDB.stub!(:new).and_return(@mock_couch)
-    @mock_couch.should_receive(:load).with("openid_registration", "coffee").and_return(true)
+    Chef::OpenIDRegistration.couchdb.should_receive(:load).with("openid_registration", "coffee").and_return(true)
     Chef::OpenIDRegistration.load("coffee")
   end
 end
 
 describe Chef::OpenIDRegistration, "destroy" do
   it "should delete this registration from couchdb" do
-    @mock_couch = mock("Chef::CouchDB")
-    @mock_couch.should_receive(:delete).with("openid_registration", "bob", 1).and_return(true)
-    Chef::CouchDB.stub!(:new).and_return(@mock_couch)
+    Chef::OpenIDRegistration.couchdb.should_receive(:delete).with("openid_registration", "bob", 1).and_return(true)
     reg = Chef::OpenIDRegistration.new
     reg.name = "bob"
     reg.couchdb_rev = 1
@@ -114,20 +109,18 @@ end
 
 describe Chef::OpenIDRegistration, "save" do
   before(:each) do
-    @mock_couch = mock("Chef::CouchDB")
-    Chef::CouchDB.stub!(:new).and_return(@mock_couch)
     @reg = Chef::OpenIDRegistration.new
     @reg.name = "bob"
     @reg.couchdb_rev = 1
   end
   
   it "should save the registration to couchdb" do
-    @mock_couch.should_receive(:store).with("openid_registration", "bob", @reg).and_return({ "rev" => 33 }) 
+    Chef::OpenIDRegistration.couchdb.should_receive(:store).with("openid_registration", "bob", @reg).and_return({ "rev" => 33 }) 
     @reg.save
   end
   
   it "should store the new couchdb_rev" do
-    @mock_couch.stub!(:store).with("openid_registration", "bob", @reg).and_return({ "rev" => 33 }) 
+    Chef::OpenIDRegistration.couchdb.stub!(:store).with("openid_registration", "bob", @reg).and_return({ "rev" => 33 }) 
     @reg.save
     @reg.couchdb_rev.should eql(33)
   end
@@ -135,18 +128,14 @@ end
 
 describe Chef::OpenIDRegistration, "create_design_document" do
   it "should create our design document" do
-    mock_couch = mock("Chef::CouchDB")
-    mock_couch.should_receive(:create_design_document).with("registrations", Chef::OpenIDRegistration::DESIGN_DOCUMENT)
-    Chef::CouchDB.stub!(:new).and_return(mock_couch)
+    Chef::OpenIDRegistration.couchdb.should_receive(:create_design_document).with("registrations", Chef::OpenIDRegistration.design_document)
     Chef::OpenIDRegistration.create_design_document
   end
 end
 
 describe Chef::OpenIDRegistration, "has_key?" do
   it "should check with CouchDB for a registration with this key" do
-    @mock_couch = mock("Chef::CouchDB")
-    @mock_couch.should_receive(:has_key?).with("openid_registration", "bob").and_return(true)
-    Chef::CouchDB.stub!(:new).and_return(@mock_couch)
+    Chef::OpenIDRegistration.couchdb.should_receive(:has_key?).with("openid_registration", "bob").and_return(true)
     Chef::OpenIDRegistration.has_key?("bob")
   end
 end

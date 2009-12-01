@@ -21,6 +21,7 @@ require 'chef/mixin/check_helper'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
 require 'chef/mixin/language_include_attribute'
+require 'chef/mixin/couchable'
 require 'chef/couchdb'
 require 'chef/rest'
 require 'chef/run_list'
@@ -40,8 +41,10 @@ class Chef
     include Chef::Mixin::LanguageIncludeAttribute
     include Chef::IndexQueue::Indexable
     
-    DESIGN_DOCUMENT = {
-      "version" => 9,
+    include Chef::Mixin::Couchable
+    extend  Chef::Mixin::Couchable::ClassMethods
+    
+    database :nodes, "version" => 9,
       "language" => "javascript",
       "views" => {
         "all" => {
@@ -120,8 +123,7 @@ class Chef
             }
           EOJS
         }
-      },
-    }
+      }
     
     # Create a new Chef::Node object.
     def initialize
@@ -132,9 +134,7 @@ class Chef
       @default_attrs = Mash.new
       @run_list = Chef::RunList.new 
 
-      @couchdb_rev = nil
       @couchdb_id = nil
-      @couchdb = Chef::CouchDB.new
 
       @run_state = {
         :template_cache => Hash.new,
@@ -359,18 +359,6 @@ class Chef
       node
     end
     
-    # List all the Chef::Node objects in the CouchDB.  If inflate is set to true, you will get
-    # the full list of all Nodes, fully inflated.
-    def self.cdb_list(inflate=false)
-      couchdb = Chef::CouchDB.new
-      rs = couchdb.list("nodes", inflate)
-      if inflate
-        rs["rows"].collect { |r| r["value"] }
-      else
-        rs["rows"].collect { |r| r["key"] }
-      end
-    end
-
     def self.list(inflate=false)
       r = Chef::REST.new(Chef::Config[:chef_server_url])
       if inflate
@@ -384,35 +372,18 @@ class Chef
       end
     end
     
-    # Load a node by name from CouchDB
-    def self.cdb_load(name)
-      couchdb = Chef::CouchDB.new
-      couchdb.load("node", name)
-    end
-
     # Load a node by name
     def self.load(name)
       r = Chef::REST.new(Chef::Config[:chef_server_url])
       r.get_rest("nodes/#{name}")
     end
     
-    # Remove this node from the CouchDB
-    def cdb_destroy
-      @couchdb.delete("node", @name, @couchdb_rev)
-    end
-
     # Remove this node via the REST API
     def destroy
       r = Chef::REST.new(Chef::Config[:chef_server_url])
       r.delete_rest("nodes/#{@name}")
     end
     
-    # Save this node to the CouchDB
-    def cdb_save
-      results = @couchdb.store("node", @name, self)
-      @couchdb_rev = results["rev"]
-    end
-
     # Save this node via the REST API
     def save
       r = Chef::REST.new(Chef::Config[:chef_server_url])
@@ -435,12 +406,6 @@ class Chef
       self
     end 
 
-    # Set up our CouchDB design document
-    def self.create_design_document
-      couchdb = Chef::CouchDB.new
-      couchdb.create_design_document("nodes", DESIGN_DOCUMENT)
-    end
-    
     # As a string
     def to_s
       "node[#{@name}]"

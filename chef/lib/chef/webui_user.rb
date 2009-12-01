@@ -33,8 +33,10 @@ class Chef
     include Chef::Mixin::ParamsValidate
     include Chef::IndexQueue::Indexable
     
-    DESIGN_DOCUMENT = {
-      "version" => 3,
+    include Chef::Mixin::Couchable
+    extend  Chef::Mixin::Couchable::ClassMethods
+    
+    database :users, "version" => 3,
       "language" => "javascript",
       "views" => {
         "all" => {
@@ -55,8 +57,7 @@ class Chef
           }
           EOJS
         },
-      },
-    }
+      }
     
     # Create a new Chef::WebUIUser object.
     def initialize()
@@ -65,8 +66,6 @@ class Chef
       @password = nil
       @admin = false
       @openid = nil
-      @couchdb_rev = nil
-      @couchdb = Chef::CouchDB.new
     end
     
     def name=(n)
@@ -103,7 +102,7 @@ class Chef
         'admin' => @admin,
         'chef_type' => 'webui_user',
       }
-      result["_rev"] = @couchdb_rev if @couchdb_rev
+      result["_rev"] = couchdb_rev if couchdb_rev
       result.to_json(*a)
     end
     
@@ -122,12 +121,7 @@ class Chef
     # List all the Chef::WebUIUser objects in the CouchDB.  If inflate is set to true, you will get
     # the full list of all registration objects.  Otherwise, you'll just get the IDs
     def self.cdb_list(inflate=false)
-      rs = Chef::CouchDB.new.list("users", inflate)
-      if inflate
-        rs["rows"].collect { |r| r["value"] }
-      else
-        rs["rows"].collect { |r| r["key"] }
-      end
+      couchdb_list(inflate)
     end
     
     def self.list(inflate=false)
@@ -146,6 +140,7 @@ class Chef
     # Load an WebUIUser by name from CouchDB
     def self.cdb_load(name)
       Chef::CouchDB.new.load("webui_user", name)
+      couchdb_load(name)
     end
     
     # Load a User by name
@@ -157,12 +152,12 @@ class Chef
     
     # Whether or not there is an WebUIUser with this key.
     def self.has_key?(name)
-      Chef::CouchDB.new.has_key?("webui_user", name)
+      couchdb.has_key?("webui_user", name)
     end
     
     # Remove this WebUIUser from the CouchDB
     def cdb_destroy
-      @couchdb.delete("webui_user", @name, @couchdb_rev)
+      couchdb_destroy
     end
     
     # Remove this WebUIUser via the REST API
@@ -173,8 +168,7 @@ class Chef
     
     # Save this WebUIUser to the CouchDB
     def cdb_save
-      results = @couchdb.store("webui_user", @name, self)
-      @couchdb_rev = results["rev"]
+      couchdb_save
     end
     
     # Save this WebUIUser via the REST API
@@ -197,11 +191,6 @@ class Chef
       r = Chef::REST.new(Chef::Config[:chef_server_url])
       r.post_rest("users", self)
       self
-    end
-    
-    # Set up our CouchDB design document
-    def self.create_design_document
-      Chef::CouchDB.new.create_design_document("users", DESIGN_DOCUMENT)
     end
     
     #return true if an admin user exists. this is pretty expensive (O(n)), should think of a better way (nuo)

@@ -33,8 +33,10 @@ class Chef
     include Chef::Mixin::ParamsValidate
     include Chef::IndexQueue::Indexable
     
-    DESIGN_DOCUMENT = {
-      "version" => 6,
+    include Chef::Mixin::Couchable
+    extend  Chef::Mixin::Couchable::ClassMethods
+    
+    database :roles, "version" => 6,
       "language" => "javascript",
       "views" => {
         "all" => {
@@ -56,7 +58,6 @@ class Chef
           EOJS
         }
       }
-    }
 
     attr_accessor :couchdb_rev, :couchdb_id
     
@@ -69,7 +70,6 @@ class Chef
       @run_list = Chef::RunList.new 
       @couchdb_rev = nil
       @couchdb_id = nil
-      @couchdb = Chef::CouchDB.new 
     end
 
     def name(arg=nil) 
@@ -130,7 +130,7 @@ class Chef
         "chef_type" => "role",
         "run_list" => @run_list.run_list
       }
-      result["_rev"] = @couchdb_rev if @couchdb_rev
+      result["_rev"] = couchdb_rev if couchdb_rev
       result
     end
 
@@ -156,18 +156,6 @@ class Chef
       role 
     end
     
-    # List all the Chef::Role objects in the CouchDB.  If inflate is set to true, you will get
-    # the full list of all Roles, fully inflated.
-    def self.cdb_list(inflate=false)
-      couchdb = Chef::CouchDB.new
-      rs = couchdb.list("roles", inflate)
-      if inflate
-        rs["rows"].collect { |r| r["value"] }
-      else
-        rs["rows"].collect { |r| r["key"] }
-      end
-    end
-
     # Get the list of all roles from the API.
     def self.list(inflate=false)
       r = Chef::REST.new(Chef::Config[:chef_server_url])
@@ -182,36 +170,10 @@ class Chef
       end
     end
     
-    # Load a role by name from CouchDB
-    def self.cdb_load(name)
-      couchdb = Chef::CouchDB.new
-      couchdb.load("role", name)
-    end
-    
     # Load a role by name from the API
     def self.load(name)
       r = Chef::REST.new(Chef::Config[:chef_server_url])
       r.get_rest("roles/#{name}")
-    end
-    
-    # Remove this role from the CouchDB
-    def cdb_destroy
-      @couchdb.delete("role", @name, @couchdb_rev)
-
-      if Chef::Config[:couchdb_version] == 0.9
-        rs = @couchdb.get_view("nodes", "by_run_list", :startkey => "role[#{@name}]", :endkey => "role[#{@name}]", :include_docs => true)
-        rs["rows"].each do |row| 
-          node = row["doc"]
-          node.run_list.remove("role[#{@name}]")
-          node.cdb_save
-        end
-      else
-       Chef::Node.cdb_list.each do |node|
-         n = Chef::Node.cdb_load(node)
-         n.run_list.remove("role[#{@name}]")
-         n.cdb_save
-       end
-      end
     end
     
     # Remove this role via the REST API
@@ -225,12 +187,6 @@ class Chef
         n.save
       end
       
-    end
-    
-    # Save this role to the CouchDB
-    def cdb_save
-      results = @couchdb.store("role", @name, self)
-      @couchdb_rev = results["rev"]
     end
     
     # Save this role via the REST API
@@ -254,12 +210,6 @@ class Chef
       r.post_rest("roles", self)
       self
     end 
-    
-    # Set up our CouchDB design document
-    def self.create_design_document
-      couchdb = Chef::CouchDB.new
-      couchdb.create_design_document("roles", DESIGN_DOCUMENT)
-    end
     
     # As a string
     def to_s
@@ -289,7 +239,7 @@ class Chef
         Chef::Log.warn("Loading #{short_name}")
         r = Chef::Role.from_disk(short_name, "json")
         begin
-          couch_role = Chef::Role.cdb_load(short_name)
+          couch_role = cdb_load(short_name)
           r.couchdb_rev = couch_role.couchdb_rev
           Chef::Log.debug("Replacing role #{short_name} with data from #{role_file}")
         rescue Chef::Exceptions::CouchDBNotFound 

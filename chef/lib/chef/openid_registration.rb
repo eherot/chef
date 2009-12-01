@@ -32,8 +32,11 @@ class Chef
     include Chef::Mixin::ParamsValidate
     include Chef::IndexQueue::Indexable
     
-    DESIGN_DOCUMENT = {
-      "version" => 3,
+    include Chef::Mixin::Couchable
+    extend  Chef::Mixin::Couchable::ClassMethods
+    
+    couchdb_doctype :openid_registration
+    database :registrations, "version" => 3,
       "language" => "javascript",
       "views" => {
         "all" => {
@@ -76,8 +79,7 @@ class Chef
           }
           EOJS
         },
-      },
-    }
+      }
     
     # Create a new Chef::OpenIDRegistration object.
     def initialize()
@@ -86,8 +88,6 @@ class Chef
       @password = nil
       @validated = false
       @admin = false
-      @couchdb_rev = nil
-      @couchdb = Chef::CouchDB.new
     end
     
     def name=(n)
@@ -113,7 +113,7 @@ class Chef
         'admin' => @admin,
         'chef_type' => 'openid_registration',
       }
-      result["_rev"] = @couchdb_rev if @couchdb_rev
+      result["_rev"] = couchdb_rev if couchdb_rev
       result.to_json(*a)
     end
     
@@ -132,12 +132,7 @@ class Chef
     # List all the Chef::OpenIDRegistration objects in the CouchDB.  If inflate is set to true, you will get
     # the full list of all registration objects.  Otherwise, you'll just get the IDs
     def self.list(inflate=false)
-      rs = Chef::CouchDB.new.list("registrations", inflate)
-      if inflate
-        rs["rows"].collect { |r| r["value"] }
-      else
-        rs["rows"].collect { |r| r["key"] }
-      end
+      couchdb_list(inflate)
     end
     
     def self.cdb_list(*args)
@@ -146,28 +141,22 @@ class Chef
     
     # Load an OpenIDRegistration by name from CouchDB
     def self.load(name)
-      Chef::CouchDB.new.load("openid_registration", name)
+      couchdb_load(name)
     end
     
     # Whether or not there is an OpenID Registration with this key.
     def self.has_key?(name)
-      Chef::CouchDB.new.has_key?("openid_registration", name)
+      couchdb.has_key?("openid_registration", name)
     end
     
     # Remove this OpenIDRegistration from the CouchDB
     def destroy
-      @couchdb.delete("openid_registration", @name, @couchdb_rev)
+      couchdb_destroy
     end
     
     # Save this OpenIDRegistration to the CouchDB
     def save
-      results = @couchdb.store("openid_registration", @name, self)
-      @couchdb_rev = results["rev"]
-    end
-    
-    # Set up our CouchDB design document
-    def self.create_design_document
-      Chef::CouchDB.new.create_design_document("registrations", DESIGN_DOCUMENT)
+      couchdb_save
     end
     
     protected

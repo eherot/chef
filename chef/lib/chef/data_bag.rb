@@ -20,6 +20,7 @@
 require 'chef/config'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
+require 'chef/mixin/couchable'
 require 'chef/couchdb'
 require 'chef/data_bag_item'
 require 'chef/index_queue'
@@ -33,7 +34,10 @@ class Chef
     include Chef::Mixin::ParamsValidate
     include Chef::IndexQueue::Indexable
     
-    DESIGN_DOCUMENT = {
+    include Chef::Mixin::Couchable
+    extend  Chef::Mixin::Couchable::ClassMethods
+    
+    database :data_bags,
       "version" => 2,
       "language" => "javascript",
       "views" => {
@@ -65,16 +69,13 @@ class Chef
           EOJS
         }
       }
-    }
 
     attr_accessor :couchdb_rev, :couchdb_id
     
     # Create a new Chef::DataBag
     def initialize
       @name = '' 
-      @couchdb_rev = nil
       @couchdb_id = nil
-      @couchdb = Chef::CouchDB.new 
     end
 
     def name(arg=nil) 
@@ -109,18 +110,6 @@ class Chef
       bag
     end
     
-    # List all the Chef::DataBag objects in the CouchDB.  If inflate is set to true, you will get
-    # the full list of all Roles, fully inflated.
-    def self.cdb_list(inflate=false)
-      couchdb = Chef::CouchDB.new
-      rs = couchdb.list("data_bags", inflate)
-      if inflate
-        rs["rows"].collect { |r| r["value"] }
-      else
-        rs["rows"].collect { |r| r["key"] }
-      end
-    end
-    
     def self.list(inflate=false)
       r = Chef::REST.new(Chef::Config[:chef_server_url])
       if inflate
@@ -134,37 +123,15 @@ class Chef
       end
     end
     
-    # Load a Data Bag by name from CouchDB
-    def self.cdb_load(name)
-      couchdb = Chef::CouchDB.new
-      couchdb.load("data_bag", name)
-    end
-    
     # Load a Data Bag by name via the RESTful API
     def self.load(name)
       r = Chef::REST.new(Chef::Config[:chef_server_url])
       r.get_rest("data/#{name}")
     end
     
-    # Remove this Data Bag from CouchDB
-    def cdb_destroy
-      removed = @couchdb.delete("data_bag", @name, @couchdb_rev)
-      rs = @couchdb.get_view("data_bags", "entries", :include_docs => true, :startkey => @name, :endkey => @name)
-      rs["rows"].each do |row|
-        row["doc"].cdb_destroy
-      end
-      removed
-    end
-    
     def destroy
       r = Chef::REST.new(Chef::Config[:chef_server_url])
       r.delete_rest("data/#{@name}")
-    end
-    
-    # Save this Data Bag to the CouchDB
-    def cdb_save
-      results = @couchdb.store("data_bag", @name, self)
-      @couchdb_rev = results["rev"]
     end
     
     # Save the Data Bag via RESTful API
@@ -200,12 +167,6 @@ class Chef
         rs = @couchdb.get_view("data_bags", "entries", :startkey => @name, :endkey => @name)
         rs["rows"].collect { |r| r["value"] }
       end
-    end
-    
-    # Set up our CouchDB design document
-    def self.create_design_document
-      couchdb = Chef::CouchDB.new
-      couchdb.create_design_document("data_bags", DESIGN_DOCUMENT)
     end
     
     # As a string

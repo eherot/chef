@@ -20,6 +20,7 @@
 require 'chef/config'
 require 'chef/mixin/params_validate'
 require 'chef/mixin/from_file'
+require 'chef/mixin/couchable'
 require 'chef/couchdb'
 require 'chef/data_bag_item'
 require 'extlib'
@@ -32,8 +33,10 @@ class Chef
     include Chef::Mixin::ParamsValidate
     include Chef::IndexQueue::Indexable
     
-    DESIGN_DOCUMENT = {
-      "version" => 1,
+    include Chef::Mixin::Couchable
+    extend  Chef::Mixin::Couchable::ClassMethods
+    
+    database :data_bag_items, "version" => 1,
       "language" => "javascript",
       "views" => {
         "all" => {
@@ -55,17 +58,14 @@ class Chef
           EOJS
         }
       }
-    }
 
     attr_accessor :couchdb_rev, :raw_data, :couchdb_id
     
     # Create a new Chef::DataBagItem
     def initialize(couchdb=nil)
-      @couchdb_rev = nil
       @couchdb_id = nil
       @data_bag = nil
       @raw_data = Mash.new
-      @couchdb = Chef::CouchDB.new 
     end
 
     def raw_data
@@ -161,22 +161,10 @@ class Chef
       self.raw_data.send(method_symbol, *args, &block)
     end
     
-    # Load a Data Bag Item by name from CouchDB
-    def self.cdb_load(data_bag, name)
-      couchdb = Chef::CouchDB.new
-      couchdb.load("data_bag_item", object_name(data_bag, name))
-    end
-    
     # Load a Data Bag Item by name via RESTful API
     def self.load(data_bag, name)
       r = Chef::REST.new(Chef::Config[:chef_server_url])
       r.get_rest("data/#{data_bag}/#{name}")
-    end
-    
-    # Remove this Data Bag Item from CouchDB
-    def cdb_destroy
-      removed = @couchdb.delete("data_bag_item", object_name, @couchdb_rev)
-      removed
     end
     
     def destroy(data_bag=data_bag, databag_item=name)
@@ -184,12 +172,6 @@ class Chef
       r.delete_rest("data/#{data_bag}/#{databag_item}")
     end
      
-    # Save this Data Bag Item to CouchDB
-    def cdb_save
-      results = @couchdb.store("data_bag_item", object_name, self)
-      @couchdb_rev = results["rev"]
-    end
-    
     # Save this Data Bag Item via RESTful API
     def save(item_id=@raw_data['id'])
       r = Chef::REST.new(Chef::Config[:chef_server_url])
@@ -211,12 +193,6 @@ class Chef
       r.post_rest("data/#{data_bag}", @raw_data) 
       self
     end 
-    
-    # Set up our CouchDB design document
-    def self.create_design_document
-      couchdb = Chef::CouchDB.new
-      couchdb.create_design_document("data_bag_items", DESIGN_DOCUMENT)
-    end
     
     # As a string
     def to_s

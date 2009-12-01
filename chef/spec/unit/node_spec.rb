@@ -394,16 +394,11 @@ describe Chef::Node do
   end
 
   describe "couchdb model" do
-    before(:each) do
-      @mock_couch = mock("Chef::CouchDB")
-    end
-
     describe "list" do  
       before(:each) do
-        @mock_couch.stub!(:list).and_return(
+        Chef::Node.couchdb.stub!(:list).and_return(
           { "rows" => [ { "value" => "a", "key" => "avenue" } ] }
         )
-        Chef::CouchDB.stub!(:new).and_return(@mock_couch) 
       end
 
       it "should retrieve a list of nodes from CouchDB" do
@@ -421,16 +416,16 @@ describe Chef::Node do
 
     describe "load" do
       it "should load a node from couchdb by name" do
-        @mock_couch.should_receive(:load).with("node", "coffee").and_return(true)
-        Chef::CouchDB.stub!(:new).and_return(@mock_couch)
+        Chef::Node.couchdb.should_receive(:load).with("node", "coffee").and_return(true)
+        Chef::CouchDB.stub!(:new).and_return(Chef::Node.couchdb)
         Chef::Node.cdb_load("coffee")
       end
     end
 
     describe "destroy" do
       it "should delete this node from couchdb" do
-        @mock_couch.should_receive(:delete).with("node", "bob", 1).and_return(true)
-        Chef::CouchDB.stub!(:new).and_return(@mock_couch)
+        Chef::Node.couchdb.should_receive(:delete).with("node", "bob", 1).and_return(true)
+        Chef::CouchDB.stub!(:new).and_return(Chef::Node.couchdb)
         node = Chef::Node.new
         node.name "bob"
         node.couchdb_rev = 1
@@ -440,15 +435,15 @@ describe Chef::Node do
 
     describe "save" do
       before(:each) do
-        @mock_couch.stub!(:store).and_return({ "rev" => 33 })
-        Chef::CouchDB.stub!(:new).and_return(@mock_couch)
+        Chef::Node.couchdb.stub!(:store).and_return({ "rev" => 33 })
+        Chef::CouchDB.stub!(:new).and_return(Chef::Node.couchdb)
         @node = Chef::Node.new
         @node.name "bob"
         @node.couchdb_rev = 1
       end
 
       it "should save the node to couchdb" do
-        @mock_couch.should_receive(:store).with("node", "bob", @node).and_return({ "rev" => 33 })
+        Chef::Node.couchdb.should_receive(:store).with("node", "bob", @node).and_return({ "rev" => 33 })
         @node.cdb_save
       end
 
@@ -460,8 +455,8 @@ describe Chef::Node do
 
     describe "create_design_document" do
       it "should create our design document" do
-        @mock_couch.should_receive(:create_design_document).with("nodes", Chef::Node::DESIGN_DOCUMENT)
-        Chef::CouchDB.stub!(:new).and_return(@mock_couch)
+        Chef::Node.couchdb.should_receive(:create_design_document).with("nodes", Chef::Node.design_document)
+        Chef::CouchDB.stub!(:new).and_return(Chef::Node.couchdb)
         Chef::Node.create_design_document
       end
     end
