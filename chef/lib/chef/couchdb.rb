@@ -134,9 +134,7 @@ class Chef
           :name => { :kind_of => String },
         }
       )
-      doc = find_by_name(obj_type, name)
-      doc.couchdb = self if doc.respond_to?(:couchdb)
-      doc 
+      find_by_name(obj_type, name)
     end
   
     def delete(obj_type, name, rev=nil)
@@ -160,7 +158,6 @@ class Chef
         end
       end
       response = @rest.delete_rest("#{couchdb_database}/#{uuid}?rev=#{rev}")
-      response.couchdb = self if response.respond_to?(:couchdb=)
       Chef::Log.info("Sending #{obj_type}(#{uuid}) to the index queue for deletion..")
       
       object.delete_from_index(:database => couchdb_database, :id => uuid, :type => obj_type)
@@ -178,13 +175,10 @@ class Chef
         }
       )
       if inflate
-        r = @rest.get_rest(view_uri(view, "all"))
-        r["rows"].each { |i| i["value"].couchdb = self if i["value"].respond_to?(:couchdb=) }
-        r
+        @rest.get_rest(view_uri(view, "all"))
       else
-        r = @rest.get_rest(view_uri(view, "all_id"))
+        @rest.get_rest(view_uri(view, "all_id"))
       end
-      r
     end
   
     def has_key?(obj_type, name)
