@@ -281,6 +281,7 @@ class ChefServerApi::Application < Merb::Controller
       if node_name
         next unless valid_cookbooks[cookbook.name.to_s]
       end
+      cookbook_list[cookbook.name.to_s] = load_cookbook_files(cookbook)
     end
     Chef::Log.debug("sending cookbook list: #{cookbook_list.inspect}")
     cookbook_list
