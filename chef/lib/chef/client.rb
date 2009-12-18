@@ -270,7 +270,15 @@ class Chef
     # true:: Always returns true
     def sync_cookbooks
       Chef::Log.debug("Synchronizing cookbooks")
-      cookbook_hash = @rest.get_rest("nodes/#{@safe_name}/cookbooks")
+      begin
+        cookbook_hash = @rest.get_rest("nodes/#{@safe_name}/cookbooks")
+      rescue ::Net::HTTPServerException => e
+        if e.message =~ /Not Found/
+          Chef::Log.fatal("The server did not have one or more required cookbooks. Check the server log for more detail.")
+        end
+        raise e
+      end
+        
       Chef::Log.debug("Cookbooks to load: #{cookbook_hash.inspect}")
       Chef::FileCache.list.each do |cache_file|
         if cache_file =~ /^cookbooks\/(.+?)\//
