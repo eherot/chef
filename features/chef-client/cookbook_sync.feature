@@ -11,6 +11,14 @@ Feature: Synchronize cookbooks from the server
      Then the run should exit '0'
       And 'stdout' should have 'INFO: Storing updated cookbooks/synchronize/recipes/default.rb in the cache.'
 
+	Scenario: Try to sync a non-existent cookbook
+	  Given a validated node
+		  And it includes the recipe 'frabnabjabtalistic'
+	   When I run the chef-client
+		 Then	the run should exit '1'
+			And 'stderr' should have '404 "Not Found"'
+			And 'stdout' should have 'FATAL: The server did not have one or more required cookbooks'
+
   Scenario: Synchronize dependent cookbooks 
     Given a validated node
       And it includes the recipe 'synchronize_deps'
