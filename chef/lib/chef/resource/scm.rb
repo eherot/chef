@@ -17,11 +17,11 @@
 #
 
 
-require 'chef/resource'
+require 'chef/resource/base'
 
-class Chef
-  class Resource
-    class Scm < Chef::Resource
+module Chef
+  module Resource
+    class Scm < Chef::Resource::Base
       
       def initialize(name, collection=nil, node=nil)
         super(name, collection, node)

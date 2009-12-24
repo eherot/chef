@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-class Chef
-  class Resource
+module Chef
+  module Resource
     
     # Convenience class for using the deploy resource with the timestamped
     # deployment strategy (provider) 

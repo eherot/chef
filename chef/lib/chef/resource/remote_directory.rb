@@ -18,8 +18,8 @@
 
 require 'chef/resource/directory'
 
-class Chef
-  class Resource
+module Chef
+  module Resource
     class RemoteDirectory < Chef::Resource::Directory
             
       def initialize(name, collection=nil, node=nil)

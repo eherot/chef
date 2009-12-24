@@ -19,83 +19,58 @@
 
 require 'chef/mixin/from_file'
 require 'chef/mixin/convert_to_class_name'
-require 'chef/mixin/recipe_definition_dsl_core'
+#require 'chef/mixin/recipe_definition_dsl_core'
 
-class Chef
-  class Provider
-    
-    include Chef::Mixin::RecipeDefinitionDSLCore
-    
-    attr_accessor :node, :new_resource, :current_resource
-    
-    def initialize(node, new_resource, collection=nil, definitions={}, cookbook_loader=nil)
-      @node = node
-      @new_resource = new_resource
-      @current_resource = nil
-      @collection = collection
-      @definitions = definitions
-      @cookbook_loader = cookbook_loader
-      @cookbook_name = @new_resource.cookbook_name
-    end
-    
-    def load_current_resource
-      raise Chef::Exceptions::Override, "You must override load_current_resource in #{self.to_s}"
-    end
-    
-    def action_nothing
-      Chef::Log.debug("Doing nothing for #{@new_resource.to_s}")
-      true
-    end
-    
-    protected
-    
-    def recipe_eval(*args, &block)
-      provider_collection, @collection = @collection, Chef::ResourceCollection.new
-      
-      instance_eval(*args, &block)
-      Chef::Runner.new(@node, @collection).converge
-      
-      @collection = provider_collection
-    end
-    
-    public
-    
-    class << self
-      include Chef::Mixin::ConvertToClassName
-      
-      def build_from_file(cookbook_name, filename)
-        pname = filename_to_qualified_string(cookbook_name, filename)
-        
-        new_provider_class = Class.new self do |cls|
-          
-          def load_current_resource
-            # silence Chef::Exceptions::Override exception
-          end
-          
-          class << cls
-            include Chef::Mixin::FromFile
-            
-            # setup DSL's shortcut methods
-            def action(name, &block)
-              define_method("action_#{name.to_s}") do
-                instance_eval(&block)
-              end
-            end
-          end
-          
-          # load provider definition from file
-          cls.class_from_file(filename)
-        end
-        
-        # register new class as a Chef::Provider
-        pname = filename_to_qualified_string(cookbook_name, filename)
-        class_name = convert_to_class_name(pname)
-        Chef::Provider.const_set(class_name, new_provider_class)
-        Chef::Log.debug("Loaded contents of #{filename} into a provider named #{pname} defined in Chef::Provider::#{class_name}")
-        
-        new_provider_class
-      end
-    end
+require 'chef/provider/base.rb'
 
-  end
-end
+require 'chef/provider/breakpoint.rb'
+require 'chef/provider/cron.rb'
+require 'chef/provider/deploy.rb'
+require 'chef/provider/deploy/revision.rb'
+require 'chef/provider/deploy/timestamped.rb'
+require 'chef/provider/directory.rb'
+require 'chef/provider/erl_call.rb'
+require 'chef/provider/execute.rb'
+require 'chef/provider/file.rb'
+require 'chef/provider/git.rb'
+require 'chef/provider/group.rb'
+require 'chef/provider/group/dscl.rb'
+require 'chef/provider/group/gpasswd.rb'
+require 'chef/provider/group/groupadd.rb'
+require 'chef/provider/group/pw.rb'
+require 'chef/provider/group/usermod.rb'
+require 'chef/provider/http_request.rb'
+require 'chef/provider/ifconfig.rb'
+require 'chef/provider/link.rb'
+require 'chef/provider/mdadm.rb'
+require 'chef/provider/mount.rb'
+require 'chef/provider/mount/mount.rb'
+require 'chef/provider/package.rb'
+require 'chef/provider/package/apt.rb'
+require 'chef/provider/package/dpkg.rb'
+require 'chef/provider/package/easy_install.rb'
+require 'chef/provider/package/freebsd.rb'
+require 'chef/provider/package/macports.rb'
+require 'chef/provider/package/portage.rb'
+require 'chef/provider/package/rpm.rb'
+require 'chef/provider/package/rubygems.rb'
+require 'chef/provider/package/yum.rb'
+require 'chef/provider/package/zypper.rb'
+require 'chef/provider/remote_directory.rb'
+require 'chef/provider/remote_file.rb'
+require 'chef/provider/route.rb'
+require 'chef/provider/ruby_block.rb'
+require 'chef/provider/script.rb'
+require 'chef/provider/service.rb'
+require 'chef/provider/service/debian.rb'
+require 'chef/provider/service/freebsd.rb'
+require 'chef/provider/service/gentoo.rb'
+require 'chef/provider/service/init.rb'
+require 'chef/provider/service/redhat.rb'
+require 'chef/provider/service/simple.rb'
+require 'chef/provider/subversion.rb'
+require 'chef/provider/template.rb'
+require 'chef/provider/user.rb'
+require 'chef/provider/user/dscl.rb'
+require 'chef/provider/user/pw.rb'
+require 'chef/provider/user/useradd.rb'

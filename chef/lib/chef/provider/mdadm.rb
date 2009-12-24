@@ -18,11 +18,11 @@
 
 require 'chef/log'
 require 'chef/mixin/command'
-require 'chef/provider'
+require 'chef/provider/base'
 
-class Chef
-  class Provider
-    class Mdadm < Chef::Provider
+module Chef
+  module Provider
+    class Mdadm < Chef::Provider::Base
 
       include Chef::Mixin::Command
 

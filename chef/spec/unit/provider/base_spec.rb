@@ -16,19 +16,19 @@
 # limitations under the License.
 #
 
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
-describe Chef::Provider do
+describe Chef::Provider::Base do
   before(:each) do
-    @resource = Chef::Resource.new("funk")
+    @resource = Chef::Resource::Base.new("funk")
     @resource.cookbook_name = "a_delicious_pie"
     @node = Chef::Node.new
     @node.name "latte"
-    @provider = Chef::Provider.new(@node, @resource)
+    @provider = Chef::Provider::Base.new(@node, @resource)
   end
   
-  it "should return a Chef::Provider" do
-    @provider.should be_a_kind_of(Chef::Provider)
+  it "should return a Chef::Provider::Base" do
+    @provider.should be_a_kind_of(Chef::Provider::Base)
   end
   
   it "should store the resource passed to new as new_resource" do

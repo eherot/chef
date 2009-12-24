@@ -19,8 +19,8 @@
 require 'tempfile'
 require 'chef/provider/execute'
 
-class Chef
-  class Provider
+module Chef
+  module Provider
     class Script < Chef::Provider::Execute
       
       def action_run  

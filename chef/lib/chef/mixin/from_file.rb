@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-class Chef
+module Chef
   module Mixin
     module FromFile
     

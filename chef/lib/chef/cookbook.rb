@@ -20,10 +20,10 @@
 require 'chef/log'
 require 'chef/node'
 require 'chef/resource_definition'
-require 'chef/recipe'
+#require 'chef/recipe'
 require 'chef/mixin/convert_to_class_name'
 
-class Chef
+module Chef
   class Cookbook
     include Chef::Mixin::ConvertToClassName
     

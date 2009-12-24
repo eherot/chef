@@ -28,7 +28,7 @@ require 'chef/webui_user'
 require 'nanite'
 require 'eventmachine'
 
-class Chef
+module Chef
   class Solr
     class Application
       class Indexer < Chef::Application

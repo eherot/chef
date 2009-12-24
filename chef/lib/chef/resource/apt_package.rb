@@ -16,11 +16,8 @@
 # limitations under the License.
 #
 
-require 'chef/resource/package'
-require 'chef/provider/package/apt'
-
-class Chef
-  class Resource
+module Chef
+  module Resource
     class AptPackage < Chef::Resource::Package
         
       def initialize(name, collection=nil, node=nil)

@@ -18,13 +18,13 @@
 
 
 require 'chef/log'
-require 'chef/provider'
+require 'chef/provider/base'
 require 'chef/mixin/command'
 require 'fileutils'
 
-class Chef
-  class Provider
-    class Subversion < Chef::Provider
+module Chef
+  module Provider
+    class Subversion < Chef::Provider::Base
       
       include Chef::Mixin::Command
       

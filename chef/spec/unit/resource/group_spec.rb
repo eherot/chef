@@ -24,7 +24,7 @@ describe Chef::Resource::Group, "initialize" do
   end  
 
   it "should create a new Chef::Resource::Group" do
-    @resource.should be_a_kind_of(Chef::Resource)
+    @resource.should be_a_kind_of(Chef::Resource::Base)
     @resource.should be_a_kind_of(Chef::Resource::Group)
   end
 

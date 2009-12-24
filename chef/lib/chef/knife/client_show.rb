@@ -20,7 +20,7 @@ require 'chef/knife'
 require 'chef/api_client'
 require 'json'
 
-class Chef
+module Chef
   class Knife
     class ClientShow < Knife
 

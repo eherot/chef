@@ -18,9 +18,9 @@
 
 require 'tempfile'
 
-class Chef
-  class Provider
-    class HttpRequest < Chef::Provider
+module Chef
+  module Provider
+    class HttpRequest < Chef::Provider::Base
       
       attr_accessor :rest
       

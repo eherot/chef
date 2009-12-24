@@ -17,12 +17,12 @@
 # limitations under the License.
 #
 
-require 'chef/recipe'
-require 'chef/resource'
+#require 'chef/provider/base'
+#require 'chef/resource/base'
 require 'chef/mixin/convert_to_class_name'
 require 'chef/mixin/language'
 
-class Chef
+module Chef
   module Mixin
     module RecipeDefinitionDSLCore
       
@@ -66,7 +66,7 @@ class Chef
           resource.recipe_name = @recipe_name
           resource.params = @params
           # Determine whether this resource is being created in the context of an enclosing Provider
-          resource.enclosing_provider = self.is_a?(Chef::Provider) ? self : nil
+          resource.enclosing_provider = self.is_a?(Chef::Provider::Base) ? self : nil
           resource.instance_eval(&block) if block
 
           @collection.insert(resource)

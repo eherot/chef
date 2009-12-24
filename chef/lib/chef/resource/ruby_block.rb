@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-class Chef
-  class Resource
-    class RubyBlock < Chef::Resource
+module Chef
+  module Resource
+    class RubyBlock < Chef::Resource::Base
       def initialize(name, collection=nil, node=nil)
         super(name, collection, node)
         @resource_name = :ruby_block

@@ -275,7 +275,7 @@ class Object
   
 end
 
-class Chef
+module Chef
   class Recipe
     
     def shef_help

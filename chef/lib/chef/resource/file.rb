@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require 'chef/resource/base'
 
-class Chef
-  class Resource
-    class File < Chef::Resource
+module Chef
+  module Resource
+    class File < Chef::Resource::Base
         
       def initialize(name, collection=nil, node=nil)
         super(name, collection, node)

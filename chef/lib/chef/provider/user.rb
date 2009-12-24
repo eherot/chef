@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'chef/provider'
+require 'chef/provider/base'
 require 'chef/mixin/command'
 require 'chef/resource/user'
 require 'etc'
 
-class Chef
-  class Provider
-    class User < Chef::Provider
+module Chef
+  module Provider
+    class User < Chef::Provider::Base
       
       include Chef::Mixin::Command
       

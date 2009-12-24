@@ -17,7 +17,7 @@
 
 require 'deep_merge'
 
-class Chef
+module Chef
   module Mixin
     class DeepMerge
       def self.merge(first, second)

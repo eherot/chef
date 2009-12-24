@@ -24,7 +24,7 @@ require 'chef/log'
 require 'chef/mixin/deep_merge'
 require 'chef/mixin/language_include_recipe'
 
-class Chef
+module Chef
   class Compile
       
     attr_accessor :node, :cookbook_loader, :collection, :definitions

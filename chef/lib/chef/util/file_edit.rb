@@ -19,7 +19,7 @@ require 'ftools'
 require 'fileutils'
 require 'tempfile'
 
-class Chef
+module Chef
 	class Util
 		class FileEdit
 

@@ -25,7 +25,7 @@ describe Chef::Resource::Route do
   end  
 
   it "should create a new Chef::Resource::Route" do
-    @resource.should be_a_kind_of(Chef::Resource)
+    @resource.should be_a_kind_of(Chef::Resource::Base)
     @resource.should be_a_kind_of(Chef::Resource::Route)
   end
   

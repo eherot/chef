@@ -20,8 +20,8 @@ require 'chef/provider/mount'
 require 'chef/log'
 require 'chef/mixin/command'
 
-class Chef
-  class Provider
+module Chef
+  module Provider
     class Mount
       class Mount < Chef::Provider::Mount
 

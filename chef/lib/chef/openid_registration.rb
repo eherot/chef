@@ -23,7 +23,7 @@ require 'digest/sha1'
 require 'rubygems'
 require 'json'
 
-class Chef
+module Chef
   class OpenIDRegistration
     
     attr_accessor :name, :salt, :validated, :password, :couchdb_rev, :admin

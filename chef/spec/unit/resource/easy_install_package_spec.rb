@@ -25,7 +25,7 @@ describe Chef::Resource::EasyInstallPackage, "initialize" do
   end
 
   it "should create a new Chef::Resource::EasyInstallPackage" do
-    @resource.should be_a_kind_of(Chef::Resource)
+    @resource.should be_a_kind_of(Chef::Resource::Base)
     @resource.should be_a_kind_of(Chef::Resource::EasyInstallPackage)
   end
 

@@ -20,7 +20,7 @@
 require 'chef/config'
 require 'etc'
 
-class Chef
+module Chef
   class Daemon
     class << self
       attr_accessor :name

@@ -16,12 +16,14 @@
 # limitations under the License.
 #
 
-require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
 
-class Chef
-  class Provider
+require 'chef/provider/package'
+require 'chef/provider/package/apt'
+
+module Chef
+  module Provider
     class Package
       class Dpkg < Chef::Provider::Package::Apt
       

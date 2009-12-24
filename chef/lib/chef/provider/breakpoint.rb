@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-class Chef
-  class Provider
-    class Breakpoint < Chef::Provider
+module Chef
+  module Provider
+    class Breakpoint < Chef::Provider::Base
       
       def load_current_resource
       end

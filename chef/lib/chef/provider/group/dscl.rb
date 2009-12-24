@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-class Chef
-  class Provider
+module Chef
+  module Provider
     class Group
       class Dscl < Chef::Provider::Group
 

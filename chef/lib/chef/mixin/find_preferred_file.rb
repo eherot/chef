@@ -18,7 +18,7 @@
 
 require 'chef/cookbook_loader'
 
-class Chef
+module Chef
   module Mixin
     module FindPreferredFile
 

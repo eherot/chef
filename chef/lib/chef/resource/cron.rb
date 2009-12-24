@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require 'chef/resource/base'
 
-class Chef
-  class Resource
-    class Cron < Chef::Resource
+module Chef
+  module Resource
+    class Cron < Chef::Resource::Base
 
       def initialize(name, collection=nil, node=nil)
         super(name, collection, node)

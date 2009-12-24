@@ -24,7 +24,7 @@ require 'chef/couchdb'
 require 'extlib'
 require 'json'
 
-class Chef
+module Chef
   class DataBagItem
     
     include Chef::Mixin::FromFile

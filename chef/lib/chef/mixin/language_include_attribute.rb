@@ -18,7 +18,7 @@
 
 require 'chef/log'
 
-class Chef
+module Chef
   module Mixin
     module LanguageIncludeAttribute
 

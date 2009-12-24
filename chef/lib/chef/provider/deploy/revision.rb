@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-class Chef
-  class Provider
+module Chef
+  module Provider
     class Deploy
       class Revision < Chef::Provider::Deploy
         

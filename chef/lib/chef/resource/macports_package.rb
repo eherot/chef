@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-class Chef
-  class Resource
+module Chef
+  module Resource
     class MacportsPackage < Chef::Resource::Package
       def initialize(name, collection = nil, node = nil)
         super(name, collection, node)

@@ -19,7 +19,7 @@
 
 require 'chef/knife'
 
-class Chef
+module Chef
   class Knife
     class CookbookMetadata < Knife
 

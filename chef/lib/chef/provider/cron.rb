@@ -18,11 +18,10 @@
 
 require 'chef/log'
 require 'chef/mixin/command'
-require 'chef/provider'
 
-class Chef
-  class Provider
-    class Cron < Chef::Provider
+module Chef
+  module Provider
+    class Cron < Chef::Provider::Base
       include Chef::Mixin::Command
 
       def initialize(node, new_resource, collection=nil, definitions=nil, cookbook_loader=nil)

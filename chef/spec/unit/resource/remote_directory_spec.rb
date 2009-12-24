@@ -25,7 +25,7 @@ describe Chef::Resource::RemoteDirectory do
   end  
 
   it "should create a new Chef::Resource::RemoteDirectory" do
-    @resource.should be_a_kind_of(Chef::Resource)
+    @resource.should be_a_kind_of(Chef::Resource::Base)
     @resource.should be_a_kind_of(Chef::Resource::RemoteDirectory)
   end
 

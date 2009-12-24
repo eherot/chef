@@ -19,8 +19,8 @@
 require 'chef/provider/package'
 require 'chef/mixin/command'
 require 'chef/resource/package'
-class Chef
-  class Provider
+module Chef
+  module Provider
     class Package
       class EasyInstall < Chef::Provider::Package
 

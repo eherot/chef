@@ -30,7 +30,7 @@ require 'chef/api_client'
 require 'chef/couchdb'
 require 'nanite/actor'
 
-class Chef
+module Chef
   class Solr
     class IndexActor
       include ::Nanite::Actor

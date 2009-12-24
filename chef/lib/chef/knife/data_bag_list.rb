@@ -19,7 +19,7 @@
 require 'chef/knife'
 require 'chef/data_bag'
 
-class Chef
+module Chef
   class Knife
     class DataBagList < Knife
 

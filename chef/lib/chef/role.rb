@@ -25,7 +25,7 @@ require 'chef/run_list'
 require 'extlib'
 require 'json'
 
-class Chef
+module Chef
   class Role 
     
     include Chef::Mixin::FromFile

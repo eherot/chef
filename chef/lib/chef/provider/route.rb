@@ -18,12 +18,12 @@
 
 require 'chef/log'
 require 'chef/mixin/command'
-require 'chef/provider'
+require 'chef/provider/base'
 require 'erb'
 
-class Chef
-  class Provider
-    class Route < Chef::Provider
+module Chef
+  module Provider
+    class Route < Chef::Provider::Base
       include Chef::Mixin::Command
 
       def load_current_resource

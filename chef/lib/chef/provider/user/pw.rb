@@ -18,8 +18,8 @@
 
 require 'chef/provider/user'
 
-class Chef
-  class Provider
+module Chef
+  module Provider
     class User
       class Pw < Chef::Provider::User
 

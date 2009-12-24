@@ -28,7 +28,7 @@ begin
 rescue LoadError
 end
 
-class Chef
+module Chef
   class Nanite 
    
     class << self

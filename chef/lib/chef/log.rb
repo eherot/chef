@@ -19,7 +19,7 @@
 require 'chef'
 require 'mixlib/log'
 
-class Chef
+module Chef
   class Log
     extend Mixlib::Log
 

@@ -25,8 +25,8 @@ require 'chef/file_cache'
 require 'uri'
 require 'tempfile'
 
-class Chef
-  class Provider
+module Chef
+  module Provider
     
     class Template < Chef::Provider::File
       

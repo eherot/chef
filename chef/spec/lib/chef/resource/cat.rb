@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-class Chef
-  class Resource
-    class Cat < Chef::Resource
+module Chef
+  module Resource
+    class Cat < Chef::Resource::Base
       
       attr_accessor :action
       

@@ -21,8 +21,8 @@ require 'chef/mixin/command'
 require 'chef/resource/package'
 require 'singleton'
 
-class Chef
-  class Provider
+module Chef
+  module Provider
     class Package
       class Zypper < Chef::Provider::Package  
       

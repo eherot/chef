@@ -19,7 +19,7 @@
 require 'mixlib/cli'
 require 'chef/mixin/convert_to_class_name'
 
-class Chef
+module Chef
   class Knife
     include Mixlib::CLI
     extend Chef::Mixin::ConvertToClassName

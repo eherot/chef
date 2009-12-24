@@ -16,15 +16,14 @@
 # limitations under the License.
 #
 
-require 'chef/config'
-require 'chef/log'
-require 'chef/resource/directory'
-require 'chef/provider'
-require 'chef/provider/file'
 require 'fileutils'
 
-class Chef
-  class Provider
+require 'chef/resource/directory'
+require 'chef/provider/base'
+require 'chef/provider/file'
+
+module Chef
+  module Provider
     class Directory < Chef::Provider::File
       def load_current_resource
         @current_resource = Chef::Resource::Directory.new(@new_resource.name)

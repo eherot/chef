@@ -19,7 +19,7 @@
 require 'chef/mixin/from_file'
 require 'chef/mixin/params_validate'
 
-class Chef
+module Chef
   class ResourceDefinition
     
     include Chef::Mixin::FromFile

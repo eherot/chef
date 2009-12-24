@@ -1,5 +1,5 @@
-class Chef
-  class Provider
+module Chef
+  module Provider
     class Package
       class Macports < Chef::Provider::Package
         def load_current_resource

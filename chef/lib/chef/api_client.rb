@@ -24,7 +24,7 @@ require 'chef/certificate'
 require 'extlib'
 require 'json'
 
-class Chef
+module Chef
   class ApiClient 
     
     include Chef::Mixin::FromFile

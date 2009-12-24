@@ -20,7 +20,7 @@
 require 'chef/mixin/deep_merge'
 require 'chef/log'
 
-class Chef
+module Chef
   class Node
     class Attribute
       attr_accessor :attribute,

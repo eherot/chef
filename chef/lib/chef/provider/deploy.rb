@@ -21,9 +21,9 @@ require "chef/mixin/from_file"
 require "chef/provider/git"
 require "chef/provider/subversion"
 
-class Chef
-  class Provider
-    class Deploy < Chef::Provider
+module Chef
+  module Provider
+    class Deploy < Chef::Provider::Base
       
       include Chef::Mixin::FromFile
       include Chef::Mixin::Command

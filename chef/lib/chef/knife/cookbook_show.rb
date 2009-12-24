@@ -20,7 +20,7 @@ require 'chef/knife'
 require 'json'
 require 'uri'
 
-class Chef
+module Chef
   class Knife
     class CookbookShow < Knife
 

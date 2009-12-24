@@ -20,7 +20,7 @@
 require 'chef/log'
 require 'mixlib/config'
 
-class Chef
+module Chef
   class Config
 
     extend Mixlib::Config

@@ -19,8 +19,8 @@
 require 'chef/provider/service'
 require 'chef/mixin/command'
 
-class Chef
-  class Provider
+module Chef
+  module Provider
     class Service
       class Freebsd < Chef::Provider::Service::Init
 

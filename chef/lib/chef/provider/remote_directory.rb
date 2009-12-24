@@ -22,13 +22,13 @@ require 'chef/rest'
 require 'chef/mixin/find_preferred_file'
 require 'chef/resource/directory'
 require 'chef/resource/remote_file'
-require 'chef/platform'
+#require 'chef/platform'
 require 'uri'
 require 'tempfile'
 require 'net/https'
 
-class Chef
-  class Provider
+module Chef
+  module Provider
     class RemoteDirectory < Chef::Provider::Directory
 
       include ::Chef::Mixin::FindPreferredFile
@@ -87,7 +87,8 @@ class Chef
         new_dir.owner(@new_resource.owner)
         new_dir.recursive(true)
         
-        d_provider = Chef::Platform.provider_for_node(@node, new_dir)
+        raise "FIXME, use resource.find_provider"
+        #d_provider = Chef::Platform.provider_for_node(@node, new_dir)
         d_provider.load_current_resource
         d_provider.action_create
         @new_resource.updated = true if d_provider.new_resource.updated  

@@ -17,11 +17,11 @@
 #
 
 
-require 'chef/resource'
+require 'chef/resource/base'
 
-class Chef
-  class Resource
-    class Breakpoint < Chef::Resource
+module Chef
+  module Resource
+    class Breakpoint < Chef::Resource::Base
       
       def initialize(action="break", *args)
         @name = caller.first

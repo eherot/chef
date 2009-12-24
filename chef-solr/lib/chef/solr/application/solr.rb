@@ -22,7 +22,7 @@ require 'chef/application'
 require 'chef/daemon'
 require 'chef/client'
 
-class Chef
+module Chef
   class Solr
     class Application
       class Solr < Chef::Application

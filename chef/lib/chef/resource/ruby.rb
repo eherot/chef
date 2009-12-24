@@ -18,8 +18,8 @@
 
 require 'chef/resource/script'
 
-class Chef
-  class Resource
+module Chef
+  module Resource
     class Ruby < Chef::Resource::Script
         
       def initialize(name, collection=nil, node=nil)

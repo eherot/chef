@@ -19,8 +19,8 @@
 require 'chef/provider/user'
 require 'openssl'
 
-class Chef
-  class Provider
+module Chef
+  module Provider
     class User
       class Dscl < Chef::Provider::User
         

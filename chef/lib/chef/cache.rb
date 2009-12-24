@@ -24,7 +24,7 @@ require 'chef/mixin/convert_to_class_name'
 require 'singleton'
 require 'moneta'
 
-class Chef 
+module Chef 
   class Cache
     include Chef::Mixin::ConvertToClassName
     include ::Singleton

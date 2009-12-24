@@ -16,26 +16,26 @@
 # limitations under the License.
 #
 
-require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
+require File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "spec_helper"))
 
-class ResourceTestHarness < Chef::Resource
+class ResourceTestHarness < Chef::Resource::Base
   provider_base Chef::Provider::Package
 end
 
-describe Chef::Resource do
+describe Chef::Resource::Base do
   before(:each) do
-    @resource = Chef::Resource.new("funk")
+    @resource = Chef::Resource::Base.new("funk")
   end
   
   describe "initialize" do
-    it "should create a new Chef::Resource" do
-      @resource.should be_a_kind_of(Chef::Resource)
+    it "should create a new Chef::Resource::Base" do
+      @resource.should be_a_kind_of(Chef::Resource::Base)
     end
   end
   
   describe "load_prior_resource" do
     before(:each) do
-      @prior_resource = Chef::Resource.new("funk")
+      @prior_resource = Chef::Resource::Base.new("funk")
       @prior_resource.supports(:funky => true)
       @prior_resource.source_line
       @prior_resource.allowed_actions << :funkytown
@@ -182,7 +182,7 @@ describe Chef::Resource do
     it "should deserialize itself from json" do
       json = @resource.to_json
       serialized_node = JSON.parse(json)
-      serialized_node.should be_a_kind_of(Chef::Resource)
+      serialized_node.should be_a_kind_of(Chef::Resource::Base)
       serialized_node.name.should eql(@resource.name)
     end
   end
@@ -215,10 +215,16 @@ describe Chef::Resource do
     end
   end
   
+  describe "finding the provider for itself" do
+    it "finds the provider for itself" do
+      pending("once I can actually run some damn code.")
+    end
+  end
+  
   describe "setting the base provider class for the resource" do
     
     it "defaults to Chef::Provider for the base class" do
-      Chef::Resource.provider_base.should == Chef::Provider
+      Chef::Resource::Base.provider_base.should == Chef::Provider
     end
     
     it "allows the base provider to be overriden by a " do

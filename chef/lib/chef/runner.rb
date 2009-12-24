@@ -21,7 +21,7 @@ require 'chef/node'
 require 'chef/resource_collection'
 require 'chef/platform'
 
-class Chef
+module Chef
   class Runner
     
     include Chef::Mixin::ParamsValidate

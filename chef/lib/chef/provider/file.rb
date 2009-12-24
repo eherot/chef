@@ -21,13 +21,13 @@ require 'chef/log'
 require 'chef/resource/file'
 require 'chef/mixin/checksum'
 require 'chef/mixin/generate_url'
-require 'chef/provider'
+require 'chef/provider/base'
 require 'etc'
 require 'fileutils'
 
-class Chef
-  class Provider
-    class File < Chef::Provider
+module Chef
+  module Provider
+    class File < Chef::Provider::Base
       include Chef::Mixin::Checksum
       include Chef::Mixin::GenerateURL
 

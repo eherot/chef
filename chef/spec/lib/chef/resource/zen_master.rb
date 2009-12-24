@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-class Chef
-  class Resource
-    class ZenMaster < Chef::Resource
+module Chef
+  module Resource
+    class ZenMaster < Chef::Resource::Base
       attr_reader :peace
       
       def initialize(name, collection=nil, node=nil)

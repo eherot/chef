@@ -18,8 +18,8 @@
 
 require 'chef/resource/package'
 
-class Chef
-  class Resource
+module Chef
+  module Resource
     class EasyInstallPackage < Chef::Resource::Package
 
       def initialize(name, collection=nil, node=nil)

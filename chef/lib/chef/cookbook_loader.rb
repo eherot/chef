@@ -22,7 +22,7 @@ require 'chef/config'
 require 'chef/cookbook'
 require 'chef/cookbook/metadata'
 
-class Chef
+module Chef
   class CookbookLoader
     
     attr_accessor :cookbook, :metadata

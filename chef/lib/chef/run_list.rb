@@ -17,7 +17,7 @@
 
 require 'chef/mixin/deep_merge'
 
-class Chef
+module Chef
   class RunList
     include Enumerable
 

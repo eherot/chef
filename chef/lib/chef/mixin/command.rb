@@ -23,7 +23,7 @@ require 'fcntl'
 require 'etc'
 require 'io/wait'
 
-class Chef
+module Chef
   module Mixin
     module Command
       

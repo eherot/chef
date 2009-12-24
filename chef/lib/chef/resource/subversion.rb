@@ -18,8 +18,8 @@
 
 require "chef/resource/scm"
 
-class Chef
-  class Resource
+module Chef
+  module Resource
     class Subversion < Chef::Resource::Scm
       
       def initialize(name, collection=nil, node=nil)

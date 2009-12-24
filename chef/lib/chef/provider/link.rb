@@ -20,11 +20,11 @@ require 'chef/config'
 require 'chef/log'
 require 'chef/mixin/command'
 require 'chef/resource/link'
-require 'chef/provider'
+require 'chef/provider/base'
 
-class Chef
-  class Provider
-    class Link < Chef::Provider
+module Chef
+  module Provider
+    class Link < Chef::Provider::Base
       include Chef::Mixin::Command
 
       def negative_complement(big)

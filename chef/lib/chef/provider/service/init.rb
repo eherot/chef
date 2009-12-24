@@ -20,8 +20,8 @@ require 'chef/provider/service'
 require 'chef/provider/service/simple'
 require 'chef/mixin/command'
 
-class Chef
-  class Provider
+module Chef
+  module Provider
     class Service
       class Init < Chef::Provider::Service::Simple
         

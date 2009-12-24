@@ -18,8 +18,8 @@
 
 require 'chef/provider/group/groupadd'
 
-class Chef
-  class Provider
+module Chef
+  module Provider
     class Group
       class Usermod < Chef::Provider::Group::Groupadd
         

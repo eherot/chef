@@ -19,7 +19,7 @@
 require 'tempfile'
 require 'erubis'
 
-class Chef
+module Chef
   module Mixin
     module Template
       

@@ -24,7 +24,7 @@ require 'digest/sha1'
 require 'rubygems'
 require 'json'
 
-class Chef
+module Chef
   class WebUIUser
     
     attr_accessor :name, :salt, :validated, :password, :couchdb_rev, :admin, :openid

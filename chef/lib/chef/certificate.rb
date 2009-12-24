@@ -23,7 +23,7 @@ require 'chef/api_client'
 require 'openssl'
 require 'fileutils'
 
-class Chef
+module Chef
   class Certificate
     class << self
   

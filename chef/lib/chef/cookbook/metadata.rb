@@ -23,7 +23,7 @@ require 'chef/mixin/check_helper'
 require 'chef/log'
 require 'chef/cookbook/metadata/version'
 
-class Chef
+module Chef
   class Cookbook
     class Metadata
     

@@ -19,7 +19,7 @@
 require 'digest/sha2'
 require 'chef/cache/checksum'
 
-class Chef
+module Chef
   module Mixin
     module Checksum
 

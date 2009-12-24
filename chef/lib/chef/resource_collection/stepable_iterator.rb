@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-class Chef
+module Chef
   class ResourceCollection
     class StepableIterator
       

@@ -17,11 +17,11 @@
 #
 
 require 'chef/mixin/command'
-require 'chef/provider'
+require 'chef/provider/base'
 
-class Chef
-  class Provider
-    class Service < Chef::Provider
+module Chef
+  module Provider
+    class Service < Chef::Provider::Base
 
       include Chef::Mixin::Command
 

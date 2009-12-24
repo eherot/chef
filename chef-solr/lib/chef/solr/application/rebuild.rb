@@ -24,7 +24,7 @@ require 'chef/solr/index'
 require 'nanite'
 require 'eventmachine'
 
-class Chef
+module Chef
   class Solr
     class Application
       class Rebuild < Chef::Application

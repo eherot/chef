@@ -28,7 +28,7 @@ require 'net/http'
 require 'libxml'
 require 'uri'
 
-class Chef
+module Chef
   class Solr
 
     attr_accessor :solr_url, :http

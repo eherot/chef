@@ -36,8 +36,8 @@
 
 require "chef/resource/scm"
 
-class Chef
-  class Resource
+module Chef
+  module Resource
     
     # Deploy: Deploy apps from a source control repository.
     #
@@ -48,7 +48,7 @@ class Chef
     # a path to a callback file/recipe. Paths are evaluated relative to the 
     # release directory. Callback files can contain chef code (resources, etc.)
     #
-    class Deploy < Chef::Resource
+    class Deploy < Chef::Resource::Base
       
       provider_base Chef::Provider::Deploy
       

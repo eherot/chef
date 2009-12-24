@@ -19,8 +19,8 @@
 require 'chef/resource/package'
 require 'chef/provider/package/dpkg'
 
-class Chef
-  class Resource
+module Chef
+  module Resource
     class DpkgPackage < Chef::Resource::Package
         
       def initialize(name, collection=nil, node=nil)

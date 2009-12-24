@@ -21,7 +21,7 @@ require 'chef/knife'
 require 'chef/streaming_cookbook_uploader'
 require 'chef/cache/checksum'
 
-class Chef
+module Chef
   class Knife
     class CookbookUpload < Knife
 

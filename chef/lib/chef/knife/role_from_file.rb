@@ -20,7 +20,7 @@ require 'chef/knife'
 require 'chef/role'
 require 'json'
 
-class Chef
+module Chef
   class Knife
     class RoleFromFile < Knife
 

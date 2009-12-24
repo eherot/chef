@@ -25,7 +25,7 @@ require 'chef/solr'
 require 'chef/log'
 require 'chef/config'
 
-class Chef
+module Chef
   class Solr
     class Query < Chef::Solr
       

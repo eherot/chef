@@ -30,7 +30,7 @@ require 'chef/api_client'
 
 include Mixlib::Authentication::SignedHeaderAuth
 
-class Chef
+module Chef
   class REST
 
     class CookieJar < Hash

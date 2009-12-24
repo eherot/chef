@@ -23,7 +23,7 @@ require 'chef/data_bag'
 require 'chef/data_bag_item'
 require 'uri'
 
-class Chef
+module Chef
   class Search
     class Query 
 

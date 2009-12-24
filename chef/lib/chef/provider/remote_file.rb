@@ -23,8 +23,8 @@ require 'uri'
 require 'tempfile'
 require 'net/https'
 
-class Chef
-  class Provider
+module Chef
+  module Provider
     class RemoteFile < Chef::Provider::File
 
       include Chef::Mixin::FindPreferredFile

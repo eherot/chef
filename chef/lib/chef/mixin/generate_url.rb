@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require 'chef/platform'
+require 'chef/platform/detect_platform'
 
-class Chef
+module Chef
   module Mixin
     module GenerateURL
     

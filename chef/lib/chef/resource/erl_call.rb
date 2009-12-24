@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+require 'chef/resource/base'
 
-class Chef
-  class Resource
-    class ErlCall < Chef::Resource
+module Chef
+  module Resource
+    class ErlCall < Chef::Resource::Base
 
       # erl_call : http://erlang.org/doc/man/erl_call.html
 

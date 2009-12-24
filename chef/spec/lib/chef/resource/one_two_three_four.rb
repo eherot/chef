@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-class Chef
-  class Resource
-    class OneTwoThreeFour < Chef::Resource
+module Chef
+  module Resource
+    class OneTwoThreeFour < Chef::Resource::Base
       attr_reader :i_can_count
       
       def initialize(name, collection=nil, node=nil)

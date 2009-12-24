@@ -21,7 +21,7 @@ require 'chef/exceptions'
 require 'json'
 require 'fileutils'
 
-class Chef
+module Chef
   class FileCache
     class << self
       include Chef::Mixin::ParamsValidate

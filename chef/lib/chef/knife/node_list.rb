@@ -20,7 +20,7 @@ require 'chef/knife'
 require 'chef/node'
 require 'json'
 
-class Chef
+module Chef
   class Knife
     class NodeList < Knife
 

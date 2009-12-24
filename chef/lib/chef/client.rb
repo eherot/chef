@@ -30,7 +30,7 @@ require 'chef/compile'
 require 'chef/runner'
 require 'ohai'
 
-class Chef
+module Chef
   class Client
     
     include Chef::Mixin::GenerateURL

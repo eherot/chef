@@ -22,7 +22,7 @@ require 'chef/solr'
 require 'libxml'
 require 'net/http'
 
-class Chef
+module Chef
   class Solr
     class Index < Solr
 

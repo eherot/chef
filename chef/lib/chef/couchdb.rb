@@ -29,7 +29,7 @@ begin
 rescue LoadError
 end
 
-class Chef
+module Chef
   class CouchDB
     include Chef::Mixin::ParamsValidate
 

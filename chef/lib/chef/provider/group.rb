@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require 'chef/provider'
+require 'chef/provider/base'
 require 'chef/mixin/command'
 require 'chef/resource/group'
 require 'etc'
 
-class Chef
-  class Provider
-    class Group < Chef::Provider
+module Chef
+  module Provider
+    class Group < Chef::Provider::Base
       include Chef::Mixin::Command
       attr_accessor :group_exists
       

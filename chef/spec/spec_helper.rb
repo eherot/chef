@@ -26,20 +26,16 @@ $:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 $:.unshift(File.join(File.dirname(__FILE__), "..", "..", "chef-server", "lib"))
 
 require 'chef'
-require File.join(File.dirname(__FILE__), "/../lib/chef/util/fileedit")
 
 chef_lib_path = File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
-Dir[
-  File.expand_path(
-    File.join(
-      chef_lib_path, 'chef', '**', '*.rb'
-    )
-  )
-].sort.each do |lib|
-  lib_short_path = lib.match("^#{chef_lib_path}#{File::SEPARATOR}(.+)$")[1]
-  require lib_short_path
-end
+
+require 'chef/knife'
+Dir[File.expand_path(chef_lib_path + "/chef/knife/*.rb")].each { |knife| require knife }
+
+require 'chef/shef'
+
 Dir[File.join(File.dirname(__FILE__), 'lib', '**', '*.rb')].sort.each { |lib| require lib }
+
 
 Chef::Config[:log_level] = :fatal
 Chef::Config[:cache_type] = "Memory"

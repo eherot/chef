@@ -20,7 +20,7 @@
 
 require 'chef/cache'
 
-class Chef
+module Chef
   class Cache
     class Checksum < Chef::Cache
     

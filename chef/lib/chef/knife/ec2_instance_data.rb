@@ -19,7 +19,7 @@
 require 'chef/knife'
 require 'json'
 
-class Chef
+module Chef
   class Knife
     class Ec2InstanceData < Knife
 

@@ -17,17 +17,17 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
-Dir[File.join(File.dirname(__FILE__), 'resource/**/*.rb')].sort.each { |lib| require lib }
+#require 'chef/provider/base'
+#require 'chef/resource/base'
 require 'chef/mixin/from_file'
 require 'chef/mixin/language'
 require 'chef/mixin/language_include_recipe'
-require 'chef/mixin/recipe_definition_dsl_core'
+#require 'chef/mixin/recipe_definition_dsl_core'
 require 'chef/resource_collection'
 require 'chef/cookbook_loader'
 require 'chef/rest'
 
-class Chef
+module Chef
   class Recipe
     
     include Chef::Mixin::FromFile

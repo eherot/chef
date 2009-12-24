@@ -19,31 +19,28 @@
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
+
 require 'rubygems'
 require 'extlib'
+require 'chef/backports'
 require 'chef/exceptions'
 require 'chef/log'
 require 'chef/config'
-Dir[File.join(File.dirname(__FILE__), 'chef/mixin/**/*.rb')].sort.each { |lib| require lib }
+require 'chef/provider'
+require 'chef/resource'
+require 'chef/mixin'
+require 'chef/runner'
+require 'chef/application'
+require 'chef/application/solo'
+require 'chef/application/client'
+require 'chef/util/fileedit'
+require 'chef/util/file_edit'
 
-class Chef
+require 'chef/recipe'
+
+# hrmm...
+require 'chef/application/knife'
+module Chef
   VERSION = '0.8.0'
 end
 
-# Adds a Dir.glob to Ruby 1.8.5, for compat
-if RUBY_VERSION < "1.8.6" 
-  class Dir 
-    class << self 
-      alias_method :glob_, :glob 
-      def glob(pattern, flags=0)
-        raise ArgumentError unless (
-          !pattern.nil? and (
-            pattern.is_a? Array and !pattern.empty?
-          ) or pattern.is_a? String
-        )
-        [pattern].flatten.inject([]) { |r, p| r + glob_(p, flags) }
-      end
-      alias_method :[], :glob 
-    end 
-  end 
-end 

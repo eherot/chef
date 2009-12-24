@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require 'chef/resource'
+#require 'chef/resource/base'
 require 'chef/resource_collection/stepable_iterator'
 
-class Chef
+module Chef
   class ResourceCollection
     include Enumerable
     
@@ -103,7 +103,7 @@ class Chef
     
     def lookup(resource)
       lookup_by = nil
-      if resource.kind_of?(Chef::Resource)
+      if resource.kind_of?(Chef::Resource::Base)
         lookup_by = resource.to_s
       elsif resource.kind_of?(String)
         lookup_by = resource
@@ -203,7 +203,7 @@ class Chef
       end
 
       def is_chef_resource(arg)
-        unless arg.kind_of?(Chef::Resource)
+        unless arg.kind_of?(Chef::Resource::Base)
           raise ArgumentError, "Members must be Chef::Resource's" 
         end
         true

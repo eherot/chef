@@ -25,7 +25,7 @@ require 'chef/data_bag_item'
 require 'extlib'
 require 'json'
 
-class Chef
+module Chef
   class DataBag 
     
     include Chef::Mixin::FromFile
