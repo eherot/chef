@@ -185,7 +185,9 @@ module Chef
       end
     
       def is(*args)
-        return *args
+        return nil if args.empty?
+        return args.first if args.size == 1
+        args
       end
     
       def to_s
@@ -208,7 +210,7 @@ module Chef
       def to_hash
         instance_vars = Hash.new
         self.instance_variables.each do |iv|
-          instance_vars[iv.sub(/^@/,'').to_sym] = self.instance_variable_get(iv) unless iv == "@collection"
+          instance_vars[iv.to_s.sub(/^@/,'').to_sym] = self.instance_variable_get(iv) unless iv == "@collection"
         end
         instance_vars
       end

@@ -42,7 +42,7 @@ module Chef
           raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status.exitstatus}"
         elsif status.exitstatus == 0
           cron_found = false
-          crontab.each do |line|
+          crontab.each_line do |line|
             case line
             when /^# Chef Name: #{@new_resource.name}/
               Chef::Log.debug("Found cron '#{@new_resource.name}'")
@@ -127,7 +127,7 @@ module Chef
           end
 
           status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
-            crontab.each { |line| stdin.puts "#{line}" }
+            crontab.each_line { |line| stdin.puts "#{line}" }
           end
           Chef::Log.info("Updated cron '#{@new_resource.name}'")
           @new_resource.updated = true
@@ -141,7 +141,7 @@ module Chef
           crontab << newcron
 
           status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
-            crontab.each { |line| stdin.puts "#{line}" }
+            crontab.each_line { |line| stdin.puts "#{line}" }
           end
           Chef::Log.info("Added cron '#{@new_resource.name}'")
           @new_resource.updated = true
@@ -171,7 +171,7 @@ module Chef
           end
 
           status = popen4("crontab -u #{@new_resource.user} -", :waitlast => true) do |pid, stdin, stdout, stderr|
-            crontab.each { |line| stdin.puts "#{line}" }
+            crontab.each_line { |line| stdin.puts "#{line}" }
           end
           Chef::Log.debug("Deleted cron '#{@new_resource.name}'")
           @new_resource.updated = true

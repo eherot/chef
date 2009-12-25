@@ -108,7 +108,7 @@ describe Chef::Provider::Mount::Mount, "load_current_resource" do
     mount << "#{@new_resource.device} on #{@new_resource.mount_point} type ext3 (rw)\n"  
     
     y = @stdout.stub!(:each)
-    mount.each {|l| y.and_yield(l)}
+    mount.each_line {|l| y.and_yield(l)}
       
     @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(0)
     @current_resource.should_receive(:mounted).with(true)
@@ -120,7 +120,7 @@ describe Chef::Provider::Mount::Mount, "load_current_resource" do
         mount << "/dev/sdy1 on #{@new_resource.mount_point} type ext3 (rw)\n"
 
         y = @stdout.stub!(:each)
-        mount.each {|l| y.and_yield(l)}
+        mount.each_line {|l| y.and_yield(l)}
 
         @provider.stub!(:popen4).and_yield(@pid, @stdin, @stdout, @stderr).and_return(0)
         @current_resource.should_receive(:mounted).with(false)

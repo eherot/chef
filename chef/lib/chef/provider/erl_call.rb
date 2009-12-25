@@ -59,7 +59,7 @@ module Chef
           Chef::Log.debug("Running erl_call[#{@new_resource.name}]")
           Chef::Log.debug("erl_call[#{@new_resource.name}] command: #{command}")
           Chef::Log.debug("erl_call[#{@new_resource.name}] code: #{@new_resource.code}")
-          @new_resource.code.each { |line| stdin.puts "#{line.chomp!}" }
+          @new_resource.code.each_line { |line| stdin.puts "#{line.chomp!}" }
           stdin.close
           Chef::Log.info("Ran erl_call[#{@new_resource.name}] successfully")
           Chef::Log.debug("erl_call[#{@new_resource.name}] output: ")

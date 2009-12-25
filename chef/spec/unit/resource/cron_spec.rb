@@ -45,74 +45,74 @@ describe Chef::Resource::Cron do
 
   it "should allow you to set a command" do
     @resource.command "/bin/true"
-    @resource.command.should eql("/bin/true")
+    @resource.command.should == "/bin/true"
   end
 
   it "should allow you to set a user" do
     @resource.user "daemon"
-    @resource.user.should eql("daemon")
+    @resource.user.should == "daemon"
   end
 
   it "should allow you to specify the minute" do
     @resource.minute "30"
-    @resource.minute.should eql("30")
+    @resource.minute.should == "30"
   end
 
   it "should allow you to specify the hour" do
     @resource.hour "6"
-    @resource.hour.should eql("6")
+    @resource.hour.should == "6"
   end
     
   it "should allow you to specify the day" do
     @resource.day "10"
-    @resource.day.should eql("10")
+    @resource.day.should == "10"
   end
 
   it "should allow you to specify the month" do
     @resource.month "10"
-    @resource.month.should eql("10")
+    @resource.month.should == "10"
   end
 
   it "should allow you to specify the weekday" do
     @resource.weekday "2"
-    @resource.weekday.should eql("2")
+    @resource.weekday.should == "2"
   end
 
   it "should allow you to specify the mailto variable" do
     @resource.mailto "test@example.com"
-    @resource.mailto.should eql("test@example.com")
+    @resource.mailto.should == "test@example.com"
   end
 
   it "should allow you to specify the path" do
     @resource.path "/usr/bin:/usr/sbin"
-    @resource.path.should eql("/usr/bin:/usr/sbin")
+    @resource.path.should == "/usr/bin:/usr/sbin"
   end
 
   it "should allow you to specify the home directory" do
     @resource.home "/root"
-    @resource.home.should eql("/root")
+    @resource.home.should == "/root"
   end
 
   it "should allow you to specify the shell to run the command with" do
     @resource.shell "/bin/zsh"
-    @resource.shell.should eql("/bin/zsh")
+    @resource.shell.should == "/bin/zsh"
   end
 
   it "should allow * for all time and date values" do
     [ "minute", "hour", "day", "month", "weekday" ].each do |x|
-      @resource.send(x, "*").should eql("*")
+      @resource.send(x, "*").should == "*"
     end
   end
   
   it "should allow ranges for all time and date values" do
     [ "minute", "hour", "day", "month", "weekday" ].each do |x|
-      @resource.send(x, "1-2,5").should eql("1-2,5")
+      @resource.send(x, "1-2,5").should == "1-2,5"
     end
   end
 
   it "should have a default value of * for all time and date values" do
     [ "minute", "hour", "day", "month", "weekday" ].each do |x|
-      @resource.send(x).should eql("*")
+      @resource.send(x).should == "*"
     end
   end
 

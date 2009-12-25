@@ -46,10 +46,11 @@ module Chef
         else
           converted_arg = arg
         end
-        begin
-          if Integer(arg) > 59 then raise RangeError end
-        rescue ArgumentError
-        end
+        assert_not_greater_than!(59, arg)
+        #begin
+        #  if arg && Integer(arg) > 59 then raise RangeError end
+        #rescue ArgumentError
+        #end
         set_or_return(
           :minute,
           converted_arg,
@@ -63,10 +64,11 @@ module Chef
         else
           converted_arg = arg
         end
-        begin
-          if Integer(arg) > 23 then raise RangeError end
-        rescue ArgumentError
-        end
+        assert_not_greater_than!(23, arg)
+        #begin
+        #  if Integer(arg) > 23 then raise RangeError end
+        #rescue ArgumentError
+        #end
         set_or_return(
           :hour,
           converted_arg,
@@ -80,10 +82,11 @@ module Chef
         else
           converted_arg = arg
         end
-        begin
-          if Integer(arg) > 31 then raise RangeError end
-        rescue ArgumentError
-        end
+        assert_not_greater_than!(31, arg)
+        #begin
+        #  if Integer(arg) > 31 then raise RangeError end
+        #rescue ArgumentError
+        #end
         set_or_return(
           :day,
           converted_arg,
@@ -97,10 +100,11 @@ module Chef
         else
           converted_arg = arg
         end
-        begin
-          if Integer(arg) > 12 then raise RangeError end
-        rescue ArgumentError
-        end
+        assert_not_greater_than!(12, arg)
+        #begin
+        #  if Integer(arg) > 12 then raise RangeError end
+        #rescue ArgumentError
+        #end
         set_or_return(
           :month,
           converted_arg,
@@ -114,10 +118,11 @@ module Chef
         else
           converted_arg = arg
         end
-        begin
-          if Integer(arg) > 7 then raise RangeError end
-        rescue ArgumentError
-        end
+        assert_not_greater_than!(7, arg)
+        #begin
+        #  if Integer(arg) > 7 then raise RangeError end
+        #rescue ArgumentError
+        #end
         set_or_return(
           :weekday,
           converted_arg,
@@ -172,6 +177,16 @@ module Chef
           :kind_of => String
         )
       end
+      
+      private
+      
+      def assert_not_greater_than!(max_value=60, arg=nil)
+        begin
+          if arg && Integer(arg) > max_value then raise RangeError end
+        rescue ArgumentError
+        end
+      end
+      
     end
   end
 end
