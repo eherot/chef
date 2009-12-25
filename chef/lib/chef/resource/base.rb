@@ -72,7 +72,7 @@ module Chef
           prior_resource = @collection.lookup(self.to_s)
           Chef::Log.debug("Setting #{self.to_s} to the state of the prior #{self.to_s}")
           prior_resource.instance_variables.each do |iv|
-            unless iv == "@source_line" || iv == "@action"
+            unless iv.to_s == "@source_line" || iv.to_s == "@action"
               self.instance_variable_set(iv, prior_resource.instance_variable_get(iv))
             end
           end

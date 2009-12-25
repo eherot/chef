@@ -17,6 +17,15 @@
 
 require 'deep_merge'
 
+# This should be moved to github.com/peritor/deep_merge
+# as deep_merge/full or something like that.
+class Hash
+  begin
+    alias :ko_deep_merge! :ko_deeper_merge!
+  rescue NameError
+  end
+end
+
 module Chef
   module Mixin
     class DeepMerge
@@ -25,7 +34,8 @@ module Chef
         first = first.to_hash
         second = Mash.new(second).to_hash unless second.kind_of?(Mash)
         second = second.to_hash
-
+        
+        #Mash.new(first.deep_merge!(second))
         Mash.new(first.ko_deep_merge!(second, {:knockout_prefix => '!merge:'}))
       end
     end
