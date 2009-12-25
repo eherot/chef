@@ -17,15 +17,6 @@
 
 require 'deep_merge'
 
-# This should be moved to github.com/peritor/deep_merge
-# as deep_merge/full or something like that.
-class Hash
-  begin
-    alias :ko_deep_merge! :ko_deeper_merge!
-  rescue NameError
-  end
-end
-
 module Chef
   module Mixin
     class DeepMerge
