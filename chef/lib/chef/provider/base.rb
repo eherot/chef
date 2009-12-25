@@ -25,8 +25,42 @@ require 'chef/mixin/recipe_definition_dsl_core'
 module Chef
   module Provider
     class Base
+      extend Chef::Mixin::ConvertToClassName
       include Chef::Mixin::RecipeDefinitionDSLCore
     
+      def self.build_from_file(cookbook_name, filename)
+        pname = filename_to_qualified_string(cookbook_name, filename)
+      
+        new_provider_class = Class.new self do |cls|
+        
+          def load_current_resource
+            # silence Chef::Exceptions::Override exception
+          end
+        
+          class << cls
+            include Chef::Mixin::FromFile
+          
+            # setup DSL's shortcut methods
+            def action(name, &block)
+              define_method("action_#{name.to_s}") do
+                instance_eval(&block)
+              end
+            end
+          end
+        
+          # load provider definition from file
+          cls.class_from_file(filename)
+        end
+      
+        # register new class as a Chef::Provider
+        pname = filename_to_qualified_string(cookbook_name, filename)
+        class_name = convert_to_class_name(pname)
+        Chef::Provider.const_set(class_name, new_provider_class)
+        Chef::Log.debug("Loaded contents of #{filename} into a provider named #{pname} defined in Chef::Provider::#{class_name}")
+      
+        new_provider_class
+      end
+      
       attr_accessor :node, :new_resource, :current_resource
     
       def initialize(node, new_resource, collection=nil, definitions={}, cookbook_loader=nil)
@@ -57,45 +91,6 @@ module Chef
         Chef::Runner.new(@node, @collection).converge
       
         @collection = provider_collection
-      end
-    
-      public
-    
-      class << self
-        include Chef::Mixin::ConvertToClassName
-      
-        def build_from_file(cookbook_name, filename)
-          pname = filename_to_qualified_string(cookbook_name, filename)
-        
-          new_provider_class = Class.new self do |cls|
-          
-            def load_current_resource
-              # silence Chef::Exceptions::Override exception
-            end
-          
-            class << cls
-              include Chef::Mixin::FromFile
-            
-              # setup DSL's shortcut methods
-              def action(name, &block)
-                define_method("action_#{name.to_s}") do
-                  instance_eval(&block)
-                end
-              end
-            end
-          
-            # load provider definition from file
-            cls.class_from_file(filename)
-          end
-        
-          # register new class as a Chef::Provider
-          pname = filename_to_qualified_string(cookbook_name, filename)
-          class_name = convert_to_class_name(pname)
-          Chef::Provider.const_set(class_name, new_provider_class)
-          Chef::Log.debug("Loaded contents of #{filename} into a provider named #{pname} defined in Chef::Provider::#{class_name}")
-        
-          new_provider_class
-        end
       end
 
     end

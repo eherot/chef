@@ -139,11 +139,10 @@ module Chef
         remote_file.source(@new_resource.response_file)
         remote_file.backup(false)
         
-        raise "FIXME, use Resource::Base.find_provider"
-#        rf_provider = Chef::Platform.provider_for_node(@node, remote_file)
-#        rf_provider.load_current_resource
-#        rf_provider.action_create
-#        
+        rf_provider = remote_file.create_provider
+        rf_provider.load_current_resource
+        rf_provider.action_create
+       
         if remote_file.updated
           Chef::FileCache.load(cache_path, false)
         else

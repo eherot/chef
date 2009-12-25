@@ -87,8 +87,7 @@ module Chef
         new_dir.owner(@new_resource.owner)
         new_dir.recursive(true)
         
-        raise "FIXME, use resource.find_provider"
-        #d_provider = Chef::Platform.provider_for_node(@node, new_dir)
+        d_provider = new_dir.create_provider
         d_provider.load_current_resource
         d_provider.action_create
         @new_resource.updated = true if d_provider.new_resource.updated  

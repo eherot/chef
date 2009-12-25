@@ -143,7 +143,7 @@ module Chef
     def find_provider(platform, version, resource_type)
       pmap = find(platform, version)
       rtkey = resource_type
-      if resource_type.kind_of?(Chef::Resource::Base)
+      if resource_type.respond_to?(:provider) && resource_type.respond_to?(:resource_name)
         return resource_type.provider if resource_type.provider
         rtkey = resource_type.resource_name.to_sym
       end

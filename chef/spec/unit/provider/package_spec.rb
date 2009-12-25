@@ -322,24 +322,18 @@ end
 describe Chef::Provider::Package, "get_preseed_file" do
   before(:each) do
     @node = mock("Chef::Node", :null_object => true)
-    @new_resource = mock("Chef::Resource::Package", 
-      :null_object => true,
-      :name => "java",
-      :version => nil,
-      :package_name => "java",
-      :cookbook_name => "java"
-    )
+    
+    @new_resource = Chef::Resource::Package.new("java")
+    @new_resource.stub!(:cookbook_name).and_return("java")
+    
     @provider = Chef::Provider::Package.new(@node, @new_resource)
     @provider.candidate_version = "1.0"
     @provider.current_resource = @current_resource
     
-    @remote_file = mock("Chef::Resource::RemoteFile", 
-      :null_object => true,
-      :cookbook_name => "java",
-      :source => "java-6.seed",
-      :backup => false,
-      :updated => false
-    )
+    @remote_file = Chef::Resource::RemoteFile.new("java", nil, @node)
+    @remote_file.source("java-6.seed")
+    @remote_file.backup(false)
+    
     @rf_provider = mock("Chef::Provider::RemoteFile",
       :null_object => true,
       :load_current_resource => true,
@@ -382,7 +376,11 @@ describe Chef::Provider::Package, "get_preseed_file" do
   end
   
   it "should find the provider for the remote file" do
-    Chef::Platform.should_receive(:find_provider_for_node).and_return(Chef::Provider::RemoteFile)
+    #Chef::Platform.should_receive(:find_provider_for_node).and_return(Chef::Provider::RemoteFile)
+    remote_file_provider = mock("Chef::Provider::RemoteFile")
+    @remote_file.stub!(:create_provider).and_return(remote_file_provider)
+    remote_file_provider.should_receive(:load_current_resource)
+    remote_file_provider.should_receive(:action_create)
     @provider.get_preseed_file("java", "6")
   end
   

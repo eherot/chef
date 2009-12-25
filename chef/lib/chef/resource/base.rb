@@ -232,9 +232,13 @@ module Chef
       end
     
       def run_action(action)
-        provider = Chef::Platform.provider_for_node(@node, self)
+        provider = create_provider
         provider.load_current_resource
         provider.send("action_#{action}")
+      end
+      
+      def create_provider
+        Chef::Platform.provider_for_node(node, self)
       end
     
       class << self

@@ -217,7 +217,11 @@ describe Chef::Resource::Base do
   
   describe "finding the provider for itself" do
     it "finds the provider for itself" do
-      pending("once I can actually run some damn code.")
+      Chef::Platform.platforms[:unicorn_os] = {:default => {:cat => Chef::Provider::Easy}}
+      resource = Chef::Resource::Cat.new("lolz")
+      resource.node.platform = :unicorn_os
+      resource.node.platform_version = 23
+      resource.create_provider.should be_an_instance_of(Chef::Provider::Easy)
     end
   end
   
