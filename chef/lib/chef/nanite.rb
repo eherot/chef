@@ -16,8 +16,7 @@
 # limitations under the License.
 #
 
-require 'chef'
-require 'chef/config'
+require 'nanite'
 require 'chef/mixin/params_validate'
 require 'json'
 
