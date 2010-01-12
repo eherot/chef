@@ -108,6 +108,7 @@ class Chef
       
         begin
           File.open(file, "w") { |f| f.write(Process.pid.to_s) }
+          lock_pidfile
         rescue Errno::EACCES => e
           Chef::Application.fatal!("Couldn't write to pidfile #{file}, permission denied: #{e.message}")
         end
@@ -115,7 +116,14 @@ class Chef
     
       # Delete the PID from the filesystem
       def remove_pid_file
+        File.new(pid_file).flock(File::LOCK_UN)
         FileUtils.rm(pid_file) if File.exists?(pid_file)
+      end
+      
+      def lock_pidfile
+        unless File.new(pid_file).flock(File::LOCK_EX | FILE::LOCK_NB)
+          Chef::Application.fatal!("Couldn't get exclusive lock on pidfile #{pid_file}, is #{name} already running?\nConfigure a different pidfile to run multiple instances of #{name}")
+        end
       end
            
       # Change process user/group to those specified in Chef::Config
