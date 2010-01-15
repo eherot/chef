@@ -68,7 +68,7 @@ class Chef
         
         def couchdb_list(inflate=false)
           map_on = inflate ? "value" : "key"
-          couchdb.list(couchdb_doctype, inflate)["rows"].map { |row| row[map_on] }
+          couchdb.list(dbname, inflate)["rows"].map { |row| row[map_on] }
         end
         alias :cdb_list :couchdb_list
         
