@@ -57,6 +57,14 @@ describe Chef::Mixin::Couchable do
   end
   
   describe "extending the class" do
+    before do
+      CouchableObject.database("couchable_object", "")
+    end
+    
+    after do
+      CouchableObject.database(nil,nil)
+    end
+    
     it "defines a couchdb_doctype as the snake_case of the class name" do
       CouchableObject.couchdb_doctype.should == "couchable_object"
     end
