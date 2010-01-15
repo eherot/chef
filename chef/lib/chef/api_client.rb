@@ -70,7 +70,6 @@ class Chef
       @couchdb_rev = nil
       @couchdb_id = nil
       @admin = false
-      @couchdb = Chef::CouchDB.new 
     end
 
     # Gets or sets the client name.

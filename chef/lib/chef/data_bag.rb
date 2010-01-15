@@ -161,10 +161,10 @@ class Chef
     def list(inflate=false)
       rs = nil 
       if inflate
-        rs = @couchdb.get_view("data_bags", "entries", :include_docs => true, :startkey => @name, :endkey => @name)
+        rs = couchdb.get_view("data_bags", "entries", :include_docs => true, :startkey => @name, :endkey => @name)
         rs["rows"].collect { |r| r["doc"] }
       else
-        rs = @couchdb.get_view("data_bags", "entries", :startkey => @name, :endkey => @name)
+        rs = couchdb.get_view("data_bags", "entries", :startkey => @name, :endkey => @name)
         rs["rows"].collect { |r| r["value"] }
       end
     end
