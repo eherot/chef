@@ -61,6 +61,15 @@ class Chef
 
     attr_accessor :couchdb_rev, :raw_data, :couchdb_id
     
+    class << self
+      alias :cdb_load_object :cdb_load
+      
+      def cdb_load(data_bag_name, id)
+        # Slightly different method signature than normal cdb_load
+        cdb_load_object("data_bag_item_#{data_bag_name}_#{id}")
+      end
+    end
+    
     # Create a new Chef::DataBagItem
     def initialize(couchdb=nil)
       @couchdb_id = nil
