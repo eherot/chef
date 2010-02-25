@@ -232,6 +232,7 @@ class Chef
       end
       # First, try and create a new registration
       begin
+        Chef::Log.debug("POSTing ApiClient: #{{:name => self.name, :admin => self.admin }.inspect}")
         r.post_rest("clients", {:name => self.name, :admin => self.admin })
       rescue Net::HTTPServerException => e
         # If that fails, go ahead and try and update it
