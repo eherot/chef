@@ -186,7 +186,7 @@ class Chef
         tmprest = Chef::REST.new(Chef::Config[:client_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
         begin
           # make a known bad request to tag our spot in the server log
-          tmprest.get_rest("ZOMGregistration")
+          tmprest.get_rest("clients/ZOMGregistration")
         rescue Exception
         end
         tmprest.register(@node_name, Chef::Config[:client_key])
