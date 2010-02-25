@@ -213,6 +213,7 @@ class Chef::Application::Client < Chef::Application
         raise
       rescue Exception => e
         if Chef::Config[:interval]
+          Chef.report_failure(e) if Chef.respond_to?(:report_failure)
           Chef::Log.error("#{e.class}")
           Chef::Log.fatal("#{e}\n#{e.backtrace.join("\n")}")
           Chef::Log.fatal("Sleeping for #{Chef::Config[:interval]} seconds before trying again")
