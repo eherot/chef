@@ -255,10 +255,11 @@ class Chef
           Chef::Log.debug("Registration response: #{response.inspect}")
           raise Chef::Exceptions::CannotWritePrivateKey, "The response from the server did not include a private key!" unless response.has_key?("private_key")
           return response
-        rescue Net::HTTPServerException
+        rescue Net::HTTPFatalError
           splay = rand(Chef::Config[:rest_timeout])
-          Chef::Log.debug("Registration attempt #{i}/#{retries} failed, sleeping #{splay} seconds...")
-          sleep(splay) # yay, just like ethernet except not as smart!
+          sleep_time = (1 << i) + splay
+          Chef::Log.info("Registration attempt #{i}/#{retries} failed, sleeping #{sleep_time} seconds...")
+          sleep(sleep_time) # yay, just like ethernet!
         end
       end
       raise Chef::Exceptions::CannotWritePrivateKey, "I failed to register the client, therefore no private key!"
