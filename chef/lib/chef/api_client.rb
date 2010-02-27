@@ -193,7 +193,7 @@ class Chef
       (couchdb || Chef::CouchDB.new).load("client", name)
     end
     
-    # Load a client by name via the API
+   # Load a client by name via the API
     def self.load(name)
       response = Chef::REST.new(Chef::Config[:chef_server_url]).get_rest("clients/#{name}")
       if response.kind_of?(Chef::ApiClient)
@@ -223,6 +223,47 @@ class Chef
       @couchdb_rev = @couchdb.store("client", @name, self)["rev"]
     end
     
+    def self.register_new(name, admin=false)
+      registration_data = try_to_register(name, admin)
+      write_private_key
+      
+      client = new
+      client.name(name)
+      client.admin(admin)
+
+      client
+    end
+
+    def self.write_private_key(destination=Chef::Config[:client_key])
+      raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination} - check permissions?" if (File.exists?(destination) &&  !File.writable?(destination))
+
+      File.open(destination, "w") do |f|
+        f.print(response["private_key"])
+      end
+
+    rescue IOError
+      raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination}"
+    end
+
+    def self.try_to_register(name, admin=false)
+      rest = Chef::REST.new(Chef::Config[:chef_server_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
+      retries = Chef::Config[:client_registration_retries] || 0
+
+      retries.downto(0) do |i|
+        begin
+          response = rest.post_rest("clients", {:name => name, :admin => admin })
+          Chef::Log.debug("Registration response: #{response.inspect}")
+          raise Chef::Exceptions::CannotWritePrivateKey, "The response from the server did not include a private key!" unless response.has_key?("private_key")
+          return response
+        rescue Net::HTTPServerException
+          splay = rand(Chef::Config[:rest_timeout])
+          Chef::Log.debug("Registration attempt #{i}/#{retries} failed, sleeping #{splay} seconds...")
+          sleep(splay) # yay, just like ethernet except not as smart!
+        end
+      end
+      raise Chef::Exceptions::CannotWritePrivateKey, "I failed to register the client, therefore no private key!"
+    end
+
     # Save this client via the REST API, returns a hash including the private key
     def save(new_key=false, validation=false)
       if validation

@@ -63,34 +63,10 @@ class Chef
         raise Chef::Exceptions::PrivateKeyMissing, "I cannot read #{key}, which you told me to use to sign requests!"
       end
     end
-    
+
     # Register the client 
     def register(name=Chef::Config[:node_name], destination=Chef::Config[:client_key])
-      raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination} - check permissions?" if (File.exists?(destination) &&  !File.writable?(destination))
-
-      nc = Chef::ApiClient.new
-      nc.name(name)
-
-      catch(:done) do
-        retries = Chef::Config[:client_registration_retries] || 0
-        retries.downto(0) do
-          begin
-            response = nc.save(true, true)
-            Chef::Log.debug("Registration response: #{response.inspect}")
-            raise Chef::Exceptions::CannotWritePrivateKey, "The response from the server did not include a private key!" unless response.has_key?("private_key")
-            # Write out the private key
-            file = File.open(destination, "w")
-            file.print(response["private_key"])
-            file.close
-            throw :done
-          rescue IOError
-            raise Chef::Exceptions::CannotWritePrivateKey, "I cannot write your private key to #{destination}"
-          rescue NetHTTPServerException => e
-          end
-        end
-        raise Chef::Exceptions::CannotWritePrivateKey, "I failed to register the client, therefore no private key!"
-      end
-
+      Chef::ApiClient.register_new(name)
       true
     end
 
