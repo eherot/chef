@@ -249,14 +249,14 @@ class Chef
       rest = Chef::REST.new(Chef::Config[:chef_server_url], Chef::Config[:validation_client_name], Chef::Config[:validation_key])
       retries = Chef::Config[:client_registration_retries] || 0
 
-      retries.downto(0) do |i|
+      1.upto(retries) do |i|
         begin
           response = rest.post_rest("clients", {:name => name, :admin => admin })
           Chef::Log.debug("Registration response: #{response.inspect}")
           raise Chef::Exceptions::CannotWritePrivateKey, "The response from the server did not include a private key!" unless response.has_key?("private_key")
           return response
         rescue Net::HTTPFatalError
-          splay = rand(Chef::Config[:rest_timeout])
+          splay = rand(5)
           sleep_time = (1 << i) + splay
           Chef::Log.info("Registration attempt #{i}/#{retries} failed, sleeping #{sleep_time} seconds...")
           sleep(sleep_time) # yay, just like ethernet!
