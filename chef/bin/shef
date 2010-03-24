@@ -25,12 +25,11 @@ require "mixlib/cli"
 require "irb"
 require "irb/completion"
 
-# TODO::EVIL
-begin
-  require "#{File.dirname(__FILE__)}/../lib/chef"
-rescue LoadError
-  # the bin got moved, e.g., by rubygems
+
+if File.exist?("#{File.dirname(__FILE__)}/../lib/chef/shef")
+  $:.unshift File.expand_path("#{File.dirname(__FILE__)}/../lib/")
 end
+
 require "chef/shef"
 
 # dirty hack to make IRB initialize shef

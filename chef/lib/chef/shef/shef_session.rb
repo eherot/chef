@@ -82,18 +82,26 @@ module Shef
     
     def show_loading_progress
       print "Loading"
-      @loading = true
-      @dot_printer = Thread.new do
-        while @loading
+      @dot_printer = fork do
+        trap("HUP")   { exit 0 }
+        trap("TERM")  { exit 0 }
+        trap("INT")   { exit 0 }
+        0.upto(80) do
           print "."
-          sleep 0.5
+          sleep 0.25
         end
       end
     end
     
     def loading_complete(success)
-      @loading = false
-      @dot_printer.join
+      begin
+        Process.kill("TERM", @dot_printer)
+        Process.wait(@dot_printer)
+      rescue Errno::ESRCH #if the dot printer is already dead, that's cool.
+      end
+
+      @dot_printer = nil
+
       msg = success ? "done.\n\n" : "epic fail!\n\n"
       print msg
     end
