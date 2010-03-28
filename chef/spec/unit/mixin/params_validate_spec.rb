@@ -405,4 +405,10 @@ describe Chef::Mixin::ParamsValidate::ValidationFailed do
     err.message.should == "Parameter 'name' can't be empty. (You gave \"\")"
   end
   
+  it "keeps the parameter name and value when created with a hash" do
+    vf = @vf_class.new(:param => :name, :value => "", :reason => "can't be empty")
+    vf.parameter_name.should == :name
+    vf.parameter_value.should == ""
+  end
+  
 end

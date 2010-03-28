@@ -21,6 +21,7 @@ class Chef
     module ParamsValidate
       
       class ValidationFailed < ArgumentError
+        attr_reader :parameter_name, :parameter_value
 
         # ValidationFailed errors are for validation failures (surprise!)
         # They can be used like normal argument errors for compatibility, but
