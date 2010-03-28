@@ -53,6 +53,11 @@ describe Chef::Node do
     it "should always have a string for name" do
       lambda { @node.name(Hash.new) }.should raise_error(ArgumentError)
     end
+
+    it "cannot be an empty string" do
+      lambda { @node.name("")}.should raise_error(Chef::Mixin::ParamsValidate::ValidationFailed)
+    end
+
   end
 
   describe "attributes" do

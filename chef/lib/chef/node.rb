@@ -185,7 +185,8 @@ class Chef
           { :name => arg }, 
           {
             :name => {
-              :kind_of => String
+              :kind_of => String,
+              :regex   => /[\w\W]+/
             }
           }
         )
