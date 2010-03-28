@@ -359,3 +359,50 @@ describe Chef::Mixin::ParamsValidate do
   end
   
 end
+
+describe Chef::Mixin::ParamsValidate::ValidationFailed do
+  before do
+    @vf_class = Chef::Mixin::ParamsValidate::ValidationFailed
+  end
+  
+  it "acts like an ArgumentError when given a nil argument in the constructor" do
+    vf = @vf_class.new
+    vf.message.should == "Chef::Mixin::ParamsValidate::ValidationFailed"
+    vf.backtrace.should be_nil
+  end
+  
+  it "acts like an ArgumentError when given a string message in the constructor" do
+    vf = @vf_class.new("your params are wack, dawg")
+    vf.message.should == "your params are wack, dawg"
+    vf.to_s.should == "your params are wack, dawg"
+    vf.inspect.should == "#<Chef::Mixin::ParamsValidate::ValidationFailed: your params are wack, dawg>"
+  end
+  
+  it "can be rescued by rescuing ArgumentError" do
+    error = nil
+    lambda do
+      begin
+        raise @vf_class, "parameter can't be blank"
+      rescue ArgumentError => e
+        error = e
+      end
+    end.should_not raise_error
+    error.should be_a_kind_of Chef::Mixin::ParamsValidate::ValidationFailed
+  end
+  
+  it "can be passed a hash of values in the constructor to set validation specific error messages" do
+    vf = @vf_class.new(:param => :name, :value => "", :reason => "can't be empty")
+    vf.message.should == "Parameter 'name' can't be empty. (You gave \"\")"
+  end
+  
+  it "can be raised with a hash" do
+    err = nil
+    begin
+      raise @vf_class, :param => :name, :value => "", :reason => "can't be empty"
+    rescue @vf_class => e
+      err = e
+    end
+    err.message.should == "Parameter 'name' can't be empty. (You gave \"\")"
+  end
+  
+end

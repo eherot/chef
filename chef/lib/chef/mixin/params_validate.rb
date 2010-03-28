@@ -17,8 +17,56 @@
 
 class Chef
   module Mixin
+    
     module ParamsValidate
       
+      class ValidationFailed < ArgumentError
+
+        # ValidationFailed errors are for validation failures (surprise!)
+        # They can be used like normal argument errors for compatibility, but
+        # they can also be given a Hash in the constructor to provide more info
+        # about the failure. When initialized with a hash, you must provide a
+        # <tt>:param</tt> key, which is the name of the parameter/attribute which was 
+        # given an invalid value, a <tt>:value</tt> key, which is the value that
+        # failed the validation check, and either a <tt>:reason</tt> or <tt>:message</tt> key.
+        # A <tt>:reason</tt> key will be inserted in to a pre-formatted message
+        # "Parameter ':param' :reason. (You gave ':value')"
+        # A :message key will be used as the entire message
+        def initialize(msg=nil)
+          if msg.respond_to?(:keys)
+            assert_valid_opts(msg)
+            process_opts(msg)
+            super(generate_message(msg))
+          else
+            super
+          end
+        end
+        
+
+        private
+        
+        def generate_message(opts)
+          if opts[:reason]
+            "Parameter '#{@parameter_name}' #{opts[:reason]}. (You gave #{@parameter_value.inspect})"
+          elsif opts[:message]
+            opts[:message]
+          end
+        end
+        
+        def process_opts(opts)
+          @parameter_name = opts[:param]
+          @parameter_value = opts[:value]
+        end
+
+        def assert_valid_opts(opts)
+          unless (opts.key?(:param)&& opts.key?(:value)) && (opts.key?(:reason)||opts.key?(:message))
+            msg = "You have to provide a :param and :value key and either a :reason or :message key "
+            msg << "to create a ValidationFailed error using a hash"
+            raise ArgumentError, msg
+          end
+        end
+      end
+
       # Takes a hash of options, along with a map to validate them.  Returns the original
       # options hash, plus any changes that might have been made (through things like setting
       # default values in the validation map)
@@ -109,7 +157,7 @@ class Chef
                 (opts.has_key?(key.to_sym) && opts[key.to_sym] != nil)
               true
             else
-              raise ArgumentError, "Required argument #{key} is missing!"
+              raise ArgumentError, :param => key, :value => nil, :message => "Required argument #{key} is missing!"
             end
           end
         end
@@ -124,7 +172,7 @@ class Chef
               end
             end
             unless passes
-              raise ArgumentError, "Option #{key} must be equal to one of: #{to_be.join(", ")}!  You passed #{value.inspect}."
+              raise ValidationFailed, :param => key, :value => value, :reason => "must be equal to one of: #{to_be.join(", ")}"
             end
           end
         end
@@ -140,7 +188,7 @@ class Chef
               end
             end
             unless passes
-              raise ArgumentError, "Option #{key} must be a kind of #{to_be}!  You passed #{value.inspect}."
+              raise ValidationFailed, :param => key, :value => value, :reason => "must be a kind of #{to_be}"
             end
           end
         end
@@ -148,10 +196,10 @@ class Chef
         # Raise an exception if the parameter does not respond to a given set of methods.
         def _pv_respond_to(opts, key, method_name_list)
           value = _pv_opts_lookup(opts, key)
-          if value != nil
+          unless value.nil?
             [ method_name_list ].flatten.each do |method_name|
               unless value.respond_to?(method_name)
-                raise ArgumentError, "Option #{key} must have a #{method_name} method!"
+                raise ValidationFailed, :param => key, :value => value, :reason => "must respond to the #{method_name} method"
               end
             end
           end
@@ -160,7 +208,7 @@ class Chef
         # Assign a default value to a parameter.
         def _pv_default(opts, key, default_value)
           value = _pv_opts_lookup(opts, key)
-          if value == nil
+          if value.nil?
             opts[key] = default_value
           end
         end
@@ -168,17 +216,17 @@ class Chef
         # Check a parameter against a regular expression.
         def _pv_regex(opts, key, regex)
           value = _pv_opts_lookup(opts, key)
-          if value != nil
+          unless value.nil?
             passes = false
             [ regex ].flatten.each do |r|
-              if value != nil
+              unless value.nil?
                 if r.match(value.to_s)
                   passes = true
                 end
               end
             end
             unless passes
-              raise ArgumentError, "Option #{key}'s value #{value} does not match regular expression #{regex.to_s}"
+              raise ValidationFailed, :param => key, :value => value, :reason => "must match regular expression #{regex.inspect}"
             end
           end
         end
@@ -187,10 +235,10 @@ class Chef
         def _pv_callbacks(opts, key, callbacks)
           raise ArgumentError, "Callback list must be a hash!" unless callbacks.kind_of?(Hash)
           value = _pv_opts_lookup(opts, key)
-          if value != nil
+          unless value.nil?
             callbacks.each do |message, zeproc|
               if zeproc.call(value) != true
-                raise ArgumentError, "Option #{key}'s value #{value} #{message}!"
+                raise ValidationFailed, :param => key, :value => value, :message => "Option #{key}'s value #{value} #{message}!"
               end
             end
           end
@@ -199,7 +247,7 @@ class Chef
         # Allow a parameter to default to @name
         def _pv_name_attribute(opts, key, is_name_attribute=true)
           if is_name_attribute
-            if opts[key] == nil
+            if opts[key].nil?
               opts[key] = self.instance_variable_get("@name")
             end
           end
