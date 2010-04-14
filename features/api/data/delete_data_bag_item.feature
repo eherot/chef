@@ -12,6 +12,17 @@ Feature: Delete a Data Bag Item via the REST API
       And I 'DELETE' the path '/data/users/francis'
      Then the inflated responses key 'id' should match '^francis$'
 
+   Scenario: Delete a Data Bag Item with a hyphenated name
+     Given a 'registration' named 'bobo' exists
+       And a 'data_bag' named 'hyphen-ated' exists
+       And a 'data_bag_item' named 'da-sh' exists
+      When I 'GET' the path '/data/hyphen-ated/da-sh'
+      Then the inflated responses key 'id' should match '^da\-sh$'
+      When I 'DELETE' the path '/data/hyphen-ated/da-sh'
+      Then the inflated responses key 'id' should match '^da\-sh$'
+      When I 'GET' the path '/data/hyphen-ated/da-sh'
+      Then I should get a '404 "Not Found"' exception
+
   Scenario: Delete a Data Bag Item that does not exist
     Given a 'registration' named 'bobo' exists
       And a 'data_bag' named 'users' exists

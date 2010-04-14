@@ -61,6 +61,15 @@ When /^I authenticate as '(.+)'$/ do |reg|
   end
 end
 
+When "I print the response" do
+  require 'pp'
+  pp :response => response, :error => exception
+end
+
+When "I die" do
+  exit!
+end
+
 #When /^I dump the contents of the search index$/ do
 #  Given "I dump the contents of the search index"
 #end

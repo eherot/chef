@@ -49,6 +49,11 @@ Before do
         b = Chef::DataBag.new
         b.name "rubies"
         b
+      end,
+      'hyphen-ated' => lambda do
+        b = Chef::DataBag.new
+        b.name "hyphen-ated"
+        b
       end
     },
     'data_bag_item' => {
@@ -68,6 +73,12 @@ Before do
         i = Chef::DataBagItem.new
         i.data_bag "users"
         i.raw_data = { "id" => "axl_rose" }
+        i
+      end,
+      'da-sh' => lambda do
+        i = Chef::DataBagItem.new
+        i.data_bag "hyphen-ated"
+        i.raw_data = {"id" => "da-sh"}
         i
       end
     },
