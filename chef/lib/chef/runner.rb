@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,9 +23,9 @@ require 'chef/platform'
 
 class Chef
   class Runner
-    
+
     include Chef::Mixin::ParamsValidate
-    
+
     def initialize(node, collection, definitions={}, cookbook_loader=nil)
       validate(
         {
@@ -41,12 +41,13 @@ class Chef
           },
         }
       )
-      @node = node
-      @collection = collection
-      @definitions = definitions
+      reset_delayed_actions
+      @node            = node
+      @collection      = collection
+      @definitions     = definitions
       @cookbook_loader = cookbook_loader
     end
-    
+
     def build_provider(resource)
       provider_klass = Chef::Platform.find_provider_for_node(@node, resource)
       Chef::Log.debug("#{resource} using #{provider_klass.to_s}")
@@ -76,7 +77,7 @@ class Chef
               end
               @delayed_actions[r][action] << lambda {
                 Chef::Log.info("#{resource} sending #{action} action to #{r} (delayed)")
-              } 
+              }
             end
           end
         end
@@ -84,14 +85,11 @@ class Chef
     end
 
     def converge
-
-      @delayed_actions = Hash.new
-      @ordered_delayed_actions = []
-      
+      reset_delayed_actions
       @collection.execute_each_resource do |resource|
         begin
           Chef::Log.debug("Processing #{resource}")
-          
+
           # Check if this resource has an only_if block - if it does, skip it.
           if resource.only_if
             unless Chef::Mixin::Command.only_if(resource.only_if, resource.only_if_args)
@@ -99,7 +97,7 @@ class Chef
               next
             end
           end
-          
+
           # Check if this resource has a not_if block - if it does, skip it.
           if resource.not_if
             unless Chef::Mixin::Command.not_if(resource.not_if, resource.not_if_args)
@@ -107,26 +105,45 @@ class Chef
               next
             end
           end
-          
+
           # Walk the actions for this resource, building the provider and running each.
           action_list = resource.action.kind_of?(Array) ? resource.action : [ resource.action ]
           action_list.each do |ra|
             run_action(resource, ra)
           end
-        rescue => e
+        rescue Exception => e
           Chef::Log.error("#{resource} (#{resource.source_line}) had an error:\n#{e}\n#{e.backtrace.join("\n")}")
-          raise e unless resource.ignore_failure
+          unless resource.ignore_failure
+            run_delayed_actions(true) #try to run any delayed actions we've accumulated
+            raise e
+          end
         end
       end
-      
+
       # Run all our :delayed actions
-      @ordered_delayed_actions.each do |resource, action| 
-        log_array = @delayed_actions[resource][action]
-        log_array.each { |l| l.call } # Call each log message
-        run_action(resource, action)
-      end
+      run_delayed_actions
 
       true
+    end
+
+    def run_delayed_actions(ignore_failures=false)
+      @ordered_delayed_actions.each do |resource, action|
+        begin
+          log_array = @delayed_actions[resource][action]
+          log_array.each { |l| l.call } # Call each log message
+          run_action(resource, action)
+        rescue Exception => e
+          msg = "delayed action #{resource}##{action} raised an uncaught error:\n"
+          msg << e.class.name + ": " + e.message + "\n" + e.backtrace.join("\n")
+          Chef::Log.error(msg)
+          raise e unless ignore_failures
+        end
+      end
+    end
+
+    def reset_delayed_actions
+      @delayed_actions         = Hash.new
+      @ordered_delayed_actions = []
     end
   end
 end
