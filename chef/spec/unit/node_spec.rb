@@ -171,13 +171,13 @@ describe Chef::Node do
     end
 
     it "should set the tags attribute to an empty array if it is not already defined" do
-      @node.consume_attributes "{}"
+      @node.consume_attributes({})
       @node.tags.should eql([])
     end
 
     it "should not set the tags attribute to an empty array if it is already defined" do
       @node[:tags] = [ "radiohead" ]
-      @node.consume_attributes "{}"
+      @node.consume_attributes({})
       @node.tags.should eql([ "radiohead" ])
     end
     

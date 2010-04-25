@@ -17,7 +17,7 @@
 #
 
 
-require File.join(File.dirname(__FILE__), '..', '..', "spec_helper")
+require File.expand_path(File.dirname(__FILE__) + "/../../spec_helper")
 
 describe Chef::Util::FileEdit, "initialiize" do
   it "should create a new Chef::Util::FileEdit object" do

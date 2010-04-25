@@ -386,7 +386,7 @@ EOH
     it "should populate the tempfile with the value of the raw request" do
       @http_mock.stub!(:request).and_yield(@http_response_mock).and_return(@http_response_mock)
       @http_response_mock.stub!(:read_body).and_yield("ninja")
-      @tf_mock.should_receive(:write, "ninja").once.and_return(true)
+      @tf_mock.should_receive(:write).with("ninja").once.and_return(true)
       do_run_request(:GET, false, 10, true)
     end
     
