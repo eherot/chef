@@ -24,7 +24,7 @@ class Clients < Application
 
   before :authenticate_every
   before :is_admin, :only => :index
-  before :is_correct_node, :only => [ :show, :create, :update, :destroy ]
+  before :admin_or_requesting_node, :only => [ :show, :create, :update, :destroy ]
   
   # GET /clients
   def index
