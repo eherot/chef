@@ -22,12 +22,12 @@ directory "#{node[:tmpdir]}/installed-gems/"
 gem_package "chef-integration-test" do
   source "http://localhost:8000"
   version "0.1.0"
-  options "-i #{node[:tmpdir]}/installed-gems/"
+  options :install_dir => "#{node[:tmpdir]}/installed-gems/"
 end
 
 gem_package "chef-integration-test-upgrade" do
   package_name 'chef-integration-test'
   source "http://localhost:8000"
-  options "-i #{node[:tmpdir]}/installed-gems/"
+  options :install_dir => "#{node[:tmpdir]}/installed-gems/"
   action :upgrade
 end

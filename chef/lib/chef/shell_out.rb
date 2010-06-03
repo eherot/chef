@@ -17,6 +17,8 @@
 #
 
 require 'etc'
+require 'tmpdir'
+require 'chef/log'
 
 class Chef
   
@@ -46,10 +48,12 @@ class Chef
     
     # === Arguments:
     # Takes a single command, or a list of command fragments. These are used
-    # as arguments to Kernel.exec.
+    # as arguments to Kernel.exec. See the Kernel.exec documentation for more
+    # explanation of how arguments are evaluated. The last argument can be an
+    # options Hash.
     # === Options:
-    # If the last argument is a Hash, it's removed from the list of command
-    # fragments and used as an options hash. The following options are available:
+    # If the last argument is a Hash, it is removed from the list of args passed
+    # to exec and used as an options hash. The following options are available:
     # * user: the user the commmand should run as. if an integer is given, it is
     #   used as a uid. A string is treated as a username and resolved to a uid
     #   with Etc.getpwnam
@@ -58,6 +62,9 @@ class Chef
     # * umask: a umask to set before running the command. If given as an Integer,
     #   be sure to use two leading zeros so it's parsed as Octal. A string will
     #   be treated as an octal integer
+    # * returns:  one or more Integer values to use as valid exit codes for the
+    #   subprocess. This only has an effect if you call +error!+ after
+    #   +run_command+.
     # * environment: a Hash of environment variables to set before the command
     #   is run. By default, the environment will *always* be set to 'LC_ALL' => 'C'
     #   to prevent issues with multibyte characters in Ruby 1.8. To avoid this,
@@ -113,12 +120,12 @@ class Chef
     # to +stdout+ and +stderr+, and saving its exit status object to +status+
     # === Returns
     # returns   +self+; +stdout+, +stderr+, +status+, and +exitstatus+ will be
-    #           populated with results of the command
+    # populated with results of the command
     # === Raises
-    # Errno::EACCES   when you are not privileged to execute the command
-    # Errno::ENOENT   when the command is not available on the system (or not
-    #                 in the current $PATH)
-    # Chef::Exceptions::CommandTimeout when the command does not complete
+    # * Errno::EACCES   when you are not privileged to execute the command
+    # * Errno::ENOENT   when the command is not available on the system (or not
+    #   in the current $PATH)
+    # * Chef::Exceptions::CommandTimeout when the command does not complete
     #                                  within +timeout+ seconds (default: 60s)
     def run_command
       Chef::Log.debug("sh(#{@command})")
@@ -127,15 +134,12 @@ class Chef
       
       configure_parent_process_file_descriptors
       propagate_pre_exec_failure
-      
-      
-      child_stdin.close # make sure subprocess knows not to expect input
         
       @result = nil
       read_time = 0
      
       until @status
-        ready = IO.select([child_stdout, child_stderr], nil, nil, READ_WAIT_TIME)
+        ready = IO.select(open_pipes, nil, nil, READ_WAIT_TIME)
         unless ready
           read_time += READ_WAIT_TIME
           if read_time >= timeout && !@result
@@ -244,13 +248,8 @@ class Chef
     end
     
     def initialize_ipc
-      @stdin_pipe, @stdout_pipe, @stderr_pipe, @process_status_pipe = IO.pipe, IO.pipe, IO.pipe, IO.pipe
-      #@process_status_pipe.last.close
+      @stdout_pipe, @stderr_pipe, @process_status_pipe = IO.pipe, IO.pipe, IO.pipe
       @process_status_pipe.last.fcntl(Fcntl::F_SETFD, Fcntl::FD_CLOEXEC)
-    end
-    
-    def child_stdin
-      @stdin_pipe[1]
     end
     
     def child_stdout
@@ -266,20 +265,24 @@ class Chef
     end
     
     def close_all_pipes
-      child_stdin.close   unless child_stdin.closed?
       child_stdout.close  unless child_stdout.closed?
       child_stderr.close  unless child_stderr.closed?
       child_process_status.close unless child_process_status.closed?
+    #rescue NoMethodError # we blew up before IPC was setup
     end
     
-    # replace stdin, stdout, and stderr with pipes to the parent, and close the
-    # reader side of the error marshaling side channel
+    # replace stdout, and stderr with pipes to the parent, and close the
+    # reader side of the error marshaling side channel. Close STDIN so when we
+    # exec, the new program will no it's never getting input ever.
     def configure_subprocess_file_descriptors
       process_status_pipe.first.close
       
-      stdin_pipe.last.close
-      STDIN.reopen stdin_pipe.first
-      stdin_pipe.first.close
+      # HACK: for some reason, just STDIN.close isn't good enough when running
+      # under ruby 1.9.2, so make it good enough:
+      stdin_reader, stdin_writer = IO.pipe
+      stdin_writer.close
+      STDIN.reopen stdin_reader
+      stdin_reader.close
 
       stdout_pipe.first.close
       STDOUT.reopen stdout_pipe.last
@@ -294,7 +297,6 @@ class Chef
     
     def configure_parent_process_file_descriptors
       # Close the sides of the pipes we don't care about
-      stdin_pipe.first.close
       stdout_pipe.last.close
       stderr_pipe.last.close
       process_status_pipe.last.close
@@ -307,18 +309,28 @@ class Chef
       true
     end
     
+    # Some patch levels of ruby in wide use (in particular the ruby 1.8.6 on OSX)
+    # segfault when you IO.select a pipe that's reached eof. Weak sauce.
+    def open_pipes
+      @open_pipes ||= [child_stdout, child_stderr]
+    end
+
     def read_stdout_to_buffer
-      while chunk = child_stdout.read_nonblock(16 * 1024)
+      while chunk = child_stdout.read(16 * 1024)
         @stdout << chunk
       end
-    rescue Errno::EAGAIN, EOFError
+    rescue Errno::EAGAIN
+    rescue EOFError
+      open_pipes.delete_at(0)
     end
     
     def read_stderr_to_buffer
-      while chunk = child_stderr.read_nonblock(16 * 1024)
+      while chunk = child_stderr.read(16 * 1024)
         @stderr << chunk
       end
-    rescue Errno::EAGAIN, EOFError
+    rescue Errno::EAGAIN
+    rescue EOFError
+      open_pipes.delete_at(1)
     end
     
     def fork_subprocess
