@@ -29,31 +29,45 @@ class Chef
 
     attr_accessor :name_args
 
+    # Keep track of every time we are inherited, so subcommands don't have to
+    # fit in the Chef::Knife namespace, and we get the list of subcommand
+    # classes automatically
+    def self.inherited(subclass)
+      # Class.new.name is nil or '' depending on ruby version
+      # skip it in either case.
+      if subclass.name && !subclass.name.empty?
+        subcommands[snake_case_basename(subclass.name)] = subclass
+      end
+    end
+    
+    @@subcommands = {}
+
+    def self.subcommands
+      # has to be a class variable, we *do* want to have one list of subcommands
+      # for the whole inheritance hierarchy
+      @@subcommands
+    end
+
     # Load all the sub-commands
     def self.load_commands
-      @sub_classes = Hash.new
-      Dir[
-        File.expand_path(File.join(File.dirname(__FILE__), 'knife', '*.rb'))
-      ].each do |knife_file|
-        require knife_file
-        snake_case_file_name = File.basename(knife_file).sub(/\.rb$/, '')
-        @sub_classes[snake_case_file_name] = convert_to_class_name(snake_case_file_name)
-      end
-      @sub_classes
+      core_cmds = Dir[File.expand_path(File.join(File.dirname(__FILE__), 'knife', '*.rb'))]
+      core_cmds.each {|knife_file| require knife_file}
     end
 
     def self.list_commands
       load_commands
-      @sub_classes.keys.sort.each do |snake_case|
-        klass_instance = build_sub_class(snake_case) 
-        klass_instance.parse_options
-        puts klass_instance.opt_parser
+
+      subcommands.sort.each do |snake_cased, klass|
+        cmd_instance = klass.new
+        cmd_instance.parse_options
+        puts cmd_instance.opt_parser
         puts
       end
     end
 
     def self.build_sub_class(snake_case, merge_opts=nil)
-      klass = Chef::Knife.const_get(@sub_classes[snake_case])
+      #klass = Chef::Knife.const_get(@sub_classes[snake_case])
+      klass = subcommands[snake_case]
       klass.options.merge!(merge_opts) if merge_opts 
       klass.new
     end
@@ -61,41 +75,46 @@ class Chef
     def self.find_command(args=ARGV, merge_opts={})
       load_commands
 
-      non_dash_args = Array.new
-      args.each do |arg|
-        non_dash_args << arg if arg =~ /^([[:alnum:]]|_)+$/
-      end
+      non_dash_args = args.select { |arg| arg =~ /^([[:alnum:]]|_)+$/ }
 
-      to_try = non_dash_args.length 
-      klass_instance = nil
-      cli_bits = nil 
+      klass, name_args = find_subcommand_class(non_dash_args)
 
-      while(to_try >= 0)
-        cli_bits = non_dash_args[0..to_try]
-        snake_case_class_name = cli_bits.join("_")
-
-        if @sub_classes.has_key?(snake_case_class_name)
-          klass_instance = build_sub_class(snake_case_class_name, merge_opts)
-          break
-        end
-
-        to_try = to_try - 1
-      end
-
-      unless klass_instance
-        Chef::Log.fatal("Cannot find sub command for: #{args.join(' ')}")
+      unless klass
+        Chef::Log.fatal("Cannot find sub command for: '#{args.join(' ')}'")
         Chef::Knife.list_commands
         exit 10
       end
+      klass.create_subcommand(args, name_args, merge_opts)
+    end
 
-      extra = klass_instance.parse_options(args)
-      if klass_instance.config[:help]
-        puts klass_instance.opt_parser
+    def self.find_subcommand_class(args)
+      candidate_command_name = args.dup
+      name_args, cmd_klass = [], nil
+
+      while ( !cmd_klass ) && ( !candidate_command_name.empty? )
+        snake_case_class_name = candidate_command_name.join("_")
+
+        unless cmd_klass = subcommands[snake_case_class_name]
+          name_args << candidate_command_name.pop
+        end
+      end
+      return([cmd_klass, name_args])
+    end
+
+    # Create a new instance of the current class configured for the given
+    # arguments and options
+    def self.create_subcommand(args, name_args, merge_opts)
+      options.merge!(merge_opts) if merge_opts 
+      instance = new
+
+      instance.parse_options(args)
+      if instance.config[:help]
+        puts instance.opt_parser
         exit 1
       end
-      klass_instance.name_args = extra.inject([]) { |c, i| cli_bits.include?(i) ? cli_bits.delete(i) : c << i; c } 
-      klass_instance.configure_chef
-      klass_instance
+      instance.name_args = name_args
+      instance.configure_chef
+      instance
     end
 
     def ask_question(question, opts={})

@@ -18,6 +18,11 @@
 
 require File.expand_path(File.join(File.dirname(__FILE__), "..", "spec_helper"))
 
+module TestKnifeSubcommands
+  class TestCommand < ::Chef::Knife
+  end
+end
+
 describe Chef::Knife do
   before(:each) do
     @knife = Chef::Knife.new
@@ -26,88 +31,98 @@ describe Chef::Knife do
     Chef::Knife.stub!(:puts)
   end
 
-  describe "class method" do
-    describe "load_commands" do
-      it "should require all the sub commands" do
-        sub_classes = Chef::Knife.load_commands
-        sub_classes.should have_key("node_show")
-        sub_classes["node_show"].should == "NodeShow"
+  it "doesn't cause an error when inherited by an anonymous subclass" do
+    lambda {Class.new(Chef::Knife)}.should_not raise_error
+  end
+
+  it "adds new subcommands as they are defined" do
+    Chef::Knife.subcommands.should_not have_key("foobar_command")
+    ::TestKnifeSubcommands.module_eval(<<-MEVAL)
+      class FoobarCommand < ::Chef::Knife
       end
+    MEVAL
+    Chef::Knife.subcommands.should have_key("foobar_command")
+  end
+
+  it "adds subclasses of subcommands" do
+    Chef::Knife.subcommands.should_not have_key("test_deeper")
+    ::TestKnifeSubcommands.module_eval(<<-TESTDEEPER)
+      class TestDeeper < TestCommand
+      end
+    TESTDEEPER
+    Chef::Knife.subcommands.should have_key("test_deeper")
+  end
+
+  it "should require all the sub commands" do
+    Chef::Knife.load_commands
+    Chef::Knife.subcommands.should have_key("node_show")
+    Chef::Knife.subcommands["node_show"].should == Chef::Knife::NodeShow
+  end
+
+  describe "list_commands" do
+    before(:each) do
+      @orig_argv ||= ARGV
+      redefine_argv([])
     end
 
-    describe "list_commands" do
-      before(:each) do
-        @orig_argv ||= ARGV
-        redefine_argv([])
-      end
-
-      after(:each) do
-        redefine_argv(@orig_argv)
-      end
-
-      it "should load commands" do
-        Chef::Knife.should_receive(:load_commands)
-        Chef::Knife.list_commands
-      end
+    after(:each) do
+      redefine_argv(@orig_argv)
     end
 
-    describe "build_sub_class" do
-      before(:each) do
-        Chef::Knife.load_commands
-      end
-
-      it "should build a sub class" do
-        Chef::Knife.build_sub_class("node_show").should be_a_kind_of(Chef::Knife::NodeShow)
-      end
-
-      it "should not merge options if none are passed" do
-        Chef::Knife::NodeShow.options.should_not_receive(:merge!)
-        Chef::Knife.build_sub_class("node_show")
-      end
-
-      it "should merge options if some are passed" do
-        Chef::Knife::NodeShow.options.should_receive(:merge!).with(Chef::Application::Knife.options)
-        Chef::Knife.build_sub_class("node_show", Chef::Application::Knife.options)
-      end
-    end
-
-    describe "find_command" do
-      before(:each) do
-        @args = [ "node", "show", "computron" ]
-        @sub_class = Chef::Knife::NodeShow.new
-        @sub_class.stub!(:parse_options).and_return([@args[-1]])
-        @sub_class.stub!(:configure_chef).and_return(true)
-        Chef::Knife.stub!(:build_sub_class).and_return(@sub_class)
-      end
-
-      it "should find the most appropriate class" do
-        Chef::Knife.should_receive(:build_sub_class).with("node_show", {}).and_return(@sub_class)
-        Chef::Knife.find_command(@args).should be_a_kind_of(Chef::Knife::NodeShow)
-      end
-
-      it "should parse the configuration arguments" do
-        @sub_class.should_receive(:parse_options).with(@args)
-        Chef::Knife.find_command(@args)
-      end
-
-      it "should set the name args" do
-        @sub_class.should_receive(:name_args=).with([@args[-1]])
-        Chef::Knife.find_command(@args)
-      end
-
-      it "should exit 10 if the sub command is not found" do
-        Chef::Knife.stub!(:list_commands).and_return(true)
-        Chef::Log.should_receive(:fatal)
-        lambda {
-          Chef::Knife.find_command([ "monkey", "man" ])
-        }.should raise_error(SystemExit) { |e| e.status.should == 10 }
-      end
+    it "should load commands" do
+      Chef::Knife.should_receive(:load_commands)
+      Chef::Knife.list_commands
     end
   end
 
-  describe "initialize" do
-    it "should create a new Chef::Knife" do
-      @knife.should be_a_kind_of(Chef::Knife)
+  describe "build_sub_class" do
+    before(:each) do
+      Chef::Knife.load_commands
+    end
+
+    it "should build a sub class" do
+      Chef::Knife.build_sub_class("node_show").should be_a_kind_of(Chef::Knife::NodeShow)
+    end
+
+    it "should not merge options if none are passed" do
+      Chef::Knife::NodeShow.options.should_not_receive(:merge!)
+      Chef::Knife.build_sub_class("node_show")
+    end
+
+    it "should merge options if some are passed" do
+      Chef::Knife::NodeShow.options.should_receive(:merge!).with(Chef::Application::Knife.options)
+      Chef::Knife.build_sub_class("node_show", Chef::Application::Knife.options)
+    end
+  end
+
+  describe "find_command" do
+    before(:each) do
+      @args = [ "node", "show", "computron" ]
+      @subcommand = Chef::Knife::NodeShow.new
+      @subcommand.stub!(:configure_chef).and_return(true)
+      Chef::Knife.stub!(:build_sub_class).and_return(@sub_class)
+    end
+
+    it "should find the most appropriate class" do
+      Chef::Knife.find_command(@args).should be_a_kind_of(Chef::Knife::NodeShow)
+    end
+
+    it "should parse the configuration arguments" do
+      Chef::Knife::NodeShow.stub!(:new).and_return(@subcommand)
+      @subcommand.should_receive(:parse_options).with(@args)
+      Chef::Knife.find_command(@args)
+    end
+
+    it "should set the name args" do
+      Chef::Knife.find_command(@args).name_args.should == [@args[-1]]
+    end
+
+    it "should exit 10 if the sub command is not found" do
+      Chef::Knife.stub!(:list_commands).and_return(true)
+      Chef::Log.should_receive(:fatal)
+      lambda {
+        Chef::Knife.find_command([ "monkey", "man" ])
+      }.should raise_error(SystemExit) { |e| e.status.should == 10 }
     end
   end
 
