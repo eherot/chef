@@ -37,7 +37,7 @@ class Chef
 
         connection = Fog::Rackspace::Servers.new(
           :rackspace_api_key => Chef::Config[:knife][:rackspace_api_key],
-          :rackspace_username => Chef::Config[:knife][:rackspace_api_username] 
+          :rackspace_username => Chef::Config[:knife][:rackspace_username] 
         )
 
         server = connection.servers.get(@name_args[0])
