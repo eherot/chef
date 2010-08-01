@@ -1,5 +1,6 @@
 #
 # Author:: Ian Meyer (<ianmmeyer@gmail.com>)
+# Author:: Sean OMeara (<someara@gmail.com>)
 # Copyright:: Copyright (c) 2009 Opscode, Inc.
 # License:: Apache License, Version 2.0
 #
@@ -23,7 +24,7 @@ class Chef
   class Knife
     class SlicehostServerCreate < Knife
 
-      banner "knife connection server create [RUN LIST...] (options)"
+      banner "knife slicehost server create [RUN LIST...] (options)"
 
       option :flavor,
         :short => "-f FLAVOR",
