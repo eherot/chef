@@ -130,13 +130,7 @@ class Chef
         end
 
         puts "\n"
-        puts "#{h.color("Instance ID", :cyan)}: #{server.id}"
-        puts "#{h.color("Flavor", :cyan)}: #{server.flavor_id}"
-        puts "#{h.color("Image", :cyan)}: #{server.image_id}"
-        puts "#{h.color("Name", :cyan)}: #{server.name}"
-        puts "#{h.color("Public Address", :cyan)}: #{server.addresses[0]}"
-        puts "#{h.color("Private Address", :cyan)}: #{server.addresses[1]}"
-        puts "#{h.color("Password", :cyan)}: #{server.password}"
+        puts "\nServer ready!"
 
       end
     end

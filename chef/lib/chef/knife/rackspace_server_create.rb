@@ -1,6 +1,8 @@
 #
+# Author:: Adam Jacob (<adam@opscode.com>)
 # Author:: Sean OMeara (<someara@gmail.com>)
-# Copyright:: Copyright (c) Sean OMeara
+# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Copyright:: Copyright (c) 2010 Sean OMeara
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
