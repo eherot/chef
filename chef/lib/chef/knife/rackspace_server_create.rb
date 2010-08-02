@@ -1,6 +1,6 @@
 #
-# Author:: Adam Jacob (<adam@opscode.com>)
-# Copyright:: Copyright (c) 2009 Opscode, Inc.
+# Author:: Sean OMeara (<someara@gmail.com>)
+# Copyright:: Copyright (c) Sean OMeara
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -121,9 +121,6 @@ class Chef
           bootstrap.config[:ssh_user] = config[:ssh_user]
           bootstrap.config[:ssh_password] = "#{server.password}"
           bootstrap.config[:identity_file] = config[:identity_file]
-          ### DELETEME
-          puts "server.id: #{server.id}"
-          puts "server.name: #{server.name}"
           bootstrap.config[:chef_node_name] = "#{server.id}"
           bootstrap.config[:prerelease] = config[:prerelease]
           bootstrap.config[:distro] = config[:distro]

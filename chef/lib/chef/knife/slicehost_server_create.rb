@@ -22,7 +22,7 @@ require 'json'
 
 class Chef
   class Knife
-    class SlicehostServerCreate < Knife
+    class SlicehostServerCreate < ServerCreate
 
       banner "knife slicehost server create [RUN LIST...] (options)"
 
@@ -83,9 +83,6 @@ class Chef
           :slicehost_password => Chef::Config[:knife][:slicehost_password]
         )
 
-        flavors = connection.flavors.inject({}) { |h,f| h[f.id] = f.name; h }
-        images  = connection.images.inject({}) { |h,i| h[i.id] = i.name; h }
-
         server =  connection.servers.create(
             :image_id => config[:image],
             :flavor_id => config[:flavor],
@@ -102,7 +99,12 @@ class Chef
         puts "#{h.color("Private Address", :cyan)}: #{server.addresses[1]}"
         puts "#{h.color("Password", :cyan)}: #{server.password}"
      
-        print "\n#{h.color("Requesting status of #{server.name}", :magenta)}"
+        print "\n#{h.color("Waiting for server", :magenta)"
+
+        # wait for it to be ready to do stuff
+        server.wait_for { print "."; ready? }
+        puts "#{h.color("\nWaiting 10 seconds for SSH Host Key generation on", :magenta)}: #{server.name}"
+        sleep 10
 
         begin
           bootstrap = Chef::Knife::Bootstrap.new
@@ -111,9 +113,6 @@ class Chef
           bootstrap.config[:ssh_user] = config[:ssh_user]
           bootstrap.config[:ssh_password] = "#{server.password}"
           bootstrap.config[:identity_file] = config[:identity_file]
-          ### DELETEME
-          puts "server.id: #{server.id}"
-          puts "server.name: #{server.name}"
           bootstrap.config[:chef_node_name] = "#{server.id}"
           bootstrap.config[:prerelease] = config[:prerelease]
           bootstrap.config[:distro] = config[:distro]
@@ -130,6 +129,7 @@ class Chef
           retry
         end
 
+        puts "\n"
         puts "#{h.color("Instance ID", :cyan)}: #{server.id}"
         puts "#{h.color("Flavor", :cyan)}: #{server.flavor_id}"
         puts "#{h.color("Image", :cyan)}: #{server.image_id}"
