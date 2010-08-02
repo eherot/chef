@@ -22,7 +22,7 @@ require 'json'
 
 class Chef
   class Knife
-    class SlicehostServerCreate < ServerCreate
+    class SlicehostServerCreate < Knife
 
       banner "knife slicehost server create [RUN LIST...] (options)"
 
@@ -50,7 +50,7 @@ class Chef
         :short => "-d DISTRO",
         :long => "--distro DISTRO",
         :description => "Bootstrap a distro using a template",
-        :default => "centos5"
+        :default => "ubuntu10.04-gems"
 
       option :template_file,
         :long => "--template-file TEMPLATE",
@@ -99,7 +99,7 @@ class Chef
         puts "#{h.color("Private Address", :cyan)}: #{server.addresses[1]}"
         puts "#{h.color("Password", :cyan)}: #{server.password}"
      
-        print "\n#{h.color("Waiting for server", :magenta)"
+        print "\n#{h.color("Waiting for server", :magenta)}"
 
         # wait for it to be ready to do stuff
         server.wait_for { print "."; ready? }

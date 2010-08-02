@@ -37,7 +37,7 @@ class Chef
         :long => "--image IMAGE",
         :description => "The image of the server",
         :proc => Proc.new { |i| i.to_i },
-        :default => 14362
+        :default => 49
 
       option :server_name,
         :short => "-N NAME",
@@ -61,7 +61,7 @@ class Chef
         :short => "-d DISTRO",
         :long => "--distro DISTRO",
         :description => "Bootstrap a distro using a template",
-        :default => "centos5"
+        :default => "ubuntu10.04-gems"
 
       option :template_file,
         :long => "--template-file TEMPLATE",
