@@ -67,6 +67,12 @@ class Chef
         :long => "--identity-file IDENTITY_FILE",
         :description => "The SSH identity file used for authentication"
 
+      option :vpc_mode,
+        :short => "-V {TRUE/FALSE}",
+        :long => "--vpc_mode {TRUE/FALSE}",
+        :description => "Enable or disable features needed for Virtual Private Cloud mode",
+        :default => false
+
       def session
         @session ||= Net::SSH::Multi.start(:concurrent_connections => config[:concurrency])
       end
@@ -92,19 +98,24 @@ class Chef
       end
 
       def session_from_list(list)
+        options_hash = (config[:vpc_mode] == "true") ? {:paranoid => false, :user_known_hosts_file => "/dev/null"} : {}
+
         list.each do |item|
           Chef::Log.debug("Adding #{item}")
           item = "#{config[:ssh_user]}@#{item}" if config[:ssh_user]
-
+          Chef::Log.debug("Using user #{config[:ssh_user]}")
           if config[:identity_file]
-            session.use item, :keys => File.expand_path(config[:identity_file])
+            Chef::Log.debug("Using identity file #{config[:identity_file]}")
+            options_hash.merge!(:keys => File.expand_path(config[:identity_file]))
           elsif config[:password]
-            session.use item, :password => config[:password]
-          else
-            session.use item
+            Chef::Log.debug("Using password #{config[:password]}")
+            options_hash.merge(:password => config[:password])
           end
+          Chef::Log.debug("options_hash = #{options_hash.inspect}")
+          session.use item, options_hash
           @longest = item.length if item.length > @longest
         end
+
         session
       end
 
