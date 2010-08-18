@@ -22,7 +22,7 @@ require 'chef/config'
 require 'chef/daemon'
 require 'chef/log'
 require 'chef/rest'
-require 'open-uri'
+require 'chef/cookbook_tarball_fetcher'
 require 'fileutils'
 
 class Chef::Application::Solo < Chef::Application
@@ -155,17 +155,15 @@ class Chef::Application::Solo < Chef::Application
     if Chef::Config[:recipe_url]
       cookbooks_path = Array(Chef::Config[:cookbook_path]).detect{|e| e =~ /\/cookbooks\/*$/ }
       recipes_path = File.expand_path(File.join(cookbooks_path, '..'))
-      target_file = File.join(recipes_path, 'recipes.tgz')
+      target_file = File.join(recipes_path, 'recipes.tar')
 
       Chef::Log.debug "Creating path #{recipes_path} to extract recipes into"
       FileUtils.mkdir_p recipes_path
-      path = File.join(recipes_path, 'recipes.tgz')
-      File.open(path, 'wb') do |f|
-        open(Chef::Config[:recipe_url]) do |r|
-          f.write(r.read)
-        end
-      end
-      Chef::Mixin::Command.run_command(:command => "tar zxvfC #{path} #{recipes_path}")
+
+      tarball_fetcher = Chef::CookbookTarballFetcher.new(Chef::Config[:recipe_url])
+      tarball_fetcher.write_archive_to(target_file)
+
+      Chef::Mixin::Command.run_command(:command => "tar xvfC #{target_file} #{recipes_path}")
     end
   end
   

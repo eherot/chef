@@ -112,37 +112,32 @@ describe Chef::Application::Solo do
 
     describe "when the recipe_url configuration option is specified" do
       before do
-        Chef::Config[:cookbook_path] = "/tmp/chef-solo/cookbooks"
-        Chef::Config[:recipe_url] = "http://junglist.gen.nz/recipes.tgz"
-        FileUtils.stub!(:mkdir_p).and_return(true)
-        @tarfile = mock("Tempfile", :null_object => true, :read => "blah")
-        @app.stub!(:open).with("http://junglist.gen.nz/recipes.tgz").and_yield(@tarfile)
+        @recipe_url    = "http://333.333.333.333/recipes.tgz"
+        @tempdir       = File.join(Dir.tmpdir,rand(1024).to_s(16).rjust(4, '0'))
+        @cookbook_path = File.join(@tempdir, "chef-solo", "cookbooks")
+        @tarball_io    = StringIO.new(IO.read(File.join(CHEF_SPEC_DATA, 'bootstrap-latest.tar.gz')))
 
-        @target_file = mock("Tempfile", :null_object => true)
-        File.stub!(:open).with("/tmp/chef-solo/recipes.tgz", "wb").and_yield(@target_file)
+        Chef::Config[:cookbook_path] = @cookbook_path
+        Chef::Config[:recipe_url]    = @recipe_url
 
-        Chef::Mixin::Command.stub!(:run_command).and_return(true)
+        @tarball_fetcher = Chef::CookbookTarballFetcher.new(@recipe_url)
+        Chef::CookbookTarballFetcher.stub!(:new).and_return(@tarball_fetcher)
+        @tarball_fetcher.should_receive(:open).with(@recipe_url).and_yield(@tarball_io)
       end
 
-      it "should create the recipes path based on the parent of the cookbook path" do
-        FileUtils.should_receive(:mkdir_p).with("/tmp/chef-solo").and_return(true)
+      after do
+        FileUtils.rm_rf(@tempdir)
+      end
+
+      it "should fetch and untar the cookbooks tarball" do
+        expected_cookbooks = %w{apache2 bootstrap chef couchdb erlang java openssl 
+                                packages rabbitmq_chef ruby runit xml zlib}
         @app.reconfigure
+        File.exist?(@cookbook_path).should be_true
+        File.exist?(File.join(@cookbook_path, "..", "recipes.tar")).should be_true
+        Dir.entries(@cookbook_path).should include(*expected_cookbooks)
       end
 
-      it "should download the recipes" do
-        @app.should_receive(:open).with("http://junglist.gen.nz/recipes.tgz").and_yield(@tarfile)
-        @app.reconfigure
-      end
-
-      it "should write the recipes to the target path" do
-        @target_file.should_receive(:write).with("blah").and_return(true)
-        @app.reconfigure
-      end
-
-      it "should untar the target file to the parent of the cookbook path" do
-        Chef::Mixin::Command.should_receive(:run_command).with({:command => "tar zxvfC /tmp/chef-solo/recipes.tgz /tmp/chef-solo"}).and_return(true)
-        @app.reconfigure
-      end
     end
   end
 
