@@ -68,9 +68,9 @@ class Chef
         :description => "The SSH identity file used for authentication"
 
       option :vpc_mode,
-        :short => "-V {TRUE/FALSE}",
-        :long => "--vpc_mode {TRUE/FALSE}",
+        :long => "--vpc_mode",
         :description => "Enable or disable features needed for Virtual Private Cloud mode",
+        :boolean => true,
         :default => false
 
       def session
@@ -98,7 +98,7 @@ class Chef
       end
 
       def session_from_list(list)
-        options_hash = (config[:vpc_mode] == "true") ? {:paranoid => false, :user_known_hosts_file => "/dev/null"} : {}
+        options_hash = config[:vpc_mode] ? {:paranoid => false, :user_known_hosts_file => "/dev/null"} : {}
 
         list.each do |item|
           Chef::Log.debug("Adding #{item}")

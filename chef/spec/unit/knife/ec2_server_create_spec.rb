@@ -60,13 +60,10 @@ describe Chef::Knife::Ec2ServerCreate do
       @knife_ec2_create.stub!(:puts)
       @knife_ec2_create.stub!(:print)
 
-      @bootstrap = mock()
+      @bootstrap = Chef::Knife::Bootstrap.new
     end
 
     it "should set the bootstrap name_args to an array" do
-      @bootstrap.should_receive(:name_args=) do |x|
-        x.should be_a_kind_of(Array)
-      end
 
       Chef::Knife::Bootstrap.should_receive(:new).once.and_return(@bootstrap)
 
@@ -74,11 +71,12 @@ describe Chef::Knife::Ec2ServerCreate do
       @bootstrap.should_receive(:run)
 
       @knife_ec2_create.run
+
+      @bootstrap.name_args.should be_a_kind_of(Array)
+      @bootstrap.name_args.should == ['ec2-75.101.253.10.compute-1.amazonaws.com']
     end
 
     it "should retry to bootstrap if the ssh connection is refused" do
-      @bootstrap.should_receive(:name_args=).twice
-
       Chef::Knife::Bootstrap.should_receive(:new).twice.and_return(@bootstrap)
 
       @bootstrap.should_receive(:config).at_least(:once).and_return({})
@@ -86,6 +84,7 @@ describe Chef::Knife::Ec2ServerCreate do
       @bootstrap.should_receive(:run).once
 
       @knife_ec2_create.run
+      @bootstrap.name_args.should == ['ec2-75.101.253.10.compute-1.amazonaws.com']
     end
 
     it "should retry to bootstrap if the ssh connection times out" do

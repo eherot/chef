@@ -113,7 +113,7 @@ class Chef
       option :subnet_id,
         :short => "-s SUBNET-ID",
         :long => "--subnet SUBNET-ID",
-        :description => "Subnet ID to deploy node to in your Virtual Private Cloud (VPC)",
+        :description => "create node in this Virtual Private Cloud Subnet ID (implies VPC mode)",
         :default => false
 
       def h
@@ -145,13 +145,13 @@ class Chef
         )
 
         # Amazon Virtual Private Cloud requires a subnet_id. If present, do a few things differently
-        vpc_mode = !server.subnet_id.blank?
+        vpc_mode = !!config[:subnet_id]
 
         puts "#{h.color("Instance ID", :cyan)}: #{server.id}"
         puts "#{h.color("Flavor", :cyan)}: #{server.flavor_id}"
         puts "#{h.color("Image", :cyan)}: #{server.image_id}"
         puts "#{h.color("Availability Zone", :cyan)}: #{server.availability_zone}"
-        puts "#{h.color("Security Groups", :cyan)}: #{server.groups.join(", ")}" if !vpc_mode
+        puts "#{h.color("Security Groups", :cyan)}: #{server.groups.join(", ")}" unless vpc_mode
         puts "#{h.color("SSH Key", :cyan)}: #{server.key_name}"
         puts "#{h.color("Subnet ID", :cyan)}: #{server.subnet_id}" if vpc_mode
      
@@ -164,15 +164,16 @@ class Chef
         else
           @initial_sleep_delay ||= 10
           display_name = server.dns_name
+        end
 
         # wait for it to be ready to do stuff
         server.wait_for { print "."; ready? }
-        puts "#{h.color("\nWaiting #{wait_time} seconds for SSH Host Key generation on #{ display_name }", :magenta)}"
+        puts "#{h.color("\nWaiting #{@initial_sleep_delay} seconds for SSH Host Key generation on #{ display_name }", :magenta)}"
         sleep @initial_sleep_delay
 
         print "\n"
 
-        if !vpc_mode
+        unless vpc_mode
           puts "#{h.color("Public DNS Name", :cyan)}: #{server.dns_name}"
           puts "#{h.color("Public IP Address", :cyan)}: #{server.ip_address}"
           puts "#{h.color("Private DNS Name", :cyan)}: #{server.private_dns_name}"
@@ -190,7 +191,7 @@ class Chef
           bootstrap.config[:distro] = config[:distro]
           bootstrap.config[:use_sudo] = true
           bootstrap.config[:template_file] = config[:template_file]
-          bootstrap.config[:vpc_mode] = vpc_mode.to_s
+          bootstrap.config[:vpc_mode] = vpc_mode
           bootstrap.run
         rescue Errno::ECONNREFUSED
           puts h.color("Connection refused on SSH, retrying - CTRL-C to abort")
