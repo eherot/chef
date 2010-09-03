@@ -124,7 +124,7 @@ describe Chef::REST do
     end
 
     it "provides access to the raw key data" do
-      @rest.signing_key.should == SIGNING_KEY_DOT_PEM
+      @rest.signing_key.should == SIGNING_KEY_DOT_PEM.strip
     end
 
     it "does not error out when initialized without credentials" do
