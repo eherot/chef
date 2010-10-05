@@ -226,11 +226,6 @@ E
         :attributes
       end
 
-      desc "returns the current node (i.e., this host)"
-      def node
-        Shef.session.node
-      end
-
       desc "pretty print the node's attributes"
       def ohai(key=nil)
         pp(key ? node.attribute[key] : node.attribute)
@@ -252,11 +247,6 @@ E
                   :skip_forward => "move forward in the run list"
       def chef_run
         Shef.session.resource_collection.iterator
-      end
-
-      desc "resets the current recipe"
-      def reset
-        Shef.session.reset!
       end
 
       desc "assume the identity of another node."
@@ -293,6 +283,20 @@ E
       def ls(directory)
         Dir.entries(directory)
       end
+    end
+
+    MainContextUIExtensions = Proc.new do
+
+      desc "returns the current node (i.e., this host)"
+      def node
+        Shef.session.node
+      end
+
+      desc "resets the current recipe"
+      def reset
+        Shef.session.reset!
+      end
+
     end
 
     RESTApiExtensions = Proc.new do
@@ -438,11 +442,12 @@ E
               **BE CAREFUL, THIS OPERATION IS DESTRUCTIVE**
 
   Bulk edit nodes by passing a code block to the +transform+ or +bulk_edit+
-  subcommand. The block will be applied to each matching node, and then the node
+  subcommand. +transform+ takes an argument which can be either a search string
+  or :all. The block will be applied to each matching node, and then the node
   will be saved. If the block returns +nil+ or +false+, that node will be 
   skipped.
 
-      nodes.transform do |node|
+      nodes.transform(:all) do |node|
         if node.fqdn =~ /.*\\.preprod\\.example\\.com/
           node.set[:environment] = "preprod"
         end
@@ -530,6 +535,7 @@ E
 
     def self.extend_context_object(obj)
       obj.instance_eval(&ObjectUIExtensions)
+      obj.instance_eval(&MainContextUIExtensions)
       obj.instance_eval(&RESTApiExtensions)
       obj.extend(FileUtils)
       obj.extend(Chef::Mixin::Language)
