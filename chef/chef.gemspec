@@ -1,3 +1,5 @@
+require File.expand_path("../lib/chef/version", __FILE__)
+
 GEM = "chef"
 AUTHOR = "Adam Jacob"
 EMAIL = "adam@opscode.com"
