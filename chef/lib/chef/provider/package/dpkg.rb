@@ -40,7 +40,7 @@ class Chef
             Chef::Log.debug("Checking dpkg status for #{@new_resource.package_name}")
             status = popen4("dpkg-deb -W #{@new_resource.source}") do |pid, stdin, stdout, stderr|
               stdout.each do |line|
-                if pkginfo = /([a-z\d\-\+]+)\t([\w\d.-]+)/.match(line)
+                if pkginfo = /([a-z\d\-\+]+)\t([\w\d.:-]+)/.match(line)
                   @current_resource.package_name(pkginfo[1])
                   @new_resource.version(pkginfo[2])
                 end
