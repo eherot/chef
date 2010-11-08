@@ -29,6 +29,27 @@ class Chef
         @highline ||= HighLine.new
       end
 
+      def to_color(flavor)
+          require 'highline'
+
+          case flavor
+          when 1
+              c = :green
+          when 2,3
+              c = :yellow
+          when 4
+              c = :blue
+          when 5
+              c = :cyan
+          when 6
+              c = :magenta
+          when 7
+              c = :red
+          end
+
+          return c
+      end
+
       def run 
         require 'fog'
         require 'highline'
@@ -40,15 +61,22 @@ class Chef
           :rackspace_username => Chef::Config[:knife][:rackspace_api_username] 
         )
 
-        server_list = [ h.color('ID', :bold), h.color('Name', :bold), h.color('Public IP', :bold), h.color('Private IP', :bold), h.color('Flavor ID', :bold) ]
+        server_list = [ 
+            h.color('ID     Name (Flavor)', :bold), 
+            h.color('Public IP', :bold), 
+            h.color('Private IP', :bold)
+        ]
+
         connection.servers.all.each do |server|
-          server_list << server.id.to_s
-          server_list << server.name
-          server_list << server.addresses["public"][0]
-          server_list << server.addresses["private"][0]
-          server_list << server.flavor_id.to_s
+          server_list << 
+              h.color(
+                  "#{server.id} #{server.name} (#{server.flavor_id})", 
+                  to_color(server.flavor_id)
+              )
+          server_list << server.addresses["public"].join(', ')
+          server_list << server.addresses["private"].join(', ')
         end
-        puts h.list(server_list, :columns_across, 5)
+        puts h.list(server_list, :columns_across, 3)
 
       end
     end
