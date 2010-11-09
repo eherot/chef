@@ -42,14 +42,16 @@ class Chef
 
         image_list = [ 
             h.color('ID', :bold),
-            h.color('Name', :bold)
+            h.color('Name', :bold),
+            h.color('Server ID', :bold)
         ]
 
-        connection.list_images.body['images'].each do |image|
+        connection.list_images_detail.body['images'].each do |image|
           image_list << image['id'].to_s
           image_list << image['name']
+          image_list << image['serverId'].to_s ? "Yes" : "No"
         end
-        puts h.list(image_list, :columns_across, 2)
+        puts h.list(image_list, :columns_across, 3)
 
       end
     end
